@@ -3,9 +3,6 @@ package com.goalio.scores
 import android.content.Context
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -29,17 +26,8 @@ object ProfileCatalogRepository {
             val teams = GoalioBackendApi.getTeams(limit = 200).items
             require(teams.isNotEmpty()) { "No teams are available" }
 
-            val featuredPlayers = coroutineScope {
-                FEATURED_PLAYER_QUERIES.map { query ->
-                    async {
-                        runCatching { GoalioBackendApi.searchPlayers(query) }
-                            .getOrDefault(emptyList())
-                            .firstOrNull()
-                    }
-                }.awaitAll().filterNotNull()
-            }
             val catalogPlayers = GoalioBackendApi.getPlayers(limit = 100).items
-            val players = (featuredPlayers + catalogPlayers)
+            val players = catalogPlayers
                 .distinctBy { it.id }
                 .map { it.withCompetitionIds(teams) }
             require(players.isNotEmpty()) { "No players are available" }
@@ -62,15 +50,6 @@ object ProfileCatalogRepository {
         }
     }
 }
-
-internal val FEATURED_PLAYER_QUERIES = listOf(
-    "Lionel Messi",
-    "Cristiano Ronaldo",
-    "Kylian Mbappe",
-    "Erling Haaland",
-    "Mohamed Salah",
-    "Neymar"
-)
 
 internal fun FavoritePlayer.withCompetitionIds(teams: List<FavoriteTeam>): FavoritePlayer {
     if (competitionIds.isNotEmpty()) return this

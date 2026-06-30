@@ -130,6 +130,7 @@ fun ProfileSetupScreen(
     var submitting by remember { mutableStateOf(false) }
     var submitError by remember { mutableStateOf<String?>(null) }
     var usernameAvailable by remember { mutableStateOf<Boolean?>(null) }
+    var usernameError by remember { mutableStateOf<String?>(null) }
     var checkingUsername by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val remoteConfig = remember { FirebaseRemoteConfig.getInstance() }
@@ -174,7 +175,7 @@ fun ProfileSetupScreen(
                 teamCatalog = catalog.teams
                 playerCatalog = catalog.players
             }
-            .onFailure { catalogError = "Could not load teams and players. Check the connection and try again." }
+            .onFailure { catalogError = it.userFacingBackendMessage("Could not load teams and players.") }
         catalogLoading = false
     }
 
@@ -195,11 +196,14 @@ fun ProfileSetupScreen(
     }
     LaunchedEffect(username) {
         usernameAvailable = null
+        usernameError = null
         checkingUsername = false
         if (!usernameRuleValid) return@LaunchedEffect
         delay(350)
         checkingUsername = true
-        usernameAvailable = runCatching { GoalioBackendApi.isUsernameAvailable(username) }.getOrNull()
+        runCatching { GoalioBackendApi.isUsernameAvailable(username) }
+            .onSuccess { usernameAvailable = it }
+            .onFailure { usernameError = it.userFacingBackendMessage("Could not check username.") }
         checkingUsername = false
     }
 
@@ -244,7 +248,7 @@ fun ProfileSetupScreen(
                                 checkingUsername -> FieldMessage("Checking username…", true)
                                 usernameAvailable == true -> FieldMessage("Username is available", true)
                                 usernameAvailable == false -> FieldMessage("That username is already taken", false)
-                                else -> FieldMessage("Could not check username. Verify the backend connection.", false)
+                                usernameError != null -> FieldMessage(usernameError.orEmpty(), false)
                             }
                             Spacer(Modifier.height(30.dp))
                             Text("Follow your favorites", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold)
@@ -470,6 +474,13 @@ private fun isValidUsername(value: String): Boolean {
     if (!Regex("[a-z][a-z0-9_]{2,19}").matches(value)) return false
     if (value.endsWith('_') || "__" in value) return false
     return value !in setOf("admin", "administrator", "goalio", "support", "moderator", "root", "system")
+}
+
+private fun Throwable.userFacingBackendMessage(prefix: String): String {
+    if (this is BackendException && statusCode == 503) {
+        return "$prefix Firebase quota is exhausted right now. Try again after quota resets."
+    }
+    return "$prefix Verify the backend connection and try again."
 }
 
 @Composable
