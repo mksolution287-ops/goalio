@@ -18,7 +18,7 @@ android {
         buildConfigField(
             "String",
             "BACKEND_BASE_URL",
-            "\"https://goalio-backend-brh0.onrender.com\""
+            "\"https://goalio-backend-sd2p.onrender.com\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

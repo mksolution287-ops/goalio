@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <!-- Production API origin. Firebase Console can override this value remotely. -->
+    <entry>
+        <key>backend_base_url</key>
+        <value>https://goalio-backend-sd2p.onrender.com</value>
+    </entry>
+
+    <!-- Profile setup feature switch. -->
+    <entry>
+        <key>profile_setup_enabled</key>
+        <value>true</value>
+    </entry>
+
+    <!-- Maximum favorites selectable during profile setup. -->
+    <entry>
+        <key>profile_teams_limit</key>
+        <value>6</value>
+    </entry>
+    <entry>
+        <key>profile_players_limit</key>
+        <value>6</value>
+    </entry>
+</defaultsMap>

@@ -21,17 +21,17 @@ class GoalioApplication : Application() {
                     .setMinimumFetchIntervalInSeconds(if (BuildConfig.DEBUG) 0 else 3600)
                     .build()
             )
-            setDefaultsAsync(
-                mapOf(
-                    "profile_setup_enabled" to true,
-                    "profile_teams_limit" to 6L,
-                    "profile_players_limit" to 6L,
-                    "backend_base_url" to BuildConfig.BACKEND_BASE_URL
-                )
-            )
-            fetchAndActivate().addOnFailureListener { error ->
-                FirebaseCrashlytics.getInstance().recordException(error)
-            }
+            setDefaultsAsync(R.xml.remote_config_defaults)
+            fetchAndActivate()
+                .addOnSuccessListener {
+                    FirebaseCrashlytics.getInstance().setCustomKey(
+                        "backend_base_url",
+                        getString("backend_base_url").ifBlank { BuildConfig.BACKEND_BASE_URL }
+                    )
+                }
+                .addOnFailureListener { error ->
+                    FirebaseCrashlytics.getInstance().recordException(error)
+                }
         }
 
         val oneSignalAppId = getString(R.string.onesignal_app_id)
