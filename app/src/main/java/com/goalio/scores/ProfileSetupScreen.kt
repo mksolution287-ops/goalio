@@ -123,7 +123,11 @@ fun ProfileSetupScreen(
     var selectedPlayers by rememberSaveable { mutableStateOf(setOf<String>()) }
     var teamCatalog by remember { mutableStateOf(emptyList<FavoriteTeam>()) }
     var playerCatalog by remember { mutableStateOf(emptyList<FavoritePlayer>()) }
+    var nextTeamCursor by remember { mutableStateOf<String?>(null) }
+    var nextPlayerCursor by remember { mutableStateOf<String?>(null) }
     var catalogLoading by remember { mutableStateOf(true) }
+    var loadingMoreTeams by remember { mutableStateOf(false) }
+    var loadingMorePlayers by remember { mutableStateOf(false) }
     var catalogError by remember { mutableStateOf<String?>(null) }
     var teamSelectionError by remember { mutableStateOf<String?>(null) }
     var playerSelectionError by remember { mutableStateOf<String?>(null) }
@@ -146,7 +150,6 @@ fun ProfileSetupScreen(
         teamCatalog.asSequence()
             .filter { teamCompetitionId == null || teamCompetitionId in it.competitionIds }
             .filter { it.name.contains(teamQuery, true) }
-            .take(6)
             .toList()
     }
     val players = remember(playerQuery, playerCatalog, playerCompetitionId) {
@@ -157,7 +160,6 @@ fun ProfileSetupScreen(
                 FeaturedPlayerKeys.indexOfFirst { it in player.name.lowercase() }
                     .takeIf { it >= 0 } ?: Int.MAX_VALUE
             }
-            .take(6)
             .toList()
     }
 
@@ -167,6 +169,8 @@ fun ProfileSetupScreen(
         if (cached != null) {
             teamCatalog = cached.teams
             playerCatalog = cached.players
+            nextTeamCursor = cached.nextTeamCursor
+            nextPlayerCursor = cached.nextPlayerCursor
             catalogLoading = false
             return@LaunchedEffect
         }
@@ -174,6 +178,8 @@ fun ProfileSetupScreen(
             .onSuccess { catalog ->
                 teamCatalog = catalog.teams
                 playerCatalog = catalog.players
+                nextTeamCursor = catalog.nextTeamCursor
+                nextPlayerCursor = catalog.nextPlayerCursor
             }
             .onFailure { catalogError = it.userFacingBackendMessage("Could not load teams and players.") }
         catalogLoading = false
@@ -182,16 +188,18 @@ fun ProfileSetupScreen(
     LaunchedEffect(teamQuery) {
         if (teamQuery.trim().length < 2) return@LaunchedEffect
         delay(250)
-        runCatching { GoalioBackendApi.searchTeams(teamQuery) }.onSuccess { results ->
-            teamCatalog = (teamCatalog + results).distinctBy { it.id }
+        runCatching { GoalioBackendApi.searchTeams(teamQuery, limit = 6) }.onSuccess { page ->
+            teamCatalog = (teamCatalog + page.items).distinctBy { it.id }
+            nextTeamCursor = page.nextCursor
         }
     }
     LaunchedEffect(playerQuery) {
         if (playerQuery.trim().length < 2) return@LaunchedEffect
         delay(250)
-        runCatching { GoalioBackendApi.searchPlayers(playerQuery) }.onSuccess { results ->
-            playerCatalog = (playerCatalog + results.map { it.withCompetitionIds(teamCatalog) })
+        runCatching { GoalioBackendApi.searchPlayers(playerQuery, limit = 6) }.onSuccess { page ->
+            playerCatalog = (playerCatalog + page.items.map { it.withCompetitionIds(teamCatalog) })
                 .distinctBy { it.id }
+            nextPlayerCursor = page.nextCursor
         }
     }
     LaunchedEffect(username) {
@@ -315,6 +323,36 @@ fun ProfileSetupScreen(
                                     )
                                 }
                             }
+                            if (nextTeamCursor != null) {
+                                Spacer(Modifier.height(12.dp))
+                                Button(
+                                    enabled = !loadingMoreTeams,
+                                    onClick = {
+                                        val cursor = nextTeamCursor ?: return@Button
+                                        scope.launch {
+                                            loadingMoreTeams = true
+                                            runCatching {
+                                                if (teamQuery.trim().length >= 2) {
+                                                    GoalioBackendApi.searchTeams(teamQuery, limit = 6, cursor = cursor)
+                                                } else {
+                                                    GoalioBackendApi.getTeams(limit = 6, cursor = cursor)
+                                                }
+                                            }.onSuccess { page ->
+                                                teamCatalog = (teamCatalog + page.items).distinctBy { it.id }
+                                                nextTeamCursor = page.nextCursor
+                                            }.onFailure {
+                                                catalogError = it.userFacingBackendMessage("Could not load more teams.")
+                                            }
+                                            loadingMoreTeams = false
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(46.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Field, contentColor = Color.White),
+                                    shape = RoundedCornerShape(50)
+                                ) {
+                                    Text(if (loadingMoreTeams) "LOADING..." else "LOAD 6 MORE TEAMS", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
                             Spacer(Modifier.height(28.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text("Who's your hero?", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
@@ -351,6 +389,37 @@ fun ProfileSetupScreen(
                                             }
                                         }
                                     }
+                                }
+                            }
+                            if (nextPlayerCursor != null) {
+                                Spacer(Modifier.height(12.dp))
+                                Button(
+                                    enabled = !loadingMorePlayers,
+                                    onClick = {
+                                        val cursor = nextPlayerCursor ?: return@Button
+                                        scope.launch {
+                                            loadingMorePlayers = true
+                                            runCatching {
+                                                if (playerQuery.trim().length >= 2) {
+                                                    GoalioBackendApi.searchPlayers(playerQuery, limit = 6, cursor = cursor)
+                                                } else {
+                                                    GoalioBackendApi.getPlayers(limit = 6, cursor = cursor)
+                                                }
+                                            }.onSuccess { page ->
+                                                playerCatalog = (playerCatalog + page.items.map { it.withCompetitionIds(teamCatalog) })
+                                                    .distinctBy { it.id }
+                                                nextPlayerCursor = page.nextCursor
+                                            }.onFailure {
+                                                catalogError = it.userFacingBackendMessage("Could not load more players.")
+                                            }
+                                            loadingMorePlayers = false
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(46.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Field, contentColor = Color.White),
+                                    shape = RoundedCornerShape(50)
+                                ) {
+                                    Text(if (loadingMorePlayers) "LOADING..." else "LOAD 6 MORE PLAYERS", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }

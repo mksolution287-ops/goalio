@@ -56,7 +56,7 @@ object GoalioBackendApi {
         "GET", "/api/v1/users/username/availability?username=${encode(username)}"
     ) { it.getBoolean("available") }
 
-    suspend fun getTeams(limit: Int = 100, cursor: String? = null): BackendPage<FavoriteTeam> = request(
+    suspend fun getTeams(limit: Int = 6, cursor: String? = null): BackendPage<FavoriteTeam> = request(
         "GET", pagedPath("/api/v1/football/teams", limit, cursor)
     ) { json ->
         BackendPage(
@@ -65,7 +65,7 @@ object GoalioBackendApi {
         )
     }
 
-    suspend fun getPlayers(limit: Int = 100, cursor: String? = null): BackendPage<FavoritePlayer> = request(
+    suspend fun getPlayers(limit: Int = 6, cursor: String? = null): BackendPage<FavoritePlayer> = request(
         "GET", pagedPath("/api/v1/football/players", limit, cursor)
     ) { json ->
         BackendPage(
@@ -74,13 +74,23 @@ object GoalioBackendApi {
         )
     }
 
-    suspend fun searchTeams(query: String, limit: Int = 6): List<FavoriteTeam> = request(
-        "GET", "/api/v1/football/teams/search?q=${encode(query)}&limit=${limit.coerceIn(1, 20)}"
-    ) { it.getJSONArray("items").toTeamList() }
+    suspend fun searchTeams(query: String, limit: Int = 6, cursor: String? = null): BackendPage<FavoriteTeam> = request(
+        "GET", searchPath("/api/v1/football/teams/search", query, limit, cursor)
+    ) { json ->
+        BackendPage(
+            items = json.getJSONArray("items").toTeamList(),
+            nextCursor = json.nullableString("nextCursor")
+        )
+    }
 
-    suspend fun searchPlayers(query: String, limit: Int = 6): List<FavoritePlayer> = request(
-        "GET", "/api/v1/football/players/search?q=${encode(query)}&limit=${limit.coerceIn(1, 20)}"
-    ) { it.getJSONArray("items").toPlayerList() }
+    suspend fun searchPlayers(query: String, limit: Int = 6, cursor: String? = null): BackendPage<FavoritePlayer> = request(
+        "GET", searchPath("/api/v1/football/players/search", query, limit, cursor)
+    ) { json ->
+        BackendPage(
+            items = json.getJSONArray("items").toPlayerList(),
+            nextCursor = json.nullableString("nextCursor")
+        )
+    }
 
     private suspend fun <T> request(
         method: String,
@@ -198,6 +208,18 @@ object GoalioBackendApi {
         append(path)
         append("?limit=")
         append(limit.coerceIn(1, 200))
+        if (!cursor.isNullOrBlank()) {
+            append("&cursor=")
+            append(encode(cursor))
+        }
+    }
+
+    private fun searchPath(path: String, query: String, limit: Int, cursor: String?): String = buildString {
+        append(path)
+        append("?q=")
+        append(encode(query))
+        append("&limit=")
+        append(limit.coerceIn(1, 20))
         if (!cursor.isNullOrBlank()) {
             append("&cursor=")
             append(encode(cursor))

@@ -8,7 +8,9 @@ import kotlinx.coroutines.sync.withLock
 
 data class ProfileCatalog(
     val teams: List<FavoriteTeam>,
-    val players: List<FavoritePlayer>
+    val players: List<FavoritePlayer>,
+    val nextTeamCursor: String? = null,
+    val nextPlayerCursor: String? = null
 )
 
 object ProfileCatalogRepository {
@@ -23,16 +25,23 @@ object ProfileCatalogRepository {
 
             // Loading teams first also establishes the anonymous Firebase session before
             // the parallel player requests begin.
-            val teams = GoalioBackendApi.getTeams(limit = 6).items
+            val teamPage = GoalioBackendApi.getTeams(limit = 6)
+            val teams = teamPage.items
             require(teams.isNotEmpty()) { "No teams are available" }
 
-            val catalogPlayers = GoalioBackendApi.getPlayers(limit = 6).items
+            val playerPage = GoalioBackendApi.getPlayers(limit = 6)
+            val catalogPlayers = playerPage.items
             val players = catalogPlayers
                 .distinctBy { it.id }
                 .map { it.withCompetitionIds(teams) }
             require(players.isNotEmpty()) { "No players are available" }
 
-            ProfileCatalog(teams, players).also { cachedCatalog = it }
+            ProfileCatalog(
+                teams = teams,
+                players = players,
+                nextTeamCursor = teamPage.nextCursor,
+                nextPlayerCursor = playerPage.nextCursor
+            ).also { cachedCatalog = it }
         }
 
         warmImages(context, catalog)
