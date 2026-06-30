@@ -114,6 +114,7 @@ fun ProfileSetupScreen(
     onSkip: () -> Unit,
     onComplete: suspend (ProfileDraft) -> String?
 ) {
+    val metrics = rememberGoalioMetrics()
     var fullName by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
     var teamQuery by rememberSaveable { mutableStateOf("") }
@@ -222,19 +223,19 @@ fun ProfileSetupScreen(
             ProfileHeader(onBack)
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(18.dp)
+                contentPadding = PaddingValues(start = metrics.horizontalPadding, end = metrics.horizontalPadding, top = metrics.dp(10), bottom = metrics.dp(24)),
+                verticalArrangement = Arrangement.spacedBy(metrics.dp(18))
             ) {
                 item {
                     Surface(
                         color = Panel,
                         border = BorderStroke(1.dp, GoalioColors.CardBorder),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(metrics.dp(24)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(Modifier.padding(20.dp)) {
-                            Text("Set up your profile", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold)
-                            Text("Make Goalio yours. You can change these anytime.", color = GoalioColors.Body, fontSize = 14.sp, lineHeight = 20.sp)
+                        Column(Modifier.padding(metrics.dp(18))) {
+                            Text("Set up your profile", color = Color.White, fontSize = metrics.sp(26), fontWeight = FontWeight.Bold)
+                            Text("Make Goalio yours. You can change these anytime.", color = GoalioColors.Body, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
                             Spacer(Modifier.height(24.dp))
                             LabeledInput("FULL NAME", "e.g., Alex Morgan", fullName, { fullName = it }, true)
                             if (fullName.isNotBlank() && !fullNameValid) {
@@ -260,8 +261,8 @@ fun ProfileSetupScreen(
                                 usernameError != null -> FieldMessage(usernameError.orEmpty(), false)
                             }
                             Spacer(Modifier.height(30.dp))
-                            Text("Follow your favorites", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold)
-                            Text("Get live updates for the teams you love.", color = GoalioColors.Body, fontSize = 15.sp)
+                            Text("Follow your favorites", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Bold)
+                            Text("Get live updates for the teams you love.", color = GoalioColors.Body, fontSize = metrics.sp(15))
                             if (catalogLoading) {
                                 FieldMessage("Loading teams and players...", true)
                             }
@@ -356,7 +357,7 @@ fun ProfileSetupScreen(
                             }
                             Spacer(Modifier.height(28.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Who's your hero?", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                                Text("Who's your hero?", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                                 SearchGlyph(Modifier.size(25.dp), Color.White)
                             }
                             Spacer(Modifier.height(12.dp))
@@ -462,7 +463,7 @@ fun ProfileSetupScreen(
                                 submitting = false
                             }
                         },
-                        modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 22.dp, vertical = 16.dp).height(58.dp),
+                        modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = metrics.horizontalPadding, vertical = metrics.dp(14)).height(metrics.dp(56)),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = GoalioColors.Accent,
                             contentColor = GoalioColors.TextPrimary,
@@ -481,15 +482,16 @@ fun ProfileSetupScreen(
 
 @Composable
 private fun ProfileHeader(onBack: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Row(
-        Modifier.fillMaxWidth().height(70.dp).padding(horizontal = 20.dp),
+        Modifier.fillMaxWidth().height(metrics.dp(66)).padding(horizontal = metrics.horizontalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(Modifier.size(38.dp).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
-            BackGlyph(Modifier.size(25.dp), Color.White)
+        Box(Modifier.size(metrics.dp(38)).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
+            BackGlyph(Modifier.size(metrics.dp(25)), Color.White)
         }
         Spacer(Modifier.weight(1f))
-        Text("⚽ Goalio", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 2.sp)
+        Text("⚽ Goalio", color = Color.White, fontSize = metrics.sp(23), fontWeight = FontWeight.ExtraBold, letterSpacing = 2.sp)
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.width(38.dp))
     }
@@ -612,17 +614,18 @@ private fun SelectionChip(label: String, onRemove: () -> Unit) {
 
 @Composable
 private fun TeamCard(team: FavoriteTeam, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         onClick = onClick,
         color = GoalioColors.Surface2,
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) GoalioColors.Accent else GoalioColors.CardBorder),
-        modifier = modifier.height(112.dp)
+        modifier = modifier.height(metrics.dp(108))
     ) {
-        Box(Modifier.padding(12.dp)) {
+        Box(Modifier.padding(metrics.dp(10))) {
             Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
-                    Modifier.size(width = 48.dp, height = 34.dp).clip(RoundedCornerShape(5.dp))
+                    Modifier.size(width = metrics.dp(46), height = metrics.dp(32)).clip(RoundedCornerShape(5.dp))
                         .background(GoalioColors.Surface3),
                     contentAlignment = Alignment.Center
                 ) {
@@ -637,8 +640,8 @@ private fun TeamCard(team: FavoriteTeam, selected: Boolean, modifier: Modifier =
                         Text(team.shortName.take(1), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
                     }
                 }
-                Spacer(Modifier.height(9.dp))
-                Text(team.name, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(metrics.dp(8)))
+                Text(team.name, color = Color.White, fontSize = metrics.sp(13), fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
             if (selected) {
                 Box(Modifier.align(Alignment.TopEnd).size(20.dp).background(GoalioColors.Accent, CircleShape), contentAlignment = Alignment.Center) {
@@ -651,15 +654,16 @@ private fun TeamCard(team: FavoriteTeam, selected: Boolean, modifier: Modifier =
 
 @Composable
 private fun PlayerCard(player: FavoritePlayer, selected: Boolean, onClick: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Surface2,
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) GoalioColors.Accent else GoalioColors.Border),
         shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.width(210.dp)
+        modifier = Modifier.width(metrics.dp(196))
     ) {
         Column {
             Box(
-                Modifier.fillMaxWidth().height(160.dp)
+                Modifier.fillMaxWidth().height(metrics.dp(144))
                     .background(GoalioColors.Black700)
             ) {
                 if (player.imageUrl != null) {
@@ -670,7 +674,7 @@ private fun PlayerCard(player: FavoritePlayer, selected: Boolean, onClick: () ->
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    PlayerSilhouette(Modifier.align(Alignment.BottomCenter).size(132.dp), GoalioColors.TextSecondary)
+                    PlayerSilhouette(Modifier.align(Alignment.BottomCenter).size(metrics.dp(120)), GoalioColors.TextSecondary)
                 }
                 Surface(
                     color = GoalioColors.Surface1.copy(alpha = .86f), shape = CircleShape,
@@ -678,10 +682,10 @@ private fun PlayerCard(player: FavoritePlayer, selected: Boolean, onClick: () ->
                     modifier = Modifier.align(Alignment.BottomStart).padding(12.dp).size(38.dp)
                 ) { Box(contentAlignment = Alignment.Center) { Text(player.initials, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold) } }
             }
-            Column(Modifier.padding(13.dp)) {
-                Text(player.name, color = Color.White, fontSize = 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(player.team, color = Muted, fontSize = 12.sp)
-                Spacer(Modifier.height(10.dp))
+            Column(Modifier.padding(metrics.dp(12))) {
+                Text(player.name, color = Color.White, fontSize = metrics.sp(16), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(player.team, color = Muted, fontSize = metrics.sp(12), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Spacer(Modifier.height(metrics.dp(9)))
                 Surface(
                     onClick = onClick,
                     color = if (selected) GoalioColors.Accent else Color.Transparent,

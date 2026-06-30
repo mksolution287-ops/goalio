@@ -23,8 +23,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +50,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -244,6 +247,7 @@ fun GoalioBackground(backgroundAlpha: Float = 1f, content: @Composable BoxScope.
 
 @Composable
 fun SplashScreen() {
+    val metrics = rememberGoalioMetrics()
     val transition = rememberInfiniteTransition(label = "splash geometry")
     val sweep = transition.animateFloat(
         initialValue = 0f,
@@ -263,15 +267,15 @@ fun SplashScreen() {
             Canvas(Modifier.fillMaxSize()) {
                 val center = Offset(size.width / 2f, size.height * .42f)
                 val radius = size.minDimension * .28f
-                repeat(3) { ring ->
+                repeat(4) { ring ->
                     drawCircle(
-                        color = Color.White.copy(alpha = .10f + ring * .04f),
-                        radius = radius * (.52f + ring * .28f) * pulse,
+                        color = Color.White.copy(alpha = .025f + ring * .012f),
+                        radius = radius * (.62f + ring * .34f) * pulse,
                         center = center,
                         style = Stroke(width = 2.2f)
                     )
                 }
-                repeat(6) { index ->
+                repeat(8) { index ->
                     val angle = Math.toRadians((sweep + index * 60).toDouble())
                     val start = Offset(
                         center.x + kotlin.math.cos(angle).toFloat() * radius * .45f,
@@ -285,8 +289,8 @@ fun SplashScreen() {
                         color = if (index % 2 == 0) GoalioColors.TextPrimary else GoalioColors.TextSecondary,
                         start = start,
                         end = end,
-                        strokeWidth = 3f,
-                        alpha = .55f
+                        strokeWidth = 1.2f,
+                        alpha = .08f
                     )
                 }
                 drawArc(
@@ -296,20 +300,38 @@ fun SplashScreen() {
                     useCenter = false,
                     topLeft = Offset(center.x - radius, center.y - radius),
                     size = Size(radius * 2, radius * 2),
-                    style = Stroke(width = 5f)
+                    style = Stroke(width = 2.2f),
+                    alpha = .22f
                 )
-                drawCircle(GoalioColors.TextPrimary, radius = 8f * pulse, center = center)
+            }
+            Surface(
+                color = GoalioColors.Surface1,
+                shape = RoundedCornerShape(metrics.dp(34)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, GoalioColors.CardBorder),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(metrics.dp(if (metrics.compact) 112 else 132))
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
+                        contentDescription = "Goalio",
+                        modifier = Modifier.size(metrics.dp(if (metrics.compact) 92 else 108))
+                    )
+                }
             }
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .offset(y = 124.dp),
+                    .offset(y = metrics.dp(if (metrics.compact) 110 else 132))
+                    .padding(horizontal = metrics.horizontalPadding)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "GOALIO",
                     color = GoalioColors.TextPrimary,
-                    fontSize = 27.sp,
+                    fontSize = metrics.sp(27),
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 7.sp,
                     textAlign = TextAlign.Center
@@ -318,7 +340,7 @@ fun SplashScreen() {
                 Text(
                     text = "LIVE FOOTBALL SCORES",
                     color = GoalioColors.TextSecondary,
-                    fontSize = 11.sp,
+                    fontSize = metrics.sp(11),
                     fontWeight = FontWeight.Normal,
                     letterSpacing = 3.sp,
                     textAlign = TextAlign.Center

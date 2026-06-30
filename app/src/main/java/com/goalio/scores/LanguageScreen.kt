@@ -38,6 +38,7 @@ private val languages = listOf(
 
 @Composable
 fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
+    val metrics = rememberGoalioMetrics()
     var query by rememberSaveable { mutableStateOf("") }
     var selected by rememberSaveable { mutableStateOf("en-US") }
     val filtered = remember(query) {
@@ -47,32 +48,32 @@ fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
     GoalioBackground(.25f) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
             Row(
-                Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 22.dp),
+                Modifier.fillMaxWidth().height(metrics.dp(68)).padding(horizontal = metrics.horizontalPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("‹", color = Color.White, fontSize = 51.sp,
-                    modifier = Modifier.clickable(onClick = onBack).padding(end = 22.dp))
-                Text("GOALIO", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold,
-                    letterSpacing = 5.sp, modifier = Modifier.weight(1f))
+                Text("‹", color = Color.White, fontSize = metrics.sp(46),
+                    modifier = Modifier.clickable(onClick = onBack).padding(end = metrics.dp(18)))
+                Text("GOALIO", color = Color.White, fontSize = metrics.sp(24), fontWeight = FontWeight.Bold,
+                    letterSpacing = if (metrics.compact) 3.sp else 5.sp, modifier = Modifier.weight(1f))
                 Button(
                     onClick = { onDone(selected) },
                     colors = ButtonDefaults.buttonColors(containerColor = GoalioColors.Accent, contentColor = GoalioColors.TextPrimary),
                     shape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp)
-                ) { Text("DONE", fontWeight = FontWeight.Bold, letterSpacing = 1.sp) }
+                    contentPadding = PaddingValues(horizontal = metrics.dp(20), vertical = metrics.dp(9))
+                ) { Text("DONE", fontWeight = FontWeight.Bold, letterSpacing = 1.sp, fontSize = metrics.sp(13)) }
             }
             HorizontalDivider(color = GoalioColors.Divider)
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                contentPadding = PaddingValues(metrics.horizontalPadding),
+                verticalArrangement = Arrangement.spacedBy(metrics.dp(10))
             ) {
                 item {
                     Spacer(Modifier.height(20.dp))
-                    Text("Select Language", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+                    Text("Select Language", color = Color.White, fontSize = metrics.sp(26), fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(5.dp))
                     Text("Personalize your experience with your preferred language.",
-                        color = GoalioColors.Body, fontSize = 16.sp, lineHeight = 22.sp)
+                        color = GoalioColors.Body, fontSize = metrics.sp(16), lineHeight = metrics.sp(22))
                     Spacer(Modifier.height(28.dp))
                     SearchBox(query) { query = it }
                     Spacer(Modifier.height(17.dp))
@@ -96,23 +97,24 @@ fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
 
 @Composable
 private fun SearchBox(value: String, onValueChange: (String) -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Row(
-        Modifier.fillMaxWidth().height(58.dp).clip(RoundedCornerShape(14.dp))
-            .then(Modifier).padding(horizontal = 16.dp),
+        Modifier.fillMaxWidth().height(metrics.dp(56)).clip(RoundedCornerShape(metrics.dp(14)))
+            .then(Modifier).padding(horizontal = metrics.dp(0)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
-            color = GoalioColors.Search, shape = RoundedCornerShape(14.dp),
+            color = GoalioColors.Search, shape = RoundedCornerShape(metrics.dp(14)),
             border = BorderStroke(1.dp, GoalioColors.Border),
             modifier = Modifier.fillMaxSize()
         ) {
-            Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("⌕", color = Color.White, fontSize = 32.sp)
-                Spacer(Modifier.width(12.dp))
+            Row(Modifier.padding(horizontal = metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
+                Text("⌕", color = Color.White, fontSize = metrics.sp(30))
+                Spacer(Modifier.width(metrics.dp(12)))
                 Box(Modifier.weight(1f)) {
-                    if (value.isEmpty()) Text("Search language...", color = GoalioColors.Placeholder, fontSize = 18.sp)
+                    if (value.isEmpty()) Text("Search language...", color = GoalioColors.Placeholder, fontSize = metrics.sp(17))
                     BasicTextField(value, onValueChange, singleLine = true,
-                        textStyle = TextStyle(color = Color.White, fontSize = 18.sp), modifier = Modifier.fillMaxWidth())
+                        textStyle = TextStyle(color = Color.White, fontSize = metrics.sp(17)), modifier = Modifier.fillMaxWidth())
                 }
             }
         }
@@ -121,34 +123,35 @@ private fun SearchBox(value: String, onValueChange: (String) -> Unit) {
 
 @Composable
 private fun LanguageCard(language: LanguageOption, selected: Boolean, onClick: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         onClick = onClick,
         color = GoalioColors.Surface1,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(metrics.dp(22)),
         border = BorderStroke(if (selected) 1.5.dp else 1.dp,
             if (selected) GoalioColors.Accent else GoalioColors.CardBorder),
-        modifier = Modifier.fillMaxWidth().height(86.dp)
+        modifier = Modifier.fillMaxWidth().height(metrics.dp(82))
     ) {
-        Row(Modifier.padding(horizontal = 17.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.padding(horizontal = metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
             Surface(
                 shape = CircleShape, color = GoalioColors.Background,
-                border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.size(48.dp)
+                border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.size(metrics.dp(46))
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(language.badge, color = Color.White, fontSize = if (language.badge.length > 3) 20.sp else 13.sp,
+                    Text(language.badge, color = Color.White, fontSize = if (language.badge.length > 3) metrics.sp(19) else metrics.sp(13),
                         fontWeight = FontWeight.Bold)
                 }
             }
-            Spacer(Modifier.width(18.dp))
+            Spacer(Modifier.width(metrics.dp(16)))
             Column(Modifier.weight(1f)) {
-                Text(language.name, color = GoalioColors.TextPrimary, fontSize = 22.sp,
+                Text(language.name, color = GoalioColors.TextPrimary, fontSize = metrics.sp(21),
                     fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(language.subtitle, color = GoalioColors.TextSecondary, fontSize = 15.sp,
+                Text(language.subtitle, color = GoalioColors.TextSecondary, fontSize = metrics.sp(15),
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             if (selected) {
-                Box(Modifier.size(25.dp).clip(CircleShape), contentAlignment = Alignment.Center) {
-                    Text("●", color = Color(0xFFC6A93B), fontSize = 23.sp)
+                Box(Modifier.size(metrics.dp(24)).clip(CircleShape), contentAlignment = Alignment.Center) {
+                    Text("●", color = GoalioColors.Accent, fontSize = metrics.sp(22))
                 }
             }
         }

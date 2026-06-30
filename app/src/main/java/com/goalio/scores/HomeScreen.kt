@@ -70,6 +70,7 @@ fun PersonalizedHomeScreen(
     onOpenMatch: (ScheduleMatch) -> Unit
 ) {
     val context = LocalContext.current
+    val metrics = rememberGoalioMetrics()
     var matches by remember { mutableStateOf(emptyList<ScheduleMatch>()) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -109,8 +110,8 @@ fun PersonalizedHomeScreen(
     GoalioBackground {
         LazyColumn(
             modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
-            contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 22.dp, bottom = 96.dp),
-            verticalArrangement = Arrangement.spacedBy(22.dp)
+            contentPadding = PaddingValues(start = metrics.horizontalPadding, end = metrics.horizontalPadding, top = metrics.dp(20), bottom = metrics.bottomBarPadding),
+            verticalArrangement = Arrangement.spacedBy(metrics.dp(20))
         ) {
             item { HomeTopBar() }
             item {
@@ -165,49 +166,51 @@ fun PersonalizedHomeScreen(
 
 @Composable
 private fun HomeTopBar() {
+    val metrics = rememberGoalioMetrics()
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text("GOALIO", color = GoalioColors.TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Black, letterSpacing = 5.sp, modifier = Modifier.weight(1f))
-        Text("Search", color = GoalioColors.TextSecondary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.width(14.dp))
-        Text("Alerts", color = GoalioColors.TextSecondary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        Text("GOALIO", color = GoalioColors.TextPrimary, fontSize = metrics.sp(24), fontWeight = FontWeight.Black, letterSpacing = if (metrics.compact) 3.sp else 5.sp, modifier = Modifier.weight(1f))
+        if (!metrics.compact) Text("Search", color = GoalioColors.TextSecondary, fontSize = metrics.sp(13), fontWeight = FontWeight.Bold)
+        Spacer(Modifier.width(metrics.dp(14)))
+        Text("Alerts", color = GoalioColors.TextSecondary, fontSize = metrics.sp(13), fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
 private fun FeaturedMatchCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Surface1,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(metrics.dp(24)),
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.padding(metrics.dp(20)), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 MatchStatusPill(match)
                 Spacer(Modifier.weight(1f))
-                Text(match.leagueLabel(), color = GoalioColors.TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                Text(match.leagueLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            Spacer(Modifier.height(26.dp))
+            Spacer(Modifier.height(metrics.dp(22)))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 TeamBadge(match.homeTeam, Modifier.weight(1f))
-                Text(scoreLine(match), color = GoalioColors.TextPrimary, fontSize = 44.sp, fontWeight = FontWeight.Black)
+                Text(scoreLine(match), color = GoalioColors.TextPrimary, fontSize = metrics.sp(42), fontWeight = FontWeight.Black)
                 TeamBadge(match.awayTeam, Modifier.weight(1f))
             }
             match.venue?.let { venue ->
                 val venueText = listOfNotNull(venue.name, venue.city).joinToString(", ")
                 if (venueText.isNotBlank()) {
-                    Spacer(Modifier.height(18.dp))
-                    Text(venueText, color = GoalioColors.TextTertiary, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Spacer(Modifier.height(metrics.dp(16)))
+                    Text(venueText, color = GoalioColors.TextTertiary, fontSize = metrics.sp(13), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(metrics.dp(20)))
             Button(
                 onClick = { onOpenMatch(match) },
                 colors = ButtonDefaults.buttonColors(containerColor = GoalioColors.Accent, contentColor = GoalioColors.TextPrimary),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.fillMaxWidth().height(56.dp)
+                shape = RoundedCornerShape(metrics.dp(14)),
+                modifier = Modifier.fillMaxWidth().height(metrics.dp(54))
             ) {
-                Text("Match Details", fontSize = 16.sp, fontWeight = FontWeight.Black)
+                Text("Match Details", fontSize = metrics.sp(16), fontWeight = FontWeight.Black)
             }
         }
     }
@@ -215,19 +218,20 @@ private fun FeaturedMatchCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch)
 
 @Composable
 private fun TeamBadge(team: MatchTeamInfo?, modifier: Modifier = Modifier) {
+    val metrics = rememberGoalioMetrics()
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(Modifier.size(72.dp).clip(CircleShape).background(GoalioColors.Surface2), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(metrics.dp(68)).clip(CircleShape).background(GoalioColors.Surface2), contentAlignment = Alignment.Center) {
             if (!team?.logo.isNullOrBlank()) {
-                AsyncImage(team?.logo, contentDescription = team?.name, contentScale = ContentScale.Fit, modifier = Modifier.size(54.dp))
+                AsyncImage(team?.logo, contentDescription = team?.name, contentScale = ContentScale.Fit, modifier = Modifier.size(metrics.dp(52)))
             } else {
-                Text(team?.abbreviation ?: "TBD", color = GoalioColors.TextPrimary, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                Text(team?.abbreviation ?: "TBD", color = GoalioColors.TextPrimary, fontWeight = FontWeight.Black, fontSize = metrics.sp(15))
             }
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(metrics.dp(9)))
         Text(
             team?.abbreviation ?: team?.shortName ?: team?.name ?: "TBD",
             color = GoalioColors.TextPrimary,
-            fontSize = 18.sp,
+            fontSize = metrics.sp(17),
             fontWeight = FontWeight.Black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -237,25 +241,27 @@ private fun TeamBadge(team: MatchTeamInfo?, modifier: Modifier = Modifier) {
 
 @Composable
 private fun SectionHeader(title: String, action: String, onAction: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = GoalioColors.TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
-        Text(action, color = GoalioColors.TextTertiary, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.clickable(onClick = onAction))
+        Text(title, color = GoalioColors.TextPrimary, fontSize = metrics.sp(23), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
+        Text(action, color = GoalioColors.TextTertiary, fontSize = metrics.sp(13), fontWeight = FontWeight.Bold, modifier = Modifier.clickable(onClick = onAction))
     }
 }
 
 @Composable
 private fun MatchMiniCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Surface1,
         shape = RoundedCornerShape(18.dp),
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
-        modifier = Modifier.width(230.dp).height(136.dp).clickable { onOpenMatch(match) }
+        modifier = Modifier.width(metrics.dp(218)).height(metrics.dp(128)).clickable { onOpenMatch(match) }
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
+        Column(Modifier.padding(metrics.dp(15)), verticalArrangement = Arrangement.SpaceBetween) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MatchStatusPill(match)
                 Spacer(Modifier.weight(1f))
-                Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
             }
             TeamScoreLine(match.homeTeam)
             TeamScoreLine(match.awayTeam)
@@ -265,71 +271,75 @@ private fun MatchMiniCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> 
 
 @Composable
 private fun ScheduleRow(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Surface1,
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = Modifier.fillMaxWidth().clickable { onOpenMatch(match) }
     ) {
-        Row(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.width(78.dp)) {
-                Text(formatKickoff(match.kickoff), color = GoalioColors.TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = 11.sp, fontWeight = FontWeight.Black)
+        Row(Modifier.padding(horizontal = metrics.dp(14), vertical = metrics.dp(13)), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.width(metrics.dp(74))) {
+                Text(formatKickoff(match.kickoff), color = GoalioColors.TextPrimary, fontSize = metrics.sp(16), fontWeight = FontWeight.Bold)
+                Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black)
             }
             Column(Modifier.weight(1f)) {
                 TeamScoreLine(match.homeTeam)
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(metrics.dp(6)))
                 TeamScoreLine(match.awayTeam)
             }
-            Text(match.statusLabel(), color = statusColor(match.state), fontSize = 12.sp, fontWeight = FontWeight.Black, maxLines = 1)
+            Text(match.statusLabel(), color = statusColor(match.state), fontSize = metrics.sp(11), fontWeight = FontWeight.Black, maxLines = 1)
         }
     }
 }
 
 @Composable
 private fun TeamScoreLine(team: MatchTeamInfo?) {
+    val metrics = rememberGoalioMetrics()
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             team?.name ?: "TBD",
             color = GoalioColors.TextSecondary,
-            fontSize = 15.sp,
+            fontSize = metrics.sp(15),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
         team?.score?.let {
-            Text(it.toString(), color = GoalioColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Black)
+            Text(it.toString(), color = GoalioColors.TextPrimary, fontSize = metrics.sp(16), fontWeight = FontWeight.Black)
         }
     }
 }
 
 @Composable
 private fun MatchStatusPill(match: ScheduleMatch) {
+    val metrics = rememberGoalioMetrics()
     val color = statusColor(match.state)
     Surface(color = GoalioColors.Surface2, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, color)) {
         Text(
             match.statusLabel().uppercase(),
             color = color,
-            fontSize = 11.sp,
+            fontSize = metrics.sp(11),
             fontWeight = FontWeight.Black,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+            modifier = Modifier.padding(horizontal = metrics.dp(9), vertical = metrics.dp(5))
         )
     }
 }
 
 @Composable
 private fun HomeStateCard(text: String, action: String? = null) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Surface1,
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
-        modifier = Modifier.fillMaxWidth().height(220.dp)
+        modifier = Modifier.fillMaxWidth().height(metrics.dp(190))
     ) {
-        Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(text, color = GoalioColors.TextSecondary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Column(Modifier.padding(metrics.dp(22)), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Text(text, color = GoalioColors.TextSecondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Bold)
             if (action != null) {
-                Spacer(Modifier.height(14.dp))
-                Text(action, color = GoalioColors.Accent, fontSize = 13.sp, fontWeight = FontWeight.Black)
+                Spacer(Modifier.height(metrics.dp(14)))
+                Text(action, color = GoalioColors.Accent, fontSize = metrics.sp(13), fontWeight = FontWeight.Black)
             }
         }
     }
@@ -337,20 +347,22 @@ private fun HomeStateCard(text: String, action: String? = null) {
 
 @Composable
 private fun MutedPill(text: String) {
+    val metrics = rememberGoalioMetrics()
     Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(16.dp), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth()) {
-        Text(text, color = GoalioColors.TextTertiary, fontSize = 15.sp, modifier = Modifier.padding(18.dp))
+        Text(text, color = GoalioColors.TextTertiary, fontSize = metrics.sp(15), modifier = Modifier.padding(metrics.dp(16)))
     }
 }
 
 @Composable
 private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Navigation,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
-        modifier = modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)
+        modifier = modifier.fillMaxWidth().padding(horizontal = metrics.dp(10), vertical = metrics.dp(8))
     ) {
-        Row(Modifier.padding(10.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.padding(metrics.dp(8)), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             BottomTab("Home", true) {}
             BottomTab("Matches", false, onOpenMatches)
             BottomTab("World Cup", false)
@@ -361,12 +373,13 @@ private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Un
 
 @Composable
 private fun RowScope.BottomTab(label: String, selected: Boolean, onClick: () -> Unit = {}) {
+    val metrics = rememberGoalioMetrics()
     val fg = if (selected) GoalioColors.TextPrimary else GoalioColors.InactiveIcon
-    Surface(color = Color.Transparent, shape = RoundedCornerShape(50), modifier = Modifier.weight(1f).height(50.dp).clickable(onClick = onClick)) {
+    Surface(color = Color.Transparent, shape = RoundedCornerShape(50), modifier = Modifier.weight(1f).height(metrics.dp(48)).clickable(onClick = onClick)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(label, color = fg, fontSize = 11.sp, fontWeight = FontWeight.Black)
-            Spacer(Modifier.height(5.dp))
-            Box(Modifier.width(24.dp).height(3.dp).background(if (selected) GoalioColors.Accent else Color.Transparent, RoundedCornerShape(50)))
+            Text(label, color = fg, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, maxLines = 1)
+            Spacer(Modifier.height(metrics.dp(5)))
+            Box(Modifier.width(metrics.dp(24)).height(3.dp).background(if (selected) GoalioColors.Accent else Color.Transparent, RoundedCornerShape(50)))
         }
     }
 }

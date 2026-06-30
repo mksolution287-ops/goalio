@@ -91,6 +91,7 @@ private val onboardingPages = listOf(
 
 @Composable
 fun OnboardingScreen(onComplete: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
     val page = pagerState.currentPage
@@ -112,50 +113,51 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 OnboardingPageContent(index, onboardingPages[index])
             }
             PagerDots(selected = page, count = onboardingPages.size)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(metrics.dp(14)))
             Button(
                 onClick = {
                     if (page == onboardingPages.lastIndex) onComplete()
                     else scope.launch { pagerState.animateScrollToPage(page + 1) }
                 },
-                modifier = Modifier.fillMaxWidth().height(68.dp).padding(horizontal = 24.dp),
-                shape = RoundedCornerShape(22.dp),
+                modifier = Modifier.fillMaxWidth().height(metrics.dp(62)).padding(horizontal = metrics.horizontalPadding),
+                shape = RoundedCornerShape(metrics.dp(20)),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
             ) {
                 Text(
                     if (page == onboardingPages.lastIndex) "Kick Off" else "Next  →",
-                    fontSize = 20.sp,
+                    fontSize = metrics.sp(19),
                     fontWeight = FontWeight.ExtraBold
                 )
             }
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(metrics.dp(12)))
             Text(
                 "PREMIUM EXPERIENCE FOR SERIOUS FANS",
                 color = Color(0xFF858786),
-                fontSize = 10.sp,
+                fontSize = metrics.sp(10),
                 letterSpacing = 1.7.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(metrics.dp(14)))
         }
     }
 }
 
 @Composable
 private fun OnboardingHeader(onSkip: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
     Row(
-        Modifier.fillMaxWidth().height(76.dp).padding(horizontal = 24.dp),
+        Modifier.fillMaxWidth().height(metrics.dp(72)).padding(horizontal = metrics.horizontalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(R.drawable.football_ball),
             contentDescription = null,
-            modifier = Modifier.size(35.dp)
+            modifier = Modifier.size(metrics.dp(32))
         )
-        Spacer(Modifier.width(12.dp))
-        Text("Goalio", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+        Spacer(Modifier.width(metrics.dp(10)))
+        Text("Goalio", color = Color.White, fontSize = metrics.sp(27), fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
         Spacer(Modifier.weight(1f))
         Surface(
             color = Color.White,
@@ -163,15 +165,16 @@ private fun OnboardingHeader(onSkip: () -> Unit) {
             shape = RoundedCornerShape(50),
             modifier = Modifier.clickable(onClick = onSkip)
         ) {
-            Text("Skip", fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 22.dp, vertical = 10.dp))
+            Text("Skip", fontSize = metrics.sp(15), fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = metrics.dp(20), vertical = metrics.dp(9)))
         }
     }
 }
 
 @Composable
 private fun OnboardingPageContent(index: Int, page: OnboardingPage) {
+    val metrics = rememberGoalioMetrics()
     Column(
-        Modifier.fillMaxSize().padding(horizontal = 22.dp),
+        Modifier.fillMaxSize().padding(horizontal = metrics.horizontalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -179,29 +182,29 @@ private fun OnboardingPageContent(index: Int, page: OnboardingPage) {
             contentAlignment = Alignment.Center
         ) {
             when (index) {
-                0 -> LiveMatchIllustration(Modifier.fillMaxWidth(.86f).aspectRatio(1.42f))
-                1 -> WorldCupIllustration(Modifier.fillMaxWidth(.9f).aspectRatio(1.42f))
-                else -> PlayIllustration(Modifier.fillMaxWidth(.9f).aspectRatio(1.42f))
+                0 -> LiveMatchIllustration(Modifier.fillMaxWidth(if (metrics.compact) .96f else .86f).aspectRatio(1.42f))
+                1 -> WorldCupIllustration(Modifier.fillMaxWidth(if (metrics.compact) .98f else .9f).aspectRatio(1.42f))
+                else -> PlayIllustration(Modifier.fillMaxWidth(if (metrics.compact) .98f else .9f).aspectRatio(1.42f))
             }
         }
         Text(
             page.title,
             color = Color.White,
-            fontSize = 27.sp,
-            lineHeight = 32.sp,
+            fontSize = metrics.sp(26),
+            lineHeight = metrics.sp(31),
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(metrics.dp(10)))
         Text(
             page.subtitle,
             color = Color(0xFFD0D1D0),
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
+            fontSize = metrics.sp(14),
+            lineHeight = metrics.sp(20),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(.96f)
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(metrics.dp(14)))
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -209,7 +212,7 @@ private fun OnboardingPageContent(index: Int, page: OnboardingPage) {
         ) {
             page.features.forEach { FeaturePill(it) }
         }
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(metrics.dp(14)))
     }
 }
 
