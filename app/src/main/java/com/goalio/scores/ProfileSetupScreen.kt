@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -62,9 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
 
@@ -108,14 +106,6 @@ private val CompetitionFilters = listOf(
     CompetitionFilter("Bundesliga", 78),
     CompetitionFilter("Ligue 1", 61)
 )
-private val FeaturedPlayerQueries = listOf(
-    "Lionel Messi",
-    "Cristiano Ronaldo",
-    "Kylian Mbappe",
-    "Erling Haaland",
-    "Mohamed Salah",
-    "Neymar"
-)
 private val FeaturedPlayerKeys = listOf("messi", "ronaldo", "mbapp", "haaland", "salah", "neymar")
 
 @Composable
@@ -141,6 +131,7 @@ fun ProfileSetupScreen(
     var submitError by remember { mutableStateOf<String?>(null) }
     var usernameAvailable by remember { mutableStateOf<Boolean?>(null) }
     var checkingUsername by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val remoteConfig = remember { FirebaseRemoteConfig.getInstance() }
     val teamLimit = remoteConfig.getLong("profile_teams_limit").toInt()
         .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
@@ -171,27 +162,19 @@ fun ProfileSetupScreen(
 
     LaunchedEffect(Unit) {
         catalogError = null
-        val loadedTeams = runCatching { GoalioBackendApi.getTeams(limit = 200).items }
-            .onFailure { catalogError = "Could not load teams. Check the connection and try again." }
-            .getOrDefault(emptyList())
-        teamCatalog = loadedTeams
-        val featuredPlayers = coroutineScope {
-            FeaturedPlayerQueries.map { query ->
-                async {
-                    runCatching { GoalioBackendApi.searchPlayers(query) }
-                        .getOrDefault(emptyList())
-                        .firstOrNull()
-                }
-            }.awaitAll().filterNotNull()
+        val cached = ProfileCatalogRepository.cached()
+        if (cached != null) {
+            teamCatalog = cached.teams
+            playerCatalog = cached.players
+            catalogLoading = false
+            return@LaunchedEffect
         }
-        playerCatalog = featuredPlayers.map { it.withCompetitionIds(loadedTeams) }
-        runCatching { GoalioBackendApi.getPlayers(limit = 100).items }
-            .onSuccess {
-                playerCatalog = (featuredPlayers + it)
-                    .distinctBy { player -> player.id }
-                    .map { player -> player.withCompetitionIds(loadedTeams) }
+        runCatching { ProfileCatalogRepository.preload(context.applicationContext) }
+            .onSuccess { catalog ->
+                teamCatalog = catalog.teams
+                playerCatalog = catalog.players
             }
-            .onFailure { catalogError = "Could not load players. Search will retry the connection." }
+            .onFailure { catalogError = "Could not load teams and players. Check the connection and try again." }
         catalogLoading = false
     }
 
@@ -487,15 +470,6 @@ private fun isValidUsername(value: String): Boolean {
     if (!Regex("[a-z][a-z0-9_]{2,19}").matches(value)) return false
     if (value.endsWith('_') || "__" in value) return false
     return value !in setOf("admin", "administrator", "goalio", "support", "moderator", "root", "system")
-}
-
-private fun FavoritePlayer.withCompetitionIds(teams: List<FavoriteTeam>): FavoritePlayer {
-    if (competitionIds.isNotEmpty()) return this
-    val inferred = teams.asSequence()
-        .filter { team -> this.team.contains(team.name, ignoreCase = true) }
-        .flatMap { it.competitionIds.asSequence() }
-        .toSet()
-    return copy(competitionIds = inferred)
 }
 
 @Composable
