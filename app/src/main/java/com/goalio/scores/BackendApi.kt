@@ -15,6 +15,8 @@ data class BackendProfile(
     val userId: String,
     val name: String,
     val username: String,
+    val favoriteTeamIds: List<String>,
+    val favoritePlayerIds: List<String>,
     val favoriteTeams: List<String>,
     val favoritePlayers: List<String>,
     val onboardingCompleted: Boolean,
@@ -38,8 +40,8 @@ object GoalioBackendApi {
         body = JSONObject().apply {
             put("name", draft.fullName)
             put("username", draft.username.lowercase())
-            put("favoriteTeams", JSONArray(draft.favoriteTeamNames))
-            put("favoritePlayers", JSONArray(draft.favoritePlayerNames))
+            put("favoriteTeamIds", JSONArray(draft.teamIds.toList()))
+            put("favoritePlayerIds", JSONArray(draft.playerIds.toList()))
             put("onboardingCompleted", true)
         }
     ) { parseProfile(it) }
@@ -123,6 +125,8 @@ object GoalioBackendApi {
         userId = json.getString("userId"),
         name = json.getString("name"),
         username = json.getString("username"),
+        favoriteTeamIds = json.optJSONArray("favoriteTeamIds").toStrings(),
+        favoritePlayerIds = json.optJSONArray("favoritePlayerIds").toStrings(),
         favoriteTeams = json.optJSONArray("favoriteTeams").toStrings(),
         favoritePlayers = json.optJSONArray("favoritePlayers").toStrings(),
         onboardingCompleted = json.optBoolean("onboardingCompleted"),

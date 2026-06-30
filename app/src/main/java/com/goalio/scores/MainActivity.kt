@@ -112,6 +112,8 @@ class MainActivity : ComponentActivity() {
                                 settings.edit()
                                     .putString("profile_full_name", profile.name)
                                     .putString("profile_username", profile.username)
+                                    .putStringSet("profile_team_ids", profile.favoriteTeamIds.toSet())
+                                    .putStringSet("profile_player_ids", profile.favoritePlayerIds.toSet())
                                     .putStringSet("profile_team_names", profile.favoriteTeams.toSet())
                                     .putStringSet("profile_player_names", profile.favoritePlayers.toSet())
                                     .putBoolean("profile_complete", true)
@@ -142,20 +144,16 @@ class MainActivity : ComponentActivity() {
                             settings.edit().putBoolean("onboarding_complete", false).apply()
                             onboardingComplete = false
                         },
-                        onSkip = {
-                            settings.edit().putBoolean("profile_complete", true).apply()
-                            profileComplete = true
-                        },
                         onComplete = { profile ->
                             try {
-                                GoalioBackendApi.saveProfile(profile)
+                                val saved = GoalioBackendApi.saveProfile(profile)
                                 settings.edit()
-                                    .putString("profile_full_name", profile.fullName)
-                                    .putString("profile_username", profile.username)
-                                    .putStringSet("profile_team_ids", profile.teamIds)
-                                    .putStringSet("profile_player_ids", profile.playerIds)
-                                    .putStringSet("profile_team_names", profile.favoriteTeamNames.toSet())
-                                    .putStringSet("profile_player_names", profile.favoritePlayerNames.toSet())
+                                    .putString("profile_full_name", saved.name)
+                                    .putString("profile_username", saved.username)
+                                    .putStringSet("profile_team_ids", saved.favoriteTeamIds.toSet())
+                                    .putStringSet("profile_player_ids", saved.favoritePlayerIds.toSet())
+                                    .putStringSet("profile_team_names", saved.favoriteTeams.toSet())
+                                    .putStringSet("profile_player_names", saved.favoritePlayers.toSet())
                                     .putBoolean("profile_complete", true)
                                     .apply()
                                 profileComplete = true

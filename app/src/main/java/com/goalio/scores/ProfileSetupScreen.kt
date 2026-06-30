@@ -60,6 +60,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
@@ -85,29 +86,8 @@ data class ProfileDraft(
     val fullName: String,
     val username: String,
     val teamIds: Set<String>,
-    val playerIds: Set<String>,
-    val favoriteTeamNames: List<String>,
-    val favoritePlayerNames: List<String>
+    val playerIds: Set<String>
 )
-
-/** Replace this demo source with the backend implementation without changing the screen. */
-object DemoFavoritesRepository {
-    val teams = listOf(
-        FavoriteTeam("arg", "Argentina", "ARG", Color(0xFF75B9E7)),
-        FavoriteTeam("bra", "Brazil", "BRA", Color(0xFFF7D34A)),
-        FavoriteTeam("fra", "France", "FRA", Color(0xFF3159A7)),
-        FavoriteTeam("eng", "England", "ENG", Color(0xFFF4F4F4)),
-        FavoriteTeam("esp", "Spain", "ESP", Color(0xFFD94848)),
-        FavoriteTeam("por", "Portugal", "POR", Color(0xFF2B9A62))
-    )
-
-    val players = listOf(
-        FavoritePlayer("messi", "Lionel Messi", "Argentina", "LM", Color(0xFF77BDEB)),
-        FavoritePlayer("mbappe", "Kylian Mbappe", "France", "KM", Color(0xFF344E9B)),
-        FavoritePlayer("ronaldo", "Cristiano Ronaldo", "Portugal", "CR", Color(0xFF268D59)),
-        FavoritePlayer("bellingham", "Jude Bellingham", "England", "JB", Color(0xFFECECEC))
-    )
-}
 
 private val Gold = Color(0xFF897846)
 private val Panel = Color(0xF2131514)
@@ -117,7 +97,6 @@ private val Muted = Color(0xFFAAA9AA)
 @Composable
 fun ProfileSetupScreen(
     onBack: () -> Unit,
-    onSkip: () -> Unit,
     onComplete: suspend (ProfileDraft) -> String?
 ) {
     var fullName by rememberSaveable { mutableStateOf("") }
@@ -126,12 +105,21 @@ fun ProfileSetupScreen(
     var playerQuery by rememberSaveable { mutableStateOf("") }
     var selectedTeams by rememberSaveable { mutableStateOf(setOf<String>()) }
     var selectedPlayers by rememberSaveable { mutableStateOf(setOf<String>()) }
-    var teamCatalog by remember { mutableStateOf(DemoFavoritesRepository.teams) }
-    var playerCatalog by remember { mutableStateOf(DemoFavoritesRepository.players) }
+    var teamCatalog by remember { mutableStateOf(emptyList<FavoriteTeam>()) }
+    var playerCatalog by remember { mutableStateOf(emptyList<FavoritePlayer>()) }
+    var catalogLoading by remember { mutableStateOf(true) }
+    var catalogError by remember { mutableStateOf<String?>(null) }
+    var teamSelectionError by remember { mutableStateOf<String?>(null) }
+    var playerSelectionError by remember { mutableStateOf<String?>(null) }
     var submitting by remember { mutableStateOf(false) }
     var submitError by remember { mutableStateOf<String?>(null) }
     var usernameAvailable by remember { mutableStateOf<Boolean?>(null) }
     var checkingUsername by remember { mutableStateOf(false) }
+    val remoteConfig = remember { FirebaseRemoteConfig.getInstance() }
+    val teamLimit = remoteConfig.getLong("profile_teams_limit").toInt()
+        .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
+    val playerLimit = remoteConfig.getLong("profile_players_limit").toInt()
+        .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
     val scope = rememberCoroutineScope()
     val fullNameValid = isValidFullName(fullName)
     val usernameRuleValid = isValidUsername(username)
@@ -145,13 +133,26 @@ fun ProfileSetupScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        catalogError = null
+        runCatching { GoalioBackendApi.getTeams(limit = 200).items }
+            .onSuccess { teamCatalog = it }
+            .onFailure { catalogError = "Could not load teams. Check the connection and try again." }
+        runCatching { GoalioBackendApi.getPlayers(limit = 100).items }
+            .onSuccess { playerCatalog = it }
+            .onFailure { catalogError = "Could not load players. Search will retry the connection." }
+        catalogLoading = false
+    }
+
     LaunchedEffect(teamQuery) {
+        if (teamQuery.trim().length < 2) return@LaunchedEffect
         delay(250)
         runCatching { GoalioBackendApi.searchTeams(teamQuery) }.onSuccess { results ->
             teamCatalog = (teamCatalog + results).distinctBy { it.id }
         }
     }
     LaunchedEffect(playerQuery) {
+        if (playerQuery.trim().length < 2) return@LaunchedEffect
         delay(250)
         runCatching { GoalioBackendApi.searchPlayers(playerQuery) }.onSuccess { results ->
             playerCatalog = (playerCatalog + results).distinctBy { it.id }
@@ -170,7 +171,7 @@ fun ProfileSetupScreen(
     BackHandler(onBack = onBack)
     GoalioBackground(.18f) {
         Column(Modifier.fillMaxSize().statusBarsPadding().imePadding()) {
-            ProfileHeader(onBack, onSkip)
+            ProfileHeader(onBack)
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 24.dp),
@@ -213,15 +214,33 @@ fun ProfileSetupScreen(
                             Spacer(Modifier.height(30.dp))
                             Text("Follow your favorites", color = Color.White, fontSize = 23.sp, fontWeight = FontWeight.Bold)
                             Text("Get live updates for the teams you love.", color = Color(0xFFD0CFD0), fontSize = 15.sp)
+                            if (catalogLoading) {
+                                FieldMessage("Loading teams and players...", true)
+                            }
+                            if (catalogError != null) {
+                                FieldMessage(catalogError.orEmpty(), false)
+                            }
                             Spacer(Modifier.height(17.dp))
                             SearchInput("Search teams...", teamQuery) { teamQuery = it }
+                            Text(
+                                "${selectedTeams.size}/$teamLimit teams selected",
+                                color = Muted,
+                                fontSize = 11.sp,
+                                modifier = Modifier.padding(start = 4.dp, top = 6.dp)
+                            )
+                            if (teamSelectionError != null) {
+                                FieldMessage(teamSelectionError.orEmpty(), false)
+                            }
                             AnimatedVisibility(selectedTeams.isNotEmpty()) {
                                 Row(
                                     Modifier.padding(top = 13.dp).horizontalScroll(rememberScrollState()),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     teamCatalog.filter { it.id in selectedTeams }.forEach { team ->
-                                        SelectionChip(team.name) { selectedTeams = selectedTeams - team.id }
+                                        SelectionChip(team.name) {
+                                            selectedTeams = selectedTeams - team.id
+                                            teamSelectionError = null
+                                        }
                                     }
                                 }
                             }
@@ -238,7 +257,19 @@ fun ProfileSetupScreen(
                                         selected = team.id in selectedTeams,
                                         modifier = Modifier.weight(1f),
                                         onClick = {
-                                            selectedTeams = if (team.id in selectedTeams) selectedTeams - team.id else selectedTeams + team.id
+                                            when {
+                                                team.id in selectedTeams -> {
+                                                    selectedTeams = selectedTeams - team.id
+                                                    teamSelectionError = null
+                                                }
+                                                selectedTeams.size >= teamLimit -> {
+                                                    teamSelectionError = "You can select up to $teamLimit teams."
+                                                }
+                                                else -> {
+                                                    selectedTeams = selectedTeams + team.id
+                                                    teamSelectionError = null
+                                                }
+                                            }
                                         }
                                     )
                                 }
@@ -250,11 +281,32 @@ fun ProfileSetupScreen(
                             }
                             Spacer(Modifier.height(12.dp))
                             SearchInput("Search players...", playerQuery) { playerQuery = it }
+                            Text(
+                                "${selectedPlayers.size}/$playerLimit players selected",
+                                color = Muted,
+                                fontSize = 11.sp,
+                                modifier = Modifier.padding(start = 4.dp, top = 6.dp)
+                            )
+                            if (playerSelectionError != null) {
+                                FieldMessage(playerSelectionError.orEmpty(), false)
+                            }
                             Spacer(Modifier.height(15.dp))
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 items(players, key = { it.id }) { player ->
                                     PlayerCard(player, player.id in selectedPlayers) {
-                                        selectedPlayers = if (player.id in selectedPlayers) selectedPlayers - player.id else selectedPlayers + player.id
+                                        when {
+                                            player.id in selectedPlayers -> {
+                                                selectedPlayers = selectedPlayers - player.id
+                                                playerSelectionError = null
+                                            }
+                                            selectedPlayers.size >= playerLimit -> {
+                                                playerSelectionError = "You can select up to $playerLimit players."
+                                            }
+                                            else -> {
+                                                selectedPlayers = selectedPlayers + player.id
+                                                playerSelectionError = null
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -279,9 +331,7 @@ fun ProfileSetupScreen(
                                 fullName = fullName.trim(),
                                 username = username.trim().lowercase(),
                                 teamIds = selectedTeams,
-                                playerIds = selectedPlayers,
-                                favoriteTeamNames = teamCatalog.filter { it.id in selectedTeams }.map { it.name },
-                                favoritePlayerNames = playerCatalog.filter { it.id in selectedPlayers }.map { it.name }
+                                playerIds = selectedPlayers
                             )
                             scope.launch {
                                 submitting = true
@@ -307,7 +357,7 @@ fun ProfileSetupScreen(
 }
 
 @Composable
-private fun ProfileHeader(onBack: () -> Unit, onSkip: () -> Unit) {
+private fun ProfileHeader(onBack: () -> Unit) {
     Row(
         Modifier.fillMaxWidth().height(70.dp).padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -318,8 +368,7 @@ private fun ProfileHeader(onBack: () -> Unit, onSkip: () -> Unit) {
         Spacer(Modifier.weight(1f))
         Text("⚽ Goalio", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 2.sp)
         Spacer(Modifier.weight(1f))
-        Text("Skip", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable(onClick = onSkip).padding(8.dp))
+        Spacer(Modifier.width(38.dp))
     }
 }
 
