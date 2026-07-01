@@ -19,7 +19,7 @@ import com.goalio.scores.ui.theme.GoalioColors
 
 @Composable
 fun GoalioTopBar(title: String = "GOALIO", onBack: (() -> Unit)? = null, onSearch: () -> Unit = {}, onNotifications: () -> Unit = {}, onSettings: () -> Unit) {
-    Row(Modifier.fillMaxWidth().height(52.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp, max = 58.dp), verticalAlignment = Alignment.CenterVertically) {
         if (onBack != null) Text("‹", color = Color.White, fontSize = 38.sp, modifier = Modifier.clickable(onClick = onBack).padding(end = 12.dp))
         Text(title, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Black, letterSpacing = 4.sp, modifier = Modifier.weight(1f))
         ChromeIcon(R.drawable.ic_search, "Search", onSearch)
@@ -34,7 +34,7 @@ fun GoalioTopBar(title: String = "GOALIO", onBack: (() -> Unit)? = null, onSearc
 
 @Composable
 fun GoalioBottomBar(modifier: Modifier = Modifier, selected: String, onHome: () -> Unit, onMatches: () -> Unit, onWorldCup: () -> Unit, onGames: () -> Unit) {
-    Surface(color = Color(0xFF111111), shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = modifier.fillMaxWidth()) {
+    Surface(color = Color(0xFF111111), shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = modifier.fillMaxWidth().navigationBarsPadding()) {
         Row(Modifier.padding(8.dp), horizontalArrangement = Arrangement.SpaceAround) {
             listOf("Home" to onHome, "Matches" to onMatches, "World Cup" to onWorldCup, "Games" to onGames).forEach { (label, action) ->
                 Surface(color = if (selected == label) GoalioColors.Accent else Color.Transparent, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f).clickable(onClick = action)) {

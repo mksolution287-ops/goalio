@@ -170,6 +170,14 @@ class MainActivity : ComponentActivity() {
                             settings.edit().putBoolean("profile_complete", true).apply()
                             profileComplete = true
                         },
+                        onSignIn = { name, username ->
+                            try {
+                                GoalioBackendApi.signInExistingProfile(name, username)
+                                null
+                            } catch (error: Exception) {
+                                error.message ?: "Full name or username did not match."
+                            }
+                        },
                         onComplete = { profile ->
                             try {
                                 val saved = GoalioBackendApi.saveProfile(profile)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
@@ -70,14 +71,24 @@ fun GameScreen(onBack: () -> Unit, onOpenHome: () -> Unit, onOpenMatches: () -> 
                 item { Button(onClick = { scope.launch { start() } }, enabled = !loading, colors = ButtonDefaults.buttonColors(containerColor = GoalioColors.Accent), modifier = Modifier.fillMaxWidth().height(54.dp)) { Text(if (loading) "LOADING…" else "PLAY 5 QUESTIONS", color = Color.Black, fontWeight = FontWeight.Black) } }
             } else {
                 val question = session!!.questions[index]
-                item { Row { Text("QUESTION ${index + 1}/5", color = GoalioColors.TextSecondary, fontWeight = FontWeight.Bold); Spacer(Modifier.weight(1f)); Text("00:%02d".format(remaining), color = if (remaining <= 5) GoalioColors.Live else GoalioColors.Accent, fontWeight = FontWeight.Black) } }
-                item { LinearProgressIndicator(progress = { (index + 1) / 5f }, modifier = Modifier.fillMaxWidth().height(6.dp), color = GoalioColors.Accent, trackColor = GoalioColors.Surface2) }
-                item { Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(22.dp), border = BorderStroke(1.dp, GoalioColors.CardBorder)) { Column(Modifier.padding(22.dp)) { Text(question.category.uppercase(), color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black); Spacer(Modifier.height(12.dp)); Text(question.prompt, color = GoalioColors.TextPrimary, fontSize = metrics.sp(22), fontWeight = FontWeight.Black) } } }
-                items(question.options.indices.toList()) { optionIndex ->
-                    val result = answer
-                    val selectedColor = when { result == null -> GoalioColors.Surface1; optionIndex == result.correctAnswerIndex -> Color(0xFF194D35); else -> GoalioColors.Surface1 }
-                    Surface(color = selectedColor, shape = RoundedCornerShape(16.dp), border = BorderStroke(1.dp, if (result != null && optionIndex == result.correctAnswerIndex) Color(0xFF38D985) else GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth().clickable(enabled = result == null && !submitting) { scope.launch { submit(optionIndex) } }) {
-                        Text("${('A'.code + optionIndex).toChar()}.  ${question.options[optionIndex]}", Modifier.padding(18.dp), color = GoalioColors.TextPrimary, fontWeight = FontWeight.Bold)
+                item {
+                    Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(22.dp), border = BorderStroke(1.dp, GoalioColors.CardBorder)) {
+                        Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(Modifier.weight(1f)) { Text(question.category.uppercase(), color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black); Text("QUESTION ${index + 1} OF 5", color = GoalioColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+                                Surface(shape = CircleShape, color = Color.Transparent, border = BorderStroke(3.dp, if (remaining <= 5) GoalioColors.Live else GoalioColors.Accent), modifier = Modifier.size(52.dp)) { Box(contentAlignment = Alignment.Center) { Text("${remaining}s", color = GoalioColors.TextPrimary, fontWeight = FontWeight.Black) } }
+                            }
+                            LinearProgressIndicator(progress = { (index + 1) / 5f }, modifier = Modifier.fillMaxWidth().height(5.dp), color = GoalioColors.Accent, trackColor = GoalioColors.Surface2)
+                            Text(question.prompt, color = GoalioColors.TextPrimary, fontSize = metrics.sp(22), fontWeight = FontWeight.Black, lineHeight = metrics.sp(29))
+                            question.options.indices.forEach { optionIndex ->
+                                val result = answer
+                                val correct = result != null && optionIndex == result.correctAnswerIndex
+                                val selectedColor = if (correct) Color(0xFF194D35) else Color(0xFF202020)
+                                Surface(color = selectedColor, shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, if (correct) Color(0xFF38D985) else GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth().clickable(enabled = result == null && !submitting) { scope.launch { submit(optionIndex) } }) {
+                                    Text("${('A'.code + optionIndex).toChar()}.  ${question.options[optionIndex]}", Modifier.padding(17.dp), color = GoalioColors.TextPrimary, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
                     }
                 }
                 answer?.let { result -> item { Surface(color = if (result.correct) Color(0xFF173E2D) else Color(0xFF4A2020), shape = RoundedCornerShape(16.dp)) { Column(Modifier.padding(18.dp)) { Text(if (result.correct) "+${result.xpDelta} XP • CORRECT" else "${result.xpDelta} XP • ${if (result.timedOut) "TIME UP" else "WRONG"}", color = if (result.correct) Color(0xFF52E49A) else Color(0xFFFF7C72), fontWeight = FontWeight.Black); Spacer(Modifier.height(7.dp)); Text(result.explanation, color = GoalioColors.TextSecondary) } } } }

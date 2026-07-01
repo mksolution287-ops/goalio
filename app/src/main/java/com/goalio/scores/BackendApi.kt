@@ -21,7 +21,8 @@ data class BackendProfile(
     val favoriteTeams: List<String>,
     val favoritePlayers: List<String>,
     val onboardingCompleted: Boolean,
-    val profileCompleted: Boolean
+    val profileCompleted: Boolean,
+    val createdAt: String? = null
 )
 
 data class BackendHome(val greeting: String, val profile: BackendProfile)
@@ -256,6 +257,12 @@ object GoalioBackendApi {
 
     suspend fun getProfile(): BackendProfile = request("GET", "/api/v1/users/profile") { parseProfile(it) }
 
+    suspend fun signInExistingProfile(name: String, username: String): BackendProfile {
+        val token = request("POST", "/api/v1/auth/profile-login", JSONObject().put("name", name).put("username", username)) { it.getString("customToken") }
+        Tasks.await(FirebaseAuth.getInstance().signInWithCustomToken(token))
+        return getProfile()
+    }
+
     suspend fun getHome(): BackendHome = request("GET", "/api/v1/home") { json ->
         BackendHome(json.getString("greeting"), parseProfile(json.getJSONObject("profile")))
     }
@@ -400,7 +407,8 @@ object GoalioBackendApi {
         favoriteTeams = json.optJSONArray("favoriteTeams").toStrings(),
         favoritePlayers = json.optJSONArray("favoritePlayers").toStrings(),
         onboardingCompleted = json.optBoolean("onboardingCompleted"),
-        profileCompleted = json.optBoolean("profileCompleted", true)
+        profileCompleted = json.optBoolean("profileCompleted", true),
+        createdAt = json.nullableString("createdAt")
     )
 
     private fun JSONArray?.toStrings(): List<String> = buildList {

@@ -112,6 +112,7 @@ private val FeaturedPlayerKeys = listOf("messi", "ronaldo", "mbapp", "haaland", 
 fun ProfileSetupScreen(
     onBack: () -> Unit,
     onSkip: () -> Unit,
+    onSignIn: suspend (String, String) -> String?,
     onComplete: suspend (ProfileDraft) -> String?
 ) {
     val metrics = rememberGoalioMetrics()
@@ -139,6 +140,7 @@ fun ProfileSetupScreen(
     var usernameAvailable by remember { mutableStateOf<Boolean?>(null) }
     var usernameError by remember { mutableStateOf<String?>(null) }
     var checkingUsername by remember { mutableStateOf(false) }
+    var signedInExisting by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val remoteConfig = remember { FirebaseRemoteConfig.getInstance() }
     val teamLimit = remoteConfig.getLong("profile_teams_limit").toInt()
@@ -262,6 +264,27 @@ fun ProfileSetupScreen(
                                 usernameAvailable == false -> FieldMessage("That username is already taken", false)
                                 usernameError != null -> FieldMessage(usernameError.orEmpty(), false)
                             }
+                            if (usernameAvailable == false && fullNameValid) {
+                                Spacer(Modifier.height(12.dp))
+                                Button(
+                                    enabled = !submitting,
+                                    onClick = {
+                                        scope.launch {
+                                            submitting = true
+                                            val signInError = onSignIn(fullName.trim(), username.trim())
+                                            submitting = false
+                                            if (signInError == null) {
+                                                signedInExisting = true
+                                                usernameAvailable = true
+                                                submitError = null
+                                            } else submitError = signInError
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Gold, contentColor = Color.Black),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) { Text("SIGN IN TO EXISTING PROFILE", fontWeight = FontWeight.Black) }
+                            }
+                            if (signedInExisting) FieldMessage("Signed in. Choose favorites and continue to update your profile.", true)
                             Spacer(Modifier.height(28.dp))
                             Text("Follow your favorites", color = Color.White, fontSize = metrics.sp(23), fontWeight = FontWeight.Black)
                             Text("Get live updates for the teams you love.", color = GoalioColors.Body, fontSize = metrics.sp(16))
