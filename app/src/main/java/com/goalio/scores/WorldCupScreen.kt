@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -81,7 +82,7 @@ fun WorldCupScreen(
                         "Library" -> item { WorldCupLibrary(cup) }
                         else -> {
                             item { WorldCupGroups(cup.groups) }
-                            item { WorldCupBracket(cup.bracket.take(2)) }
+                            item { WorldCupBracket(cup.bracket) }
                             item { WorldCupLibrary(cup) }
                         }
                     }
@@ -100,9 +101,9 @@ private fun WorldCupTopBar(onBack: () -> Unit) {
         Spacer(Modifier.width(metrics.dp(18)))
         Text("WORLD CUP", color = Color.White, fontSize = metrics.sp(24), fontWeight = FontWeight.Black, letterSpacing = 5.sp)
         Spacer(Modifier.weight(1f))
-        Text("⌕", color = GoalioColors.Accent, fontSize = metrics.sp(24), fontWeight = FontWeight.Black)
-        Spacer(Modifier.width(metrics.dp(18)))
-        Text("⚙", color = GoalioColors.Accent, fontSize = metrics.sp(20), fontWeight = FontWeight.Black)
+        Text("Search", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+        Spacer(Modifier.width(metrics.dp(14)))
+        Text("Settings", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
     }
 }
 
@@ -110,11 +111,7 @@ private fun WorldCupTopBar(onBack: () -> Unit) {
 private fun WorldCupHero(cup: WorldCupBootstrapInfo) {
     val metrics = rememberGoalioMetrics()
     Surface(shape = RoundedCornerShape(metrics.dp(18)), color = GoalioColors.Surface1, modifier = Modifier.fillMaxWidth().height(metrics.dp(270))) {
-        Box(
-            Modifier.background(
-                Brush.verticalGradient(listOf(Color(0xFF183139), Color(0xFF0D0F10), Color(0xFF151515)))
-            )
-        ) {
+        Box(Modifier.background(Brush.verticalGradient(listOf(Color(0xFF183139), Color(0xFF0D0F10), Color(0xFF151515))))) {
             Canvas(Modifier.fillMaxSize()) {
                 drawCircle(Color.White.copy(alpha = .16f), radius = size.width * .28f, center = Offset(size.width * .06f, size.height * .08f))
                 drawCircle(Color.White.copy(alpha = .16f), radius = size.width * .28f, center = Offset(size.width * .94f, size.height * .08f))
@@ -194,21 +191,55 @@ private fun WorldCupBracket(rounds: List<WorldCupBracketRoundInfo>) {
     Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
         SectionTitle("The Knockout Path")
         if (rounds.isEmpty()) {
-            WorldCupState("Bracket will appear when knockout fixtures are published.")
+            WorldCupState("Bracket data is loading from World Cup feed.")
         } else {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
-                items(rounds) { round ->
-                    Surface(color = GoalioColors.Surface2, shape = RoundedCornerShape(metrics.dp(10)), border = BorderStroke(1.dp, Color(0xFF333333)), modifier = Modifier.width(metrics.dp(250))) {
-                        Column(Modifier.padding(metrics.dp(16)), verticalArrangement = Arrangement.spacedBy(metrics.dp(12))) {
-                            Text(round.round.uppercase(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black)
-                            round.matches.take(3).forEach { match ->
-                                Text("${match.homeTeam ?: "TBD"} ${match.homeScore?.toString() ?: "-"}  ·  ${match.awayTeam ?: "TBD"} ${match.awayScore?.toString() ?: "-"}", color = Color.White, fontSize = metrics.sp(14), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            }
-                        }
+            Surface(color = Color(0xFF050505), shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, Color(0xFF2B2B2B)), modifier = Modifier.fillMaxWidth()) {
+                LazyRow(
+                    contentPadding = PaddingValues(metrics.dp(16)),
+                    horizontalArrangement = Arrangement.spacedBy(metrics.dp(18)),
+                    modifier = Modifier.heightIn(min = metrics.dp(360))
+                ) {
+                    items(rounds) { round ->
+                        BracketRoundColumn(round)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun BracketRoundColumn(round: WorldCupBracketRoundInfo) {
+    val metrics = rememberGoalioMetrics()
+    Column(Modifier.width(metrics.dp(205)), verticalArrangement = Arrangement.spacedBy(metrics.dp(13))) {
+        Text(round.round.uppercase(), color = Color.White, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+        round.matches.forEach { match -> BracketMatchBox(match) }
+    }
+}
+
+@Composable
+private fun BracketMatchBox(match: WorldCupBracketMatchInfo) {
+    val metrics = rememberGoalioMetrics()
+    Column {
+        Text("MATCH ${match.matchNumber ?: match.eventId.takeLast(2)}", color = GoalioColors.Accent, fontSize = metrics.sp(10), fontWeight = FontWeight.Black)
+        Surface(color = Color(0xFF141414), shape = RoundedCornerShape(metrics.dp(7)), border = BorderStroke(1.dp, Color(0xFF454545)), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(metrics.dp(10)), verticalArrangement = Arrangement.spacedBy(metrics.dp(7))) {
+                BracketTeamRow(match.homeTeam.orEmpty(), match.homeScore)
+                Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF303030)))
+                BracketTeamRow(match.awayTeam.orEmpty(), match.awayScore)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BracketTeamRow(name: String, score: Int?) {
+    val metrics = rememberGoalioMetrics()
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(metrics.dp(10)).clip(CircleShape).background(GoalioColors.Accent))
+        Spacer(Modifier.width(metrics.dp(8)))
+        Text(name.ifBlank { "Awaiting winner" }, color = Color.White, fontSize = metrics.sp(13), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        if (score != null) Text(score.toString(), color = GoalioColors.TextPrimary, fontSize = metrics.sp(13), fontWeight = FontWeight.Black)
     }
 }
 
@@ -288,11 +319,7 @@ private fun WorldCupBottomNav(modifier: Modifier = Modifier, onOpenHome: () -> U
 @Composable
 private fun androidx.compose.foundation.layout.RowScope.WorldCupNavTab(label: String, selected: Boolean, onClick: () -> Unit) {
     val metrics = rememberGoalioMetrics()
-    Surface(
-        color = if (selected) GoalioColors.Accent else Color.Transparent,
-        shape = RoundedCornerShape(50),
-        modifier = Modifier.weight(1f).height(metrics.dp(56)).clickable(onClick = onClick)
-    ) {
+    Surface(color = if (selected) GoalioColors.Accent else Color.Transparent, shape = RoundedCornerShape(50), modifier = Modifier.weight(1f).height(metrics.dp(56)).clickable(onClick = onClick)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(label, color = if (selected) Color.White else Color(0xFFBEB8AA), fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1)
         }

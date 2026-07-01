@@ -95,6 +95,7 @@ data class WorldCupGroupInfo(val code: String, val teams: List<StandingTeamInfo>
 data class WorldCupBracketMatchInfo(
     val eventId: String,
     val round: String,
+    val matchNumber: Int?,
     val status: String?,
     val homeTeam: String?,
     val awayTeam: String?,
@@ -445,6 +446,7 @@ object GoalioBackendApi {
             add(WorldCupBracketMatchInfo(
                 eventId = getString("eventId"),
                 round = getString("round"),
+                matchNumber = if (isNull("matchNumber")) null else optInt("matchNumber"),
                 status = nullableString("status"),
                 homeTeam = nullableString("homeTeam"),
                 awayTeam = nullableString("awayTeam"),

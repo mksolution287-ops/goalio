@@ -541,7 +541,7 @@ private fun TeamLineupCard(lineup: TeamLineupInfo) {
                 LineupGroup("Starting XI", lineup.starters)
             }
             if (lineup.substitutes.isNotEmpty()) {
-                LineupGroup("Bench", lineup.substitutes)
+                LineupGroup(if (lineup.starters.isEmpty()) "Squad" else "Bench", lineup.substitutes)
             }
         }
     }
