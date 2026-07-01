@@ -177,6 +177,27 @@ data class TeamLineupInfo(
     val substitutes: List<LineupPlayerInfo>
 )
 
+data class LineupManagerInfo(val name: String, val photo: String?)
+
+data class PitchLineupPlayerInfo(
+    val id: String?, val name: String, val number: Int?, val position: String?, val role: String?,
+    val photo: String?, val captain: Boolean, val x: Float?, val y: Float?
+)
+
+data class UnavailablePlayerInfo(val name: String, val reason: String)
+
+data class NormalizedTeamLineupInfo(
+    val teamId: String?, val teamName: String?, val teamLogo: String?, val formation: String?,
+    val manager: LineupManagerInfo?, val startingXI: List<PitchLineupPlayerInfo>,
+    val bench: List<PitchLineupPlayerInfo>, val unavailable: List<UnavailablePlayerInfo>
+)
+
+data class MatchLineupInfo(
+    val eventId: String, val status: String, val source: String, val formationStatus: String,
+    val lastUpdated: String, val nextRefreshAt: String?, val kickoff: String?, val isStale: Boolean,
+    val home: NormalizedTeamLineupInfo, val away: NormalizedTeamLineupInfo
+)
+
 data class MatchTimelineEvent(
     val minute: String?,
     val type: String?,
@@ -285,6 +306,10 @@ object GoalioBackendApi {
     suspend fun getMatchDetail(league: String, eventId: String): MatchDetail = request(
         "GET", "/api/v1/matches/${encodePath(league)}/${encodePath(eventId)}/detail"
     ) { json -> json.toMatchDetail() }
+
+    suspend fun getMatchLineup(league: String, eventId: String): MatchLineupInfo = request(
+        "GET", "/api/v1/matches/${encodePath(eventId)}/lineup?league=${encode(league)}"
+    ) { json -> json.toMatchLineup() }
 
     suspend fun getStandings(league: String, season: Int? = null): LeagueStandings = request(
         "GET",
@@ -559,6 +584,43 @@ object GoalioBackendApi {
         summary = nullableString("summary"),
         winProbability = optJSONObject("winProbability")?.toWinProbabilityInfo()
     )
+
+    private fun JSONObject.toMatchLineup() = MatchLineupInfo(
+        eventId = getString("eventId"), status = getString("status"), source = getString("source"),
+        formationStatus = getString("formationStatus"), lastUpdated = getString("lastUpdated"),
+        nextRefreshAt = nullableString("nextRefreshAt"), kickoff = nullableString("kickoff"),
+        isStale = optBoolean("isStale", false),
+        home = getJSONObject("home").toNormalizedTeamLineup(),
+        away = getJSONObject("away").toNormalizedTeamLineup()
+    )
+
+    private fun JSONObject.toNormalizedTeamLineup() = NormalizedTeamLineupInfo(
+        teamId = nullableString("teamId"), teamName = nullableString("teamName"),
+        teamLogo = nullableString("teamLogo"), formation = nullableString("formation"),
+        manager = optJSONObject("manager")?.run { LineupManagerInfo(getString("name"), nullableString("photo")) },
+        startingXI = optJSONArray("startingXI").toPitchPlayers(),
+        bench = optJSONArray("bench").toPitchPlayers(),
+        unavailable = optJSONArray("unavailable").toUnavailablePlayers()
+    )
+
+    private fun JSONArray?.toPitchPlayers(): List<PitchLineupPlayerInfo> = buildList {
+        if (this@toPitchPlayers != null) for (index in 0 until length()) getJSONObject(index).run {
+            add(PitchLineupPlayerInfo(
+                id = nullableString("id"), name = getString("name"),
+                number = if (isNull("number")) null else optInt("number"),
+                position = nullableString("position"), role = nullableString("role"), photo = nullableString("photo"),
+                captain = optBoolean("captain", false),
+                x = if (isNull("x")) null else optDouble("x").toFloat(),
+                y = if (isNull("y")) null else optDouble("y").toFloat()
+            ))
+        }
+    }
+
+    private fun JSONArray?.toUnavailablePlayers(): List<UnavailablePlayerInfo> = buildList {
+        if (this@toUnavailablePlayers != null) for (index in 0 until length()) getJSONObject(index).run {
+            add(UnavailablePlayerInfo(getString("name"), getString("reason")))
+        }
+    }
 
     private fun JSONObject.toWinProbabilityInfo() = WinProbabilityInfo(
         homeWinPercentage = optInt("homeWinPercentage", 50),
