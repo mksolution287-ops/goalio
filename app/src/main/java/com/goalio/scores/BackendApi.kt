@@ -25,6 +25,11 @@ data class BackendProfile(
 )
 
 data class BackendHome(val greeting: String, val profile: BackendProfile)
+data class QuizQuestionInfo(val id: String, val category: String, val prompt: String, val options: List<String>, val timeLimitSeconds: Int)
+data class QuizSessionInfo(val sessionId: String, val questions: List<QuizQuestionInfo>, val currentQuestion: Int, val questionStartedAt: String)
+data class QuizAnswerInfo(val correct: Boolean, val timedOut: Boolean, val correctAnswerIndex: Int, val explanation: String, val xpDelta: Int, val totalXp: Int, val currentQuestion: Int, val completed: Boolean)
+data class QuizLeaderInfo(val rank: Int, val username: String, val xp: Int, val isMe: Boolean)
+data class QuizLeaderboardInfo(val entries: List<QuizLeaderInfo>, val me: QuizLeaderInfo?)
 
 data class BackendPage<T>(val items: List<T>, val nextCursor: String?)
 
@@ -327,6 +332,25 @@ object GoalioBackendApi {
     suspend fun getWorldCupBootstrap(): WorldCupBootstrapInfo = request(
         "GET", "/api/v1/worldcup/bootstrap"
     ) { json -> json.toWorldCupBootstrap() }
+
+    suspend fun startQuiz(): QuizSessionInfo = request("POST", "/api/v1/quiz/sessions", JSONObject()) { json ->
+        QuizSessionInfo(json.getString("sessionId"), buildList {
+            val items = json.getJSONArray("questions")
+            for (i in 0 until items.length()) items.getJSONObject(i).run {
+                add(QuizQuestionInfo(getString("id"), getString("category"), getString("prompt"), optJSONArray("options").toStrings(), optInt("timeLimitSeconds", 15)))
+            }
+        }, json.optInt("currentQuestion"), json.getString("questionStartedAt"))
+    }
+
+    suspend fun answerQuiz(sessionId: String, questionId: String, answerIndex: Int): QuizAnswerInfo = request(
+        "POST", "/api/v1/quiz/sessions/${encodePath(sessionId)}/answer", JSONObject().put("questionId", questionId).put("answerIndex", answerIndex)
+    ) { json -> QuizAnswerInfo(json.getBoolean("correct"), json.optBoolean("timedOut"), json.getInt("correctAnswerIndex"), json.getString("explanation"), json.getInt("xpDelta"), json.getInt("totalXp"), json.getInt("currentQuestion"), json.getBoolean("completed")) }
+
+    suspend fun getQuizLeaderboard(): QuizLeaderboardInfo = request("GET", "/api/v1/quiz/leaderboard") { json ->
+        fun parse(item: JSONObject) = QuizLeaderInfo(item.getInt("rank"), item.getString("username"), item.getInt("xp"), !item.isNull("userId"))
+        val entries = buildList { val items = json.getJSONArray("entries"); for (i in 0 until items.length()) add(parse(items.getJSONObject(i))) }
+        QuizLeaderboardInfo(entries, json.optJSONObject("me")?.let(::parse))
+    }
 
     private suspend fun <T> request(
         method: String,

@@ -194,6 +194,7 @@ class MainActivity : ComponentActivity() {
                             onBack = { appScreen = "home" },
                             onOpenHome = { appScreen = "home" },
                             onOpenWorldCup = { appScreen = "worldcup" },
+                            onOpenGames = { appScreen = "games" },
                             onOpenMatch = { match ->
                                 selectedMatch = match
                                 appScreen = "detail"
@@ -207,7 +208,8 @@ class MainActivity : ComponentActivity() {
                                 onBack = { appScreen = "matches" },
                                 onOpenHome = { appScreen = "home" },
                                 onOpenMatches = { appScreen = "matches" },
-                                onOpenWorldCup = { appScreen = "worldcup" }
+                                onOpenWorldCup = { appScreen = "worldcup" },
+                                onOpenGames = { appScreen = "games" }
                             )
                         } ?: run {
                             appScreen = "matches"
@@ -215,6 +217,7 @@ class MainActivity : ComponentActivity() {
                                 onBack = { appScreen = "home" },
                                 onOpenHome = { appScreen = "home" },
                                 onOpenWorldCup = { appScreen = "worldcup" },
+                                onOpenGames = { appScreen = "games" },
                                 onOpenMatch = { match ->
                                     selectedMatch = match
                                     appScreen = "detail"
@@ -226,12 +229,14 @@ class MainActivity : ComponentActivity() {
                             onOpenHome = { appScreen = "home" },
                             onOpenMatches = { appScreen = "matches" }
                         )
+                        "games" -> GameScreen(onBack = { appScreen = "home" }, onOpenHome = { appScreen = "home" })
                         else -> PersonalizedHomeScreen(
                             fallbackName = settings.getString("profile_full_name", null),
                             fallbackTeams = settings.getStringSet("profile_team_names", emptySet()).orEmpty(),
                             fallbackPlayers = settings.getStringSet("profile_player_names", emptySet()).orEmpty(),
                             onOpenMatches = { appScreen = "matches" },
                             onOpenWorldCup = { appScreen = "worldcup" },
+                            onOpenGames = { appScreen = "games" },
                             onOpenMatch = { match ->
                                 selectedMatch = match
                                 appScreen = "detail"

@@ -66,6 +66,12 @@ fun WorldCupScreen(
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
+        MatchRepository.matchUpdates.collect {
+            data = data?.let(WorldCupRepository::reconcile)
+        }
+    }
+
+    LaunchedEffect(Unit) {
         while (true) {
             runCatching { WorldCupRepository.refresh(context) }
                 .onSuccess {

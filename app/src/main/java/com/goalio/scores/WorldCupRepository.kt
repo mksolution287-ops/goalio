@@ -10,22 +10,37 @@ object WorldCupRepository {
     private const val PREFS = "goalio_world_cup_cache"
     private const val BOOTSTRAP = "bootstrap"
 
-    fun cached(context: Context): WorldCupBootstrapInfo? =
-        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    fun cached(context: Context): WorldCupBootstrapInfo? {
+        val cached = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(BOOTSTRAP, null)
             ?.let { runCatching { JSONObject(it).toWorldCupBootstrapInfo() }.getOrNull() }
+        if (cached != null) MatchRepository.seedExternal(cached.allMatches())
+        return cached?.reconciled()
+    }
 
     suspend fun refresh(context: Context): WorldCupBootstrapInfo {
         val fresh = GoalioBackendApi.getWorldCupBootstrap()
+        MatchRepository.synchronizeExternal(context, fresh.allMatches())
         withContext(Dispatchers.IO) {
             context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit()
                 .putString(BOOTSTRAP, fresh.toJson().toString())
                 .apply()
         }
-        return fresh
+        return fresh.reconciled()
     }
+
+    fun reconcile(value: WorldCupBootstrapInfo): WorldCupBootstrapInfo = value.reconciled()
 }
+
+private fun WorldCupBootstrapInfo.allMatches() = liveMatches + todayMatches + upcomingMatches + recentResults
+
+private fun WorldCupBootstrapInfo.reconciled() = copy(
+    liveMatches = liveMatches.map(MatchRepository::canonical),
+    todayMatches = todayMatches.map(MatchRepository::canonical),
+    upcomingMatches = upcomingMatches.map(MatchRepository::canonical),
+    recentResults = recentResults.map(MatchRepository::canonical)
+)
 
 private fun WorldCupBootstrapInfo.toJson() = JSONObject().apply {
     put("tournament", JSONObject().apply {

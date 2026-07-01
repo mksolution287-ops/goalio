@@ -91,6 +91,7 @@ fun MatchScreen(
     onBack: () -> Unit,
     onOpenHome: () -> Unit,
     onOpenWorldCup: () -> Unit,
+    onOpenGames: () -> Unit,
     onOpenMatch: (ScheduleMatch) -> Unit
 ) {
     val context = LocalContext.current
@@ -101,6 +102,15 @@ fun MatchScreen(
     var matches by remember { mutableStateOf(emptyList<ScheduleMatch>()) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(selectedDate) {
+        MatchRepository.matchUpdates.collect { canonical ->
+            val shared = canonical.values.filter { it.kickoff?.take(10) == selectedDate }
+            if (shared.isNotEmpty()) {
+                matches = shared.sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
+            }
+        }
+    }
 
     LaunchedEffect(selectedDate) {
         matches = MatchRepository.cachedFeed(context, selectedDate, selectedDate)
@@ -174,7 +184,7 @@ fun MatchScreen(
                 }
             }
         }
-        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = {}, onWorldCup = onOpenWorldCup)
+        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = {}, onWorldCup = onOpenWorldCup, onGames = onOpenGames)
     }
 }
 
@@ -186,7 +196,8 @@ fun MatchDetailScreen(
     onBack: () -> Unit,
     onOpenHome: () -> Unit,
     onOpenMatches: () -> Unit,
-    onOpenWorldCup: () -> Unit
+    onOpenWorldCup: () -> Unit,
+    onOpenGames: () -> Unit
 ) {
     val context = LocalContext.current
     val metrics = rememberGoalioMetrics()
@@ -198,6 +209,15 @@ fun MatchDetailScreen(
     var lineupError by remember { mutableStateOf<String?>(null) }
     var selectedTab by rememberSaveable { mutableStateOf("Overview") }
     var previousScore by remember { mutableStateOf(detail?.scoreSignature() ?: initialMatch?.scoreSignature().orEmpty()) }
+
+    LaunchedEffect(league, matchId) {
+        MatchRepository.detailUpdates.collect { canonical ->
+            canonical["$league:$matchId"]?.let { shared ->
+                detail = shared
+                previousScore = shared.scoreSignature()
+            }
+        }
+    }
 
     LaunchedEffect(league, matchId) {
         detail = MatchRepository.cachedDetail(context, league, matchId)
@@ -278,7 +298,7 @@ fun MatchDetailScreen(
                 item { StreamHighlights() }
             }
         }
-        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = onOpenMatches, onWorldCup = onOpenWorldCup)
+        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = onOpenMatches, onWorldCup = onOpenWorldCup, onGames = onOpenGames)
     }
 }
 
@@ -356,7 +376,7 @@ private fun FixtureCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Un
         Column {
             Row(Modifier.fillMaxWidth().padding(metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
                 Text("${match.leagueLabel()} • ${match.stageLabel()}", color = GoalioColors.TextPrimary, fontSize = metrics.sp(14), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(match.statusPillText(), color = statusColor(match.state), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                DynamicMatchStatus(match, metrics)
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242426)))
             Row(Modifier.fillMaxWidth().padding(horizontal = metrics.dp(20), vertical = metrics.dp(28)), verticalAlignment = Alignment.CenterVertically) {
@@ -406,7 +426,7 @@ private fun DetailHeroCard(detail: MatchDetail) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 DetailTopTeam(detail.homeTeam, Modifier.weight(1f))
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(metrics.dp(130))) {
-                    Text(detail.statusPillText(), color = statusColor(detail.statusState()), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                    DynamicDetailStatus(detail, metrics)
                     Spacer(Modifier.height(metrics.dp(6)))
                     Text(scoreLine(detail.homeTeam, detail.awayTeam), color = GoalioColors.TextPrimary, fontSize = metrics.sp(42), fontWeight = FontWeight.Black)
                 }
@@ -890,14 +910,14 @@ private fun MatchStateCard(text: String) {
 }
 
 @Composable
-private fun MatchBottomNav(modifier: Modifier = Modifier, selected: String, onHome: () -> Unit, onMatches: () -> Unit, onWorldCup: () -> Unit) {
+private fun MatchBottomNav(modifier: Modifier = Modifier, selected: String, onHome: () -> Unit, onMatches: () -> Unit, onWorldCup: () -> Unit, onGames: () -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(color = Color(0xFF3B3B3B), shape = RoundedCornerShape(metrics.dp(28)), modifier = modifier.fillMaxWidth().padding(horizontal = metrics.dp(8), vertical = metrics.dp(10))) {
         Row(Modifier.padding(metrics.dp(8)), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             NavTab("Home", selected == "Home", onHome)
             NavTab("Matches", selected == "Matches", onMatches)
             NavTab("World Cup", selected == "World Cup", onWorldCup)
-            NavTab("Games", false) {}
+            NavTab("Games", selected == "Games", onGames)
         }
     }
 }
@@ -959,20 +979,59 @@ private fun ScheduleMatch.statusLabel(): String = when (state) {
     else -> statusDescription ?: status ?: "Match"
 }
 
-private fun ScheduleMatch.statusPillText(): String {
-    if (state == "pre") return countdownLabel() ?: statusLabel().uppercase()
-    if (state == "in") return "LIVE ${status ?: statusDescription ?: ""}".trim()
-    return statusLabel().uppercase()
+@Composable
+private fun DynamicMatchStatus(match: ScheduleMatch, metrics: GoalioMetrics) {
+    var now by remember(match.matchId, match.kickoff) { mutableStateOf(Instant.now()) }
+    val anchor = remember(match.status, match.statusDescription) { Instant.now() }
+    LaunchedEffect(match.matchId, match.state, match.status, match.statusDescription) {
+        if (match.state !in setOf("pre", "in")) return@LaunchedEffect
+        while (true) { now = Instant.now(); delay(1_000) }
+    }
+    Text(match.dynamicStatusText(now, anchor), color = statusColor(match.state), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
 }
 
-private fun ScheduleMatch.countdownLabel(): String? {
-    if (state != "pre" || kickoff.isNullOrBlank()) return null
+@Composable
+private fun DynamicDetailStatus(detail: MatchDetail, metrics: GoalioMetrics) {
+    var now by remember(detail.matchId, detail.kickoff) { mutableStateOf(Instant.now()) }
+    val anchor = remember(detail.status, detail.statusDescription) { Instant.now() }
+    LaunchedEffect(detail.matchId, detail.status, detail.statusDescription) {
+        if (detail.statusState() !in setOf("pre", "in")) return@LaunchedEffect
+        while (true) { now = Instant.now(); delay(1_000) }
+    }
+    Text(detail.dynamicStatusText(now, anchor), color = statusColor(detail.statusState()), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+}
+
+private fun ScheduleMatch.dynamicStatusText(now: Instant, anchor: Instant): String = when (state) {
+    "pre" -> countdownLabel(now) ?: statusLabel().uppercase()
+    "in" -> liveClock(status, statusDescription, anchor, now)
+    else -> statusLabel().uppercase()
+}
+
+private fun MatchDetail.dynamicStatusText(now: Instant, anchor: Instant): String = when (statusState()) {
+    "pre" -> countdownLabel(kickoff, now) ?: (statusDescription ?: status ?: "UPCOMING").uppercase()
+    "in" -> liveClock(status, statusDescription, anchor, now)
+    else -> (statusDescription ?: status ?: "MATCH").uppercase()
+}
+
+private fun liveClock(status: String?, description: String?, anchor: Instant, now: Instant): String {
+    val minute = Regex("(\\d{1,3})(?:\\+\\d+)?['’]?").find("${status.orEmpty()} ${description.orEmpty()}")
+        ?.groupValues?.get(1)?.toLongOrNull() ?: return "LIVE ${status ?: description.orEmpty()}".trim()
+    val elapsed = Duration.between(anchor, now).seconds.coerceAtLeast(0)
+    return "LIVE ${minute + elapsed / 60}'%02d\"".format(elapsed % 60)
+}
+
+private fun ScheduleMatch.countdownLabel(now: Instant): String? =
+    if (state != "pre") null else countdownLabel(kickoff, now)
+
+private fun countdownLabel(kickoff: String?, now: Instant): String? {
+    if (kickoff.isNullOrBlank()) return null
     val start = runCatching { OffsetDateTime.parse(kickoff).toInstant() }.getOrNull() ?: return null
-    val remaining = Duration.between(Instant.now(), start)
+    val remaining = Duration.between(now, start)
     if (remaining.isNegative) return "STARTING"
     val hours = remaining.toHours()
     val minutes = remaining.toMinutes() % 60
-    return if (hours > 0) "${hours}H ${minutes}M" else "${minutes}M"
+    val seconds = remaining.seconds % 60
+    return "%02d:%02d:%02d".format(hours, minutes, seconds)
 }
 
 private fun ScheduleMatch.leagueLabel(): String = leagueLabel(league)
@@ -1145,9 +1204,10 @@ private fun MatchDetail.statusPillText(): String =
     if (statusState() == "in") "LIVE ${status ?: ""}".trim() else (statusDescription ?: status ?: "Match").uppercase()
 
 private fun MatchDetail.statusState(): String? = when {
+    Regex("\\b\\d{1,3}(?:\\+\\d+)?['’]").containsMatchIn("${status.orEmpty()} ${statusDescription.orEmpty()}") -> "in"
     status?.contains("live", true) == true -> "in"
     statusDescription?.contains("live", true) == true -> "in"
-    statusDescription?.contains("final", true) == true -> "post"
+    listOf(status, statusDescription).any { it?.trim()?.lowercase() in setOf("ft", "final", "full time", "aet", "pens") } -> "post"
     statusDescription?.contains("scheduled", true) == true -> "pre"
     else -> null
 }

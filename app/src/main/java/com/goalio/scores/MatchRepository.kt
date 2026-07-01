@@ -5,6 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -34,11 +37,23 @@ object MatchRepository {
     )
 
     private const val PREFS = "goalio_match_cache"
+    private const val CANONICAL_MATCHES = "matches_canonical"
+    private val canonicalMatches = MutableStateFlow<Map<String, ScheduleMatch>>(emptyMap())
+    private val canonicalDetails = MutableStateFlow<Map<String, MatchDetail>>(emptyMap())
+    val matchUpdates = canonicalMatches.asStateFlow()
+    val detailUpdates = canonicalDetails.asStateFlow()
 
-    fun cachedFeed(context: Context, from: String, to: String): List<ScheduleMatch> =
-        context.cachePrefs().getString(feedKey(from, to), null)
+    fun cachedFeed(context: Context, from: String, to: String): List<ScheduleMatch> {
+        val range = context.cachePrefs().getString(feedKey(from, to), null)
             ?.let { runCatching { JSONArray(it).toScheduleMatches() }.getOrDefault(emptyList()) }
             .orEmpty()
+        val persistedCanonical = context.cachePrefs().getString(CANONICAL_MATCHES, null)
+            ?.let { runCatching { JSONArray(it).toScheduleMatches() }.getOrDefault(emptyList()) }
+            .orEmpty()
+        publishMatches(persistedCanonical, overwrite = false)
+        publishMatches(range, overwrite = false)
+        return range.map { canonicalMatches.value[matchKey(it.league, it.matchId)] ?: it }
+    }
 
     suspend fun refreshFeed(context: Context, from: String, to: String): MatchFeedResult {
         val previousMatches = cachedFeed(context, from, to)
@@ -54,20 +69,30 @@ object MatchRepository {
             .sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
         val changed = before.isNotBlank() && before != matches.scoreSignature()
         val notificationEvents = matchNotificationEvents(previousMatches, matches)
+        publishMatches(matches, overwrite = true)
+        GoalioMatchNotifier.scheduleUpcoming(context, canonicalMatches.value.values.toList())
+        val canonicalSnapshot = canonicalMatches.value.values.toList()
         withContext(Dispatchers.IO) {
             context.cachePrefs().edit()
                 .putString(feedKey(from, to), JSONArray(matches.map { it.toJson() }).toString())
+                .putString(CANONICAL_MATCHES, JSONArray(canonicalSnapshot.map { it.toJson() }).toString())
                 .apply()
         }
-        return MatchFeedResult(matches, changed, notificationEvents)
+        return MatchFeedResult(matches.map { canonicalMatches.value[matchKey(it.league, it.matchId)] ?: it }, changed, notificationEvents)
     }
 
-    fun cachedDetail(context: Context, league: String, matchId: String): MatchDetail? =
-        context.cachePrefs().getString(detailKey(league, matchId), null)
+    fun cachedDetail(context: Context, league: String, matchId: String): MatchDetail? {
+        val cached = context.cachePrefs().getString(detailKey(league, matchId), null)
             ?.let { runCatching { JSONObject(it).toMatchDetail() }.getOrNull() }
+        val reconciled = cached?.reconcile(canonicalMatches.value[matchKey(league, matchId)])
+        if (reconciled != null) canonicalDetails.update { it + (matchKey(league, matchId) to reconciled) }
+        return reconciled
+    }
 
     suspend fun refreshDetail(context: Context, league: String, matchId: String): MatchDetail {
         val detail = GoalioBackendApi.getMatchDetail(league, matchId)
+            .reconcile(canonicalMatches.value[matchKey(league, matchId)])
+        canonicalDetails.update { it + (matchKey(league, matchId) to detail) }
         withContext(Dispatchers.IO) {
             context.cachePrefs().edit()
                 .putString(detailKey(league, matchId), detail.toJson().toString())
@@ -91,6 +116,24 @@ object MatchRepository {
     fun nextRefreshDelayMillis(matches: List<ScheduleMatch>): Long =
         if (matches.any { it.state == "in" }) 2 * 60 * 1000L else 15 * 60 * 1000L
 
+    fun canonical(match: ScheduleMatch): ScheduleMatch =
+        canonicalMatches.value[matchKey(match.league, match.matchId)] ?: match
+
+    fun seedExternal(matches: List<ScheduleMatch>) {
+        publishMatches(matches, overwrite = false)
+    }
+
+    suspend fun synchronizeExternal(context: Context, matches: List<ScheduleMatch>) {
+        publishMatches(matches, overwrite = true)
+        GoalioMatchNotifier.scheduleUpcoming(context, canonicalMatches.value.values.toList())
+        val snapshot = canonicalMatches.value.values.toList()
+        withContext(Dispatchers.IO) {
+            context.cachePrefs().edit()
+                .putString(CANONICAL_MATCHES, JSONArray(snapshot.map { it.toJson() }).toString())
+                .apply()
+        }
+    }
+
     private fun Context.cachePrefs() = applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     private fun feedKey(from: String, to: String) = "feed_${from}_$to"
@@ -98,6 +141,36 @@ object MatchRepository {
     private fun detailKey(league: String, matchId: String) = "detail_${league}_$matchId"
 
     private fun standingsKey(league: String) = "standings_$league"
+
+    private fun publishMatches(matches: List<ScheduleMatch>, overwrite: Boolean) {
+        if (matches.isEmpty()) return
+        canonicalMatches.update { current ->
+            current.toMutableMap().apply {
+                matches.forEach { match ->
+                    val key = matchKey(match.league, match.matchId)
+                    if (overwrite || key !in this) this[key] = match
+                }
+            }
+        }
+        val latest = canonicalMatches.value
+        canonicalDetails.update { details ->
+            details.mapValues { (key, detail) -> detail.reconcile(latest[key]) }
+        }
+    }
+}
+
+private fun matchKey(league: String, matchId: String) = "$league:$matchId"
+
+private fun MatchDetail.reconcile(match: ScheduleMatch?): MatchDetail {
+    if (match == null) return this
+    return copy(
+        status = match.status ?: status,
+        statusDescription = match.statusDescription ?: statusDescription,
+        kickoff = match.kickoff ?: kickoff,
+        homeTeam = homeTeam?.copy(score = match.homeTeam?.score ?: homeTeam.score) ?: match.homeTeam,
+        awayTeam = awayTeam?.copy(score = match.awayTeam?.score ?: awayTeam.score) ?: match.awayTeam,
+        venue = venue ?: match.venue
+    )
 }
 
 private fun matchNotificationEvents(
@@ -129,13 +202,13 @@ private fun matchNotificationEvents(
 private fun ScheduleMatch.scorePair(): String =
     "${homeTeam?.score ?: "-"}:${awayTeam?.score ?: "-"}"
 
-private fun ScheduleMatch.compactNotificationName(): String {
+internal fun ScheduleMatch.compactNotificationName(): String {
     val home = homeTeam?.abbreviation ?: homeTeam?.shortName ?: homeTeam?.name ?: "Home"
     val away = awayTeam?.abbreviation ?: awayTeam?.shortName ?: awayTeam?.name ?: "Away"
     return "$home vs $away"
 }
 
-private fun ScheduleMatch.kickoffEpochMillis(): Long? =
+internal fun ScheduleMatch.kickoffEpochMillis(): Long? =
     runCatching { java.time.OffsetDateTime.parse(kickoff).toInstant().toEpochMilli() }.getOrNull()
 
 fun stateRank(state: String?): Int = when (state) {

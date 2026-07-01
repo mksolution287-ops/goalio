@@ -76,6 +76,7 @@ fun PersonalizedHomeScreen(
     fallbackPlayers: Set<String>,
     onOpenMatches: () -> Unit,
     onOpenWorldCup: () -> Unit,
+    onOpenGames: () -> Unit,
     onOpenMatch: (ScheduleMatch) -> Unit
 ) {
     val context = LocalContext.current
@@ -87,6 +88,17 @@ fun PersonalizedHomeScreen(
     val today = remember { LocalDate.now() }
     val fromDate = remember(today) { today.minusDays(30).toString() }
     val toDate = remember(today) { today.plusDays(120).toString() }
+
+    LaunchedEffect(fromDate, toDate) {
+        MatchRepository.matchUpdates.collect { canonical ->
+            val shared = canonical.values.filter { match ->
+                match.kickoff?.take(10)?.let { it >= fromDate && it <= toDate } ?: true
+            }
+            if (shared.isNotEmpty()) {
+                matches = shared.sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
+            }
+        }
+    }
 
     LaunchedEffect(fromDate, toDate) {
         matches = MatchRepository.cachedFeed(context, fromDate, toDate)
@@ -172,7 +184,7 @@ fun PersonalizedHomeScreen(
                 item { FunZoneSection() }
             }
         }
-        HomeBottomNav(Modifier.align(Alignment.BottomCenter), onOpenMatches, onOpenWorldCup)
+            HomeBottomNav(Modifier.align(Alignment.BottomCenter), onOpenMatches, onOpenWorldCup, onOpenGames)
     }
 }
 
@@ -505,16 +517,18 @@ private fun TeamScoreLine(team: MatchTeamInfo?) {
 private fun MatchStatusPill(match: ScheduleMatch) {
     val metrics = rememberGoalioMetrics()
     var now by remember(match.matchId, match.kickoff) { mutableStateOf(Instant.now()) }
+    val liveAnchor = remember(match.status, match.statusDescription) { Instant.now() }
     LaunchedEffect(match.matchId, match.kickoff, match.state) {
-        if (match.state != "pre") return@LaunchedEffect
+        if (match.state !in setOf("pre", "in")) return@LaunchedEffect
         while (true) {
             now = Instant.now()
             delay(1_000)
         }
     }
     val countdown = remember(match.kickoff, now) { match.countdownLabel(now) }
+    val liveClock = remember(match.status, match.statusDescription, now) { match.liveClockLabel(liveAnchor, now) }
     val color = if (countdown != null) GoalioColors.Accent else statusColor(match.state)
-    val label = countdown ?: match.statusLabel().uppercase()
+    val label = countdown ?: liveClock ?: match.statusLabel().uppercase()
     Surface(color = GoalioColors.Surface2, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, color)) {
         Text(
             label,
@@ -554,7 +568,7 @@ private fun MutedPill(text: String) {
 }
 
 @Composable
-private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Unit, onOpenWorldCup: () -> Unit) {
+private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Unit, onOpenWorldCup: () -> Unit, onOpenGames: () -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Navigation,
@@ -566,7 +580,7 @@ private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Un
             BottomTab("Home", true) {}
             BottomTab("Matches", false, onOpenMatches)
             BottomTab("World Cup", false, onOpenWorldCup)
-            BottomTab("Games", false)
+            BottomTab("Games", false, onOpenGames)
         }
     }
 }
@@ -658,15 +672,19 @@ private fun ScheduleMatch.countdownLabel(now: Instant): String? {
     val kickoffInstant = runCatching { OffsetDateTime.parse(kickoff).toInstant() }.getOrNull() ?: return null
     val remaining = Duration.between(now, kickoffInstant)
     if (remaining.isNegative || remaining.isZero) return "STARTING"
-    val days = remaining.toDays()
-    val hours = remaining.toHours() % 24
+    val hours = remaining.toHours()
     val minutes = remaining.toMinutes() % 60
-    return when {
-        days > 0 -> "${days}d ${hours}h"
-        hours > 0 -> "${hours}h ${minutes}m"
-        minutes > 0 -> "${minutes}m"
-        else -> "${remaining.seconds.coerceAtLeast(1)}s"
-    }
+    val seconds = remaining.seconds % 60
+    return "%02d:%02d:%02d".format(hours, minutes, seconds)
+}
+
+private fun ScheduleMatch.liveClockLabel(anchor: Instant, now: Instant): String? {
+    if (state != "in") return null
+    val source = "${status.orEmpty()} ${statusDescription.orEmpty()}"
+    val minute = Regex("(\\d{1,3})(?:\\+\\d+)?['’]?").find(source)?.groupValues?.get(1)?.toLongOrNull()
+        ?: return "LIVE ${status ?: statusDescription.orEmpty()}".trim()
+    val elapsed = Duration.between(anchor, now).seconds.coerceAtLeast(0)
+    return "LIVE ${minute + elapsed / 60}'%02d\"".format(elapsed % 60)
 }
 
 private fun statusColor(state: String?): Color = when (state) {
