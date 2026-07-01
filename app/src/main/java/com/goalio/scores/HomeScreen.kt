@@ -75,6 +75,7 @@ fun PersonalizedHomeScreen(
     fallbackTeams: Set<String>,
     fallbackPlayers: Set<String>,
     onOpenMatches: () -> Unit,
+    onOpenWorldCup: () -> Unit,
     onOpenMatch: (ScheduleMatch) -> Unit
 ) {
     val context = LocalContext.current
@@ -167,11 +168,11 @@ fun PersonalizedHomeScreen(
                     }
                 }
                 item { WinProbabilityCard(featured) }
-                item { WorldCupHubCard(standings, onOpenMatches) }
+                item { WorldCupHubCard(standings, onOpenWorldCup) }
                 item { FunZoneSection() }
             }
         }
-        HomeBottomNav(Modifier.align(Alignment.BottomCenter), onOpenMatches)
+        HomeBottomNav(Modifier.align(Alignment.BottomCenter), onOpenMatches, onOpenWorldCup)
     }
 }
 
@@ -553,7 +554,7 @@ private fun MutedPill(text: String) {
 }
 
 @Composable
-private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Unit) {
+private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Unit, onOpenWorldCup: () -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Navigation,
@@ -564,7 +565,7 @@ private fun HomeBottomNav(modifier: Modifier = Modifier, onOpenMatches: () -> Un
         Row(Modifier.padding(metrics.dp(8)), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             BottomTab("Home", true) {}
             BottomTab("Matches", false, onOpenMatches)
-            BottomTab("World Cup", false)
+            BottomTab("World Cup", false, onOpenWorldCup)
             BottomTab("Games", false)
         }
     }

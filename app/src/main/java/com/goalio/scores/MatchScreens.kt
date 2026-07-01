@@ -88,6 +88,7 @@ private val LeagueFilters = listOf(
 fun MatchScreen(
     onBack: () -> Unit,
     onOpenHome: () -> Unit,
+    onOpenWorldCup: () -> Unit,
     onOpenMatch: (ScheduleMatch) -> Unit
 ) {
     val context = LocalContext.current
@@ -171,7 +172,7 @@ fun MatchScreen(
                 }
             }
         }
-        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = {})
+        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = {}, onWorldCup = onOpenWorldCup)
     }
 }
 
@@ -182,7 +183,8 @@ fun MatchDetailScreen(
     initialMatch: ScheduleMatch?,
     onBack: () -> Unit,
     onOpenHome: () -> Unit,
-    onOpenMatches: () -> Unit
+    onOpenMatches: () -> Unit,
+    onOpenWorldCup: () -> Unit
 ) {
     val context = LocalContext.current
     val metrics = rememberGoalioMetrics()
@@ -260,7 +262,7 @@ fun MatchDetailScreen(
                 item { StreamHighlights() }
             }
         }
-        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = onOpenMatches)
+        MatchBottomNav(Modifier.align(Alignment.BottomCenter), selected = "Matches", onHome = onOpenHome, onMatches = onOpenMatches, onWorldCup = onOpenWorldCup)
     }
 }
 
@@ -784,13 +786,13 @@ private fun MatchStateCard(text: String) {
 }
 
 @Composable
-private fun MatchBottomNav(modifier: Modifier = Modifier, selected: String, onHome: () -> Unit, onMatches: () -> Unit) {
+private fun MatchBottomNav(modifier: Modifier = Modifier, selected: String, onHome: () -> Unit, onMatches: () -> Unit, onWorldCup: () -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(color = Color(0xFF3B3B3B), shape = RoundedCornerShape(metrics.dp(28)), modifier = modifier.fillMaxWidth().padding(horizontal = metrics.dp(8), vertical = metrics.dp(10))) {
         Row(Modifier.padding(metrics.dp(8)), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             NavTab("Home", selected == "Home", onHome)
             NavTab("Matches", selected == "Matches", onMatches)
-            NavTab("World Cup", false) {}
+            NavTab("World Cup", selected == "World Cup", onWorldCup)
             NavTab("Games", false) {}
         }
     }

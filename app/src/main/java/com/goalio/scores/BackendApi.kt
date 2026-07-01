@@ -82,6 +82,51 @@ data class LeagueStandings(
     val teams: List<StandingTeamInfo>
 )
 
+data class WorldCupTournamentInfo(
+    val id: String,
+    val name: String,
+    val stage: String,
+    val hostCities: Int,
+    val daysToFinal: Int?
+)
+
+data class WorldCupGroupInfo(val code: String, val teams: List<StandingTeamInfo>)
+
+data class WorldCupBracketMatchInfo(
+    val eventId: String,
+    val round: String,
+    val status: String?,
+    val homeTeam: String?,
+    val awayTeam: String?,
+    val homeScore: Int?,
+    val awayScore: Int?,
+    val kickoff: String?
+)
+
+data class WorldCupBracketRoundInfo(val round: String, val matches: List<WorldCupBracketMatchInfo>)
+
+data class WorldCupLibraryItemInfo(
+    val id: String,
+    val title: String,
+    val category: String,
+    val body: String,
+    val readMinutes: Int
+)
+
+data class WorldCupFactInfo(val title: String, val body: String)
+
+data class WorldCupBootstrapInfo(
+    val tournament: WorldCupTournamentInfo,
+    val liveMatches: List<ScheduleMatch>,
+    val todayMatches: List<ScheduleMatch>,
+    val upcomingMatches: List<ScheduleMatch>,
+    val recentResults: List<ScheduleMatch>,
+    val groups: List<WorldCupGroupInfo>,
+    val bracket: List<WorldCupBracketRoundInfo>,
+    val library: List<WorldCupLibraryItemInfo>,
+    val randomFact: WorldCupFactInfo
+)
+
 data class MatchStat(val name: String?, val label: String?, val value: String?)
 
 data class TeamStatsBlock(val teamId: String?, val stats: List<MatchStat>)
@@ -233,6 +278,10 @@ object GoalioBackendApi {
         }
     ) { json -> json.toLeagueStandings() }
 
+    suspend fun getWorldCupBootstrap(): WorldCupBootstrapInfo = request(
+        "GET", "/api/v1/worldcup/bootstrap"
+    ) { json -> json.toWorldCupBootstrap() }
+
     private suspend fun <T> request(
         method: String,
         path: String,
@@ -340,6 +389,26 @@ object GoalioBackendApi {
         teams = optJSONArray("teams").toStandingTeams()
     )
 
+    private fun JSONObject.toWorldCupBootstrap() = WorldCupBootstrapInfo(
+        tournament = getJSONObject("tournament").run {
+            WorldCupTournamentInfo(
+                id = getString("id"),
+                name = getString("name"),
+                stage = getString("stage"),
+                hostCities = optInt("hostCities", 16),
+                daysToFinal = if (isNull("daysToFinal")) null else optInt("daysToFinal")
+            )
+        },
+        liveMatches = optJSONArray("liveMatches").toScheduleMatches(),
+        todayMatches = optJSONArray("todayMatches").toScheduleMatches(),
+        upcomingMatches = optJSONArray("upcomingMatches").toScheduleMatches(),
+        recentResults = optJSONArray("recentResults").toScheduleMatches(),
+        groups = optJSONArray("groups").toWorldCupGroups(),
+        bracket = optJSONArray("bracket").toWorldCupBracket(),
+        library = optJSONArray("library").toWorldCupLibrary(),
+        randomFact = getJSONObject("randomFact").run { WorldCupFactInfo(getString("title"), getString("body")) }
+    )
+
     private fun JSONArray?.toStandingTeams(): List<StandingTeamInfo> = buildList {
         if (this@toStandingTeams != null) for (index in 0 until length()) getJSONObject(index).run {
             add(StandingTeamInfo(
@@ -359,8 +428,47 @@ object GoalioBackendApi {
         }
     }
 
-    private fun JSONArray.toScheduleMatches() = buildList {
-        for (index in 0 until length()) getJSONObject(index).run {
+    private fun JSONArray?.toWorldCupGroups(): List<WorldCupGroupInfo> = buildList {
+        if (this@toWorldCupGroups != null) for (index in 0 until length()) getJSONObject(index).run {
+            add(WorldCupGroupInfo(getString("code"), optJSONArray("teams").toStandingTeams()))
+        }
+    }
+
+    private fun JSONArray?.toWorldCupBracket(): List<WorldCupBracketRoundInfo> = buildList {
+        if (this@toWorldCupBracket != null) for (index in 0 until length()) getJSONObject(index).run {
+            add(WorldCupBracketRoundInfo(getString("round"), optJSONArray("matches").toWorldCupBracketMatches()))
+        }
+    }
+
+    private fun JSONArray?.toWorldCupBracketMatches(): List<WorldCupBracketMatchInfo> = buildList {
+        if (this@toWorldCupBracketMatches != null) for (index in 0 until length()) getJSONObject(index).run {
+            add(WorldCupBracketMatchInfo(
+                eventId = getString("eventId"),
+                round = getString("round"),
+                status = nullableString("status"),
+                homeTeam = nullableString("homeTeam"),
+                awayTeam = nullableString("awayTeam"),
+                homeScore = if (isNull("homeScore")) null else optInt("homeScore"),
+                awayScore = if (isNull("awayScore")) null else optInt("awayScore"),
+                kickoff = nullableString("kickoff")
+            ))
+        }
+    }
+
+    private fun JSONArray?.toWorldCupLibrary(): List<WorldCupLibraryItemInfo> = buildList {
+        if (this@toWorldCupLibrary != null) for (index in 0 until length()) getJSONObject(index).run {
+            add(WorldCupLibraryItemInfo(
+                id = getString("id"),
+                title = getString("title"),
+                category = getString("category"),
+                body = getString("body"),
+                readMinutes = optInt("readMinutes", 4)
+            ))
+        }
+    }
+
+    private fun JSONArray?.toScheduleMatches() = buildList {
+        if (this@toScheduleMatches != null) for (index in 0 until length()) getJSONObject(index).run {
             add(ScheduleMatch(
                 matchId = getString("matchId"),
                 league = getString("league"),
