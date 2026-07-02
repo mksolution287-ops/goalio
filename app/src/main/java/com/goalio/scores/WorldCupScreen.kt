@@ -49,6 +49,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
 import coil3.compose.AsyncImage
 import com.goalio.scores.ui.theme.GoalioColors
 import kotlinx.coroutines.delay
@@ -64,7 +68,7 @@ fun WorldCupScreen(
     val context = LocalContext.current
     val metrics = rememberGoalioMetrics()
     var data by remember { mutableStateOf(WorldCupRepository.cached(context)) }
-    var selected by remember { mutableStateOf("Groups") }
+    var selected by remember { mutableStateOf("Matches") }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
@@ -93,7 +97,7 @@ fun WorldCupScreen(
             contentPadding = PaddingValues(metrics.horizontalPadding, metrics.dp(18), metrics.horizontalPadding, metrics.bottomBarPadding),
             verticalArrangement = Arrangement.spacedBy(metrics.dp(22))
         ) {
-            item { GoalioTopBar(onBack = onBack, onSettings = onOpenSettings) }
+            item { GoalioTopBar(title = "WORLD CUP", onBack = onBack, onSettings = onOpenSettings) }
             when {
                 data == null && error == null -> item { WorldCupState("Loading World Cup data...") }
                 error != null -> item { WorldCupState(error.orEmpty()) }
@@ -102,13 +106,10 @@ fun WorldCupScreen(
                     item { WorldCupHero(cup) }
                     item { WorldCupTabs(selected) { selected = it } }
                     when (selected) {
-                        "Bracket" -> item { WorldCupBracket(cup.bracket) }
+                        "Matches" -> item { WorldCupMatches(cup, onOpenMatches) }
+                        "Groups" -> item { WorldCupGroups(cup.groups) }
+                        "Bracket" -> item { WorldCupBracket(cup) }
                         "Library" -> item { WorldCupLibrary(cup) }
-                        else -> {
-                            item { WorldCupGroups(cup.groups) }
-                            item { WorldCupBracket(cup.bracket) }
-                            item { WorldCupLibrary(cup) }
-                        }
                     }
                 }
             }
@@ -172,7 +173,7 @@ private fun HeroMetric(value: String, label: String) {
 private fun WorldCupTabs(selected: String, onSelected: (String) -> Unit) {
     val metrics = rememberGoalioMetrics()
     LazyRow(horizontalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
-        items(listOf("Groups", "Bracket", "Library")) { tab ->
+        items(listOf("Matches", "Groups", "Bracket", "Library")) { tab ->
             Surface(
                 color = if (selected == tab) GoalioColors.Accent else Color.Transparent,
                 shape = RoundedCornerShape(50),
@@ -268,8 +269,9 @@ private fun GroupStat(value: Int?, signed: Boolean = false, bold: Boolean = fals
 }
 
 @Composable
-private fun WorldCupBracket(bracket: WorldCupBracketInfo) {
+private fun WorldCupBracket(cup: WorldCupBootstrapInfo) {
     val metrics = rememberGoalioMetrics()
+    val bracket = cup.bracket
     val hasMatches = bracket.rounds.values.any { it.isNotEmpty() }
     Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
         SectionTitle("The Knockout Path")
@@ -277,14 +279,15 @@ private fun WorldCupBracket(bracket: WorldCupBracketInfo) {
             WorldCupState("Bracket data is loading from World Cup feed.")
         } else {
             Surface(color = Color(0xFF050505), shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, Color(0xFF2B2B2B)), modifier = Modifier.fillMaxWidth()) {
-                ConnectedBracket(bracket)
+                ConnectedBracket(cup)
             }
         }
     }
 }
 
 @Composable
-private fun ConnectedBracket(bracket: WorldCupBracketInfo) {
+private fun ConnectedBracket(cup: WorldCupBootstrapInfo) {
+    val bracket = cup.bracket
     val metrics = rememberGoalioMetrics()
     val cardWidth = 260f * metrics.scale
     val cardHeight = 92f * metrics.scale
@@ -371,9 +374,45 @@ private fun ConnectedBracket(bracket: WorldCupBracketInfo) {
     val contentHeight = headerHeight + 8 * firstStep + 10f * metrics.scale
     val bracketScroll = rememberScrollState()
 
-    LaunchedEffect(bracketScroll.maxValue) {
-        if (bracketScroll.maxValue > 0 && bracketScroll.value == 0) {
-            bracketScroll.scrollTo(bracketScroll.maxValue / 2)
+    val density = LocalDensity.current
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+
+    val targetColumnIndex = remember(columns, cup) {
+        // 1. Search for first column containing a LIVE match
+        var index = columns.indexOfFirst { col ->
+            col.matches.any { match ->
+                cup.liveMatches.any { it.matchId == match.eventId } ||
+                match.status?.contains("LIVE", ignoreCase = true) == true
+            }
+        }
+        if (index != -1) return@remember index
+
+        // 2. Search for first column containing a TODAY match
+        index = columns.indexOfFirst { col ->
+            col.matches.any { match ->
+                cup.todayMatches.any { it.matchId == match.eventId } ||
+                match.status?.contains("TODAY", ignoreCase = true) == true
+            }
+        }
+        if (index != -1) return@remember index
+
+        // 3. Search for first column containing a match that has teams decided and is not completed
+        index = columns.indexOfFirst { col ->
+            col.matches.any { match ->
+                !match.homeTeam.isNullOrBlank() && !match.awayTeam.isNullOrBlank() && match.status != "COMPLETED"
+            }
+        }
+        if (index != -1) return@remember index
+
+        // 4. Default fallback: middle one (index 4) if all matches are completed or no match started
+        4
+    }
+
+    LaunchedEffect(bracketScroll.maxValue, targetColumnIndex) {
+        if (bracketScroll.maxValue > 0) {
+            val scrollTargetDp = targetColumnIndex * (cardWidth + columnGap) - (screenWidth - cardWidth) / 2f
+            val scrollTargetPx = with(density) { scrollTargetDp.dp.toPx() }.toInt()
+            bracketScroll.scrollTo(scrollTargetPx.coerceIn(0, bracketScroll.maxValue))
         }
     }
 
@@ -497,6 +536,7 @@ private fun WorldCupMatches(cup: WorldCupBootstrapInfo, onOpenMatches: () -> Uni
 @Composable
 private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
     val metrics = rememberGoalioMetrics()
+    val context = LocalContext.current
     Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
         SectionTitle("World Cup Library")
         Surface(color = Color(0xFF171717), shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, Color(0xFF2A2A2A)), modifier = Modifier.fillMaxWidth()) {
@@ -507,14 +547,48 @@ private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
             }
         }
         cup.library.forEach { item ->
-            Surface(color = GoalioColors.Surface2, shape = RoundedCornerShape(metrics.dp(14)), modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(metrics.dp(18))) {
-                    Text(item.category.uppercase(), color = GoalioColors.Accent, fontSize = metrics.sp(11), fontWeight = FontWeight.Black)
-                    Spacer(Modifier.height(metrics.dp(8)))
-                    Text(item.title, color = Color.White, fontSize = metrics.sp(18), fontWeight = FontWeight.Black)
-                    Text(item.body, color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), maxLines = 3, overflow = TextOverflow.Ellipsis)
-                    Spacer(Modifier.height(metrics.dp(10)))
-                    Text("${item.readMinutes} min read", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Bold)
+            Surface(
+                color = GoalioColors.Surface2,
+                shape = RoundedCornerShape(metrics.dp(14)),
+                modifier = Modifier.fillMaxWidth().clickable {
+                    if (!item.url.isNullOrBlank()) {
+                        runCatching {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+                            context.startActivity(intent)
+                        }
+                    }
+                }
+            ) {
+                Column {
+                    if (!item.imageUrl.isNullOrBlank()) {
+                        AsyncImage(
+                            model = item.imageUrl,
+                            contentDescription = item.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(metrics.dp(150))
+                                .clip(RoundedCornerShape(topStart = metrics.dp(14), topEnd = metrics.dp(14)))
+                        )
+                    }
+                    Column(Modifier.padding(metrics.dp(18))) {
+                        Text(item.category.uppercase(), color = GoalioColors.Accent, fontSize = metrics.sp(11), fontWeight = FontWeight.Black)
+                        Spacer(Modifier.height(metrics.dp(8)))
+                        Text(item.title, color = Color.White, fontSize = metrics.sp(18), fontWeight = FontWeight.Black)
+                        Spacer(Modifier.height(metrics.dp(4)))
+                        Text(item.body, color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), maxLines = 3, overflow = TextOverflow.Ellipsis)
+                        Spacer(Modifier.height(metrics.dp(12)))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("${item.readMinutes} min read", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Bold)
+                            if (!item.url.isNullOrBlank()) {
+                                Text("Read on FIFA.com →", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                            }
+                        }
+                    }
                 }
             }
         }

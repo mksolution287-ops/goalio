@@ -1,10 +1,16 @@
 package com.goalio.scores
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import android.widget.TextView
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -158,8 +164,14 @@ fun MatchScreen(
         ) {
             item { GoalioTopBar(onBack = onBack, onSettings = onOpenSettings) }
             item {
+                DateFilterHeader(
+                    selectedDate = selectedLocalDate,
+                    onDateSelected = { selectedDate = it.toString() }
+                )
+            }
+            item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(metrics.dp(13))) {
-                    items((-2..8).map { today.plusDays(it.toLong()) }) { day ->
+                    items((-14..30).map { selectedLocalDate.plusDays(it.toLong()) }) { day ->
                         DateCard(day, selected = day.toString() == selectedDate) {
                             selectedDate = day.toString()
                         }
@@ -178,7 +190,7 @@ fun MatchScreen(
             item {
                 Crossfade(targetState = Triple(loading, errorMessage, filtered.isEmpty()), label = "match list") { state ->
                     when {
-                        state.first -> MatchStateCard("Loading real match data...")
+                        state.first -> MatchListSkeleton()
                         state.second != null -> MatchStateCard(state.second.orEmpty())
                         state.third -> MatchStateCard("No ${leagueLabel(selectedLeague)} matches on ${selectedLocalDate.format(DateTimeFormatter.ofPattern("dd MMM"))}.")
                         else -> Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(18))) {
@@ -191,6 +203,103 @@ fun MatchScreen(
             }
         }
         GoalioBottomBar(Modifier.align(Alignment.BottomCenter), "Matches", onOpenHome, {}, onOpenWorldCup, onOpenGames)
+    }
+}
+
+@Composable
+private fun DateFilterHeader(selectedDate: LocalDate, onDateSelected: (LocalDate) -> Unit) {
+    val context = LocalContext.current
+    val metrics = rememberGoalioMetrics()
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                "MATCH CALENDAR",
+                color = GoalioColors.Tertiary,
+                fontSize = metrics.sp(10),
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = 1.5.sp
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                selectedDate.format(DateTimeFormatter.ofPattern("MMMM yyyy")),
+                color = GoalioColors.TextPrimary,
+                fontSize = metrics.sp(22),
+                fontWeight = FontWeight.Black
+            )
+        }
+        Surface(
+            color = GoalioColors.Neutral,
+            contentColor = Color.White,
+            border = BorderStroke(1.dp, GoalioColors.Tertiary.copy(alpha = .7f)),
+            shape = RoundedCornerShape(50),
+            modifier = Modifier.clickable {
+                DatePickerDialog(
+                    context,
+                    { _, year, month, day -> onDateSelected(LocalDate.of(year, month + 1, day)) },
+                    selectedDate.year,
+                    selectedDate.monthValue - 1,
+                    selectedDate.dayOfMonth
+                ).show()
+            }
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = metrics.dp(16), vertical = metrics.dp(10)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CalendarGlyph(Modifier.size(metrics.dp(17)), GoalioColors.Tertiary)
+                Spacer(Modifier.width(metrics.dp(8)))
+                Text("Choose date", fontSize = metrics.sp(12), fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CalendarGlyph(modifier: Modifier, color: Color) = Canvas(modifier) {
+    val stroke = size.minDimension * .09f
+    drawRoundRect(color, style = Stroke(stroke), cornerRadius = androidx.compose.ui.geometry.CornerRadius(stroke * 1.5f))
+    drawLine(color, Offset(size.width * .2f, size.height * .34f), Offset(size.width * .8f, size.height * .34f), stroke, StrokeCap.Round)
+    drawLine(color, Offset(size.width * .3f, size.height * .05f), Offset(size.width * .3f, size.height * .2f), stroke, StrokeCap.Round)
+    drawLine(color, Offset(size.width * .7f, size.height * .05f), Offset(size.width * .7f, size.height * .2f), stroke, StrokeCap.Round)
+}
+
+@Composable
+private fun MatchListSkeleton() {
+    val transition = rememberInfiniteTransition(label = "matchSkeleton")
+    val alpha by transition.animateFloat(
+        initialValue = .34f,
+        targetValue = .72f,
+        animationSpec = infiniteRepeatable(tween(850), RepeatMode.Reverse),
+        label = "matchSkeletonAlpha"
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        repeat(4) {
+            Surface(
+                color = GoalioColors.Neutral,
+                border = BorderStroke(1.dp, GoalioColors.CardBorder),
+                shape = RoundedCornerShape(22.dp),
+                modifier = Modifier.fillMaxWidth().height(116.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(Modifier.width(92.dp).height(9.dp).clip(CircleShape).background(Color(0xFF666666).copy(alpha = alpha)))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.size(38.dp).clip(CircleShape).background(Color(0xFF666666).copy(alpha = alpha)))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                            Box(Modifier.fillMaxWidth(.62f).height(12.dp).clip(CircleShape).background(Color(0xFF777777).copy(alpha = alpha)))
+                            Box(Modifier.fillMaxWidth(.43f).height(9.dp).clip(CircleShape).background(Color(0xFF5A5A5A).copy(alpha = alpha)))
+                        }
+                        Box(Modifier.width(48.dp).height(24.dp).clip(CircleShape).background(GoalioColors.Tertiary.copy(alpha = alpha * .55f)))
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -395,41 +504,48 @@ private fun FixtureCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Un
     val metrics = rememberGoalioMetrics()
     val homeOdds = match.homeWinProbability()
     Surface(
-        color = Color(0xFF1D1D1F),
-        shape = RoundedCornerShape(metrics.dp(18)),
-        border = BorderStroke(1.dp, Color(0xFF303036)),
+        color = GoalioColors.Neutral,
+        shape = RoundedCornerShape(metrics.dp(24)),
+        border = BorderStroke(1.dp, GoalioColors.Tertiary.copy(alpha = .28f)),
         modifier = Modifier.fillMaxWidth().clickable { onOpenMatch(match) }
     ) {
         Column {
-            Row(Modifier.fillMaxWidth().padding(metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
-                Text("${match.leagueLabel()} • ${match.stageLabel()}", color = GoalioColors.TextPrimary, fontSize = metrics.sp(14), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Box(Modifier.fillMaxWidth().height(3.dp).background(GoalioColors.Tertiary))
+            Row(Modifier.fillMaxWidth().padding(horizontal = metrics.dp(18), vertical = metrics.dp(15)), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(match.leagueLabel().uppercase(), color = GoalioColors.Tertiary, fontSize = metrics.sp(10), fontWeight = FontWeight.ExtraBold, letterSpacing = 1.3.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Spacer(Modifier.height(3.dp))
+                    Text(match.stageLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
                 DynamicMatchStatus(match, metrics)
             }
-            Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242426)))
-            Row(Modifier.fillMaxWidth().padding(horizontal = metrics.dp(20), vertical = metrics.dp(28)), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.fillMaxWidth().padding(horizontal = metrics.dp(18)).height(1.dp).background(Color(0xFF303034)))
+            Row(Modifier.fillMaxWidth().padding(horizontal = metrics.dp(18), vertical = metrics.dp(24)), verticalAlignment = Alignment.CenterVertically) {
                 MatchTeamBlock(match.homeTeam, Modifier.weight(1f))
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(metrics.dp(116))) {
-                    Text(scoreLine(match), color = GoalioColors.TextPrimary, fontSize = metrics.sp(42), fontWeight = FontWeight.Light, textAlign = TextAlign.Center)
+                    Text(scoreLine(match), color = GoalioColors.TextPrimary, fontSize = metrics.sp(38), fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(metrics.dp(8)))
-                    Text("MATCH ODDS", color = Color(0xFF9A9288), fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                    Surface(color = Color.Black, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, Color(0xFF39393D))) {
+                        Text("MATCH CENTER", color = GoalioColors.TextSecondary, fontSize = metrics.sp(9), fontWeight = FontWeight.Black, letterSpacing = 1.2.sp, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp))
+                    }
                 }
                 MatchTeamBlock(match.awayTeam, Modifier.weight(1f))
             }
-            Column(Modifier.padding(horizontal = metrics.dp(20))) {
+            Column(Modifier.padding(horizontal = metrics.dp(20), vertical = metrics.dp(2))) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("WIN ${homeOdds.toInt()}%", color = Color(0xFFC1B6A5), fontSize = metrics.sp(13), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
-                    Text("${(100f - homeOdds).toInt()}% WIN", color = Color(0xFFC1B6A5), fontSize = metrics.sp(13), fontWeight = FontWeight.Black)
+                    Text("HOME ${homeOdds.toInt()}%", color = GoalioColors.TextSecondary, fontSize = metrics.sp(11), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    Text("${(100f - homeOdds).toInt()}% AWAY", color = GoalioColors.TextSecondary, fontSize = metrics.sp(11), fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(metrics.dp(9)))
-                Row(Modifier.fillMaxWidth().height(metrics.dp(9)).clip(RoundedCornerShape(50))) {
-                    Box(Modifier.weight(homeOdds).fillMaxSize().background(Color.White))
-                    Box(Modifier.weight(100f - homeOdds).fillMaxSize().background(Color(0xFFE53015)))
+                Row(Modifier.fillMaxWidth().height(metrics.dp(7)).clip(RoundedCornerShape(50))) {
+                    Box(Modifier.weight(homeOdds).fillMaxSize().background(GoalioColors.Tertiary))
+                    Box(Modifier.weight(100f - homeOdds).fillMaxSize().background(Color(0xFF3C3C3E)))
                 }
             }
-            Box(Modifier.fillMaxWidth().padding(metrics.dp(20))) {
-                Box(Modifier.fillMaxWidth().height(1.dp).align(Alignment.TopCenter).background(Color(0xFF262629)))
-                Text("♡", color = GoalioColors.Accent, fontSize = metrics.sp(29), modifier = Modifier.align(Alignment.BottomStart).padding(top = metrics.dp(13)))
-                Text(">", color = GoalioColors.Accent, fontSize = metrics.sp(30), modifier = Modifier.align(Alignment.BottomEnd).padding(top = metrics.dp(13)))
+            Row(Modifier.fillMaxWidth().padding(horizontal = metrics.dp(20), vertical = metrics.dp(17)), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(6.dp).clip(CircleShape).background(GoalioColors.Tertiary))
+                Spacer(Modifier.width(8.dp))
+                Text("Tap to open full match details", color = GoalioColors.TextTertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.SemiBold)
             }
         }
     }
