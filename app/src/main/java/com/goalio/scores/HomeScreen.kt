@@ -2,6 +2,7 @@ package com.goalio.scores
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -46,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -241,40 +245,54 @@ private fun FeaturedMatchCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch)
     val metrics = rememberGoalioMetrics()
     Surface(
         color = Color.Transparent,
-        shape = RoundedCornerShape(metrics.dp(10)),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = .12f)),
+        shape = RoundedCornerShape(metrics.dp(16)),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            Modifier
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF153020), Color(0xFF0B160D), Color(0xFF071007))
-                    )
-                )
-                .padding(metrics.dp(22)),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                MatchStatusPill(match)
-                Spacer(Modifier.weight(1f))
-                Text(match.leagueLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-            Spacer(Modifier.height(metrics.dp(26)))
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TeamBadge(match.homeTeam, Modifier.weight(1f))
-                Text(scoreLine(match), color = GoalioColors.TextPrimary, fontSize = metrics.sp(42), fontWeight = FontWeight.Black)
-                TeamBadge(match.awayTeam, Modifier.weight(1f))
-            }
-            Spacer(Modifier.height(metrics.dp(28)))
-            Button(
-                onClick = { onOpenMatch(match) },
-                border = BorderStroke(2.dp, GoalioColors.Tertiary),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF241000), contentColor = GoalioColors.TextPrimary),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier.fillMaxWidth().height(metrics.dp(54))
+        Box(Modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(R.drawable.foot),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+            )
+            Column(
+                Modifier.padding(metrics.dp(22)),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Match Details", fontSize = metrics.sp(16), fontWeight = FontWeight.Black)
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    MatchStatusPill(match)
+                    Spacer(Modifier.weight(1f))
+                    Text(match.leagueLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                Spacer(Modifier.height(metrics.dp(26)))
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    TeamBadge(match.homeTeam, Modifier.weight(1f))
+                    Text(scoreLine(match), color = GoalioColors.TextPrimary, fontSize = metrics.sp(42), fontWeight = FontWeight.Black)
+                    TeamBadge(match.awayTeam, Modifier.weight(1f))
+                }
+                Spacer(Modifier.height(metrics.dp(28)))
+                Button(
+                    onClick = { onOpenMatch(match) },
+                    colors = ButtonDefaults.buttonColors(containerColor = GoalioColors.Accent, contentColor = Color.White),
+                    shape = RoundedCornerShape(metrics.dp(16)),
+                    modifier = Modifier.fillMaxWidth().height(metrics.dp(54))
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Image(
+                            painter = painterResource(R.drawable.football_ball),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Match Details", fontSize = metrics.sp(16), fontWeight = FontWeight.Black)
+                    }
+                }
             }
         }
     }
@@ -328,14 +346,22 @@ private fun MatchMiniCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> 
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = Modifier.width(metrics.dp(210)).height(metrics.dp(136)).clickable { onOpenMatch(match) }
     ) {
-        Column(Modifier.padding(metrics.dp(15)), verticalArrangement = Arrangement.SpaceBetween) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                MatchStatusPill(match)
-                Spacer(Modifier.weight(1f))
-                Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+        Row(Modifier.fillMaxSize()) {
+            Box(
+                Modifier
+                    .width(metrics.dp(4))
+                    .fillMaxHeight()
+                    .background(GoalioColors.Accent)
+            )
+            Column(Modifier.padding(metrics.dp(15)).weight(1f), verticalArrangement = Arrangement.SpaceBetween) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MatchStatusPill(match)
+                    Spacer(Modifier.weight(1f))
+                    Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                }
+                TeamScoreLine(match.homeTeam)
+                TeamScoreLine(match.awayTeam)
             }
-            TeamScoreLine(match.homeTeam)
-            TeamScoreLine(match.awayTeam)
         }
     }
 }
@@ -344,16 +370,41 @@ private fun MatchMiniCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> 
 private fun ScheduleRow(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(
-        color = GoalioColors.Neutral,
-        shape = RoundedCornerShape(metrics.dp(11)),
+        color = GoalioColors.Surface1,
+        shape = RoundedCornerShape(metrics.dp(12)),
+        border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = Modifier.fillMaxWidth().clickable { onOpenMatch(match) }
     ) {
         Row(Modifier.padding(horizontal = metrics.dp(16), vertical = metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
             Text(formatKickoff(match.kickoff), color = GoalioColors.TextSecondary, fontSize = metrics.sp(17), fontWeight = FontWeight.Medium)
             Spacer(Modifier.width(metrics.dp(18)))
             Text(match.compactName(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(17), fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-            Text(">", color = GoalioColors.TextSecondary, fontSize = metrics.sp(26), fontWeight = FontWeight.Black)
+            Text("›", color = GoalioColors.TextSecondary, fontSize = metrics.sp(26), fontWeight = FontWeight.Black)
         }
+    }
+}
+
+@Composable
+private fun WinProbabilityHeader() {
+    val metrics = rememberGoalioMetrics()
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TrendIcon(Modifier.size(metrics.dp(25)), Color.White)
+        Spacer(Modifier.width(metrics.dp(10)))
+        Text("Win Probability", color = GoalioColors.TextPrimary, fontSize = metrics.sp(23), fontWeight = FontWeight.Black)
+    }
+}
+
+@Composable
+private fun WinProbabilityBar(homeProbability: Float, homeName: String, awayName: String) {
+    val metrics = rememberGoalioMetrics()
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(homeName.uppercase().take(12), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
+        Text(awayName.uppercase().take(12), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+    }
+    Spacer(Modifier.height(metrics.dp(10)))
+    Row(Modifier.fillMaxWidth().height(metrics.dp(12)).clip(RoundedCornerShape(50))) {
+        Box(Modifier.weight(homeProbability).fillMaxSize().background(Color.White))
+        Box(Modifier.weight(100f - homeProbability).fillMaxSize().background(GoalioColors.Accent))
     }
 }
 
@@ -364,38 +415,67 @@ private fun WinProbabilityCard(match: ScheduleMatch?) {
     val awayName = match?.awayTeam?.abbreviation ?: match?.awayTeam?.shortName ?: match?.awayTeam?.name ?: "AWAY"
     val homeProbability = match.winProbability()
     Surface(
-        color = GoalioColors.Neutral,
+        color = GoalioColors.Surface1,
         shape = RoundedCornerShape(metrics.dp(10)),
-        border = BorderStroke(1.dp, GoalioColors.TextTertiary.copy(alpha = .55f)),
+        border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(metrics.dp(20))) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TrendIcon(Modifier.size(metrics.dp(25)), Color.White)
-                Spacer(Modifier.width(metrics.dp(10)))
-                Text("Win Probability", color = GoalioColors.TextPrimary, fontSize = metrics.sp(23), fontWeight = FontWeight.Black)
-            }
+            WinProbabilityHeader()
             Spacer(Modifier.height(metrics.dp(20)))
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(homeName.uppercase().take(12), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
-                Text(awayName.uppercase().take(12), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
-            }
-            Spacer(Modifier.height(metrics.dp(10)))
-            Row(Modifier.fillMaxWidth().height(metrics.dp(12)).clip(RoundedCornerShape(50))) {
-                Box(Modifier.weight(homeProbability).fillMaxSize().background(Color.White))
-                Box(Modifier.weight(100f - homeProbability).fillMaxSize().background(Color(0xFFE22D13)))
-            }
+            WinProbabilityBar(homeProbability, homeName, awayName)
             Spacer(Modifier.height(metrics.dp(20)))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("${homeProbability.toInt()}%", color = GoalioColors.TextSecondary, fontSize = metrics.sp(18))
                 Spacer(Modifier.width(metrics.dp(18)))
-                Text("${(100f - homeProbability).toInt()}%", color = Color(0xFFE22D13), fontSize = metrics.sp(18))
+                Text("${(100f - homeProbability).toInt()}%", color = GoalioColors.Accent, fontSize = metrics.sp(18))
                 Spacer(Modifier.weight(1f))
-                Surface(color = GoalioColors.Accent, shape = RoundedCornerShape(50)) {
-                    Text("View Analysis", color = Color.White, fontSize = metrics.sp(16), modifier = Modifier.padding(horizontal = metrics.dp(26), vertical = metrics.dp(12)))
+                Surface(color = Color.Transparent, border = BorderStroke(1.dp, GoalioColors.Accent), shape = RoundedCornerShape(50)) {
+                    Text("View Analysis", color = GoalioColors.Accent, fontSize = metrics.sp(16), modifier = Modifier.padding(horizontal = metrics.dp(26), vertical = metrics.dp(12)))
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun GlobeIcon(modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        drawCircle(Color.White, radius = size.minDimension * 0.42f, style = Stroke(1.5.dp.toPx()))
+        drawLine(Color.White, Offset(size.width * 0.12f, size.height * 0.5f), Offset(size.width * 0.88f, size.height * 0.5f), 1.5.dp.toPx())
+        drawArc(Color.White, startAngle = -45f, sweepAngle = 90f, useCenter = false, style = Stroke(1.5.dp.toPx()))
+        drawArc(Color.White, startAngle = 135f, sweepAngle = 90f, useCenter = false, style = Stroke(1.5.dp.toPx()))
+    }
+}
+
+@Composable
+private fun WorldCupHubHeader(onViewHub: () -> Unit) {
+    val metrics = rememberGoalioMetrics()
+    Column(Modifier.fillMaxWidth()) {
+        Box(Modifier.fillMaxWidth().height(3.dp).background(GoalioColors.Accent))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF241000))
+                .padding(horizontal = metrics.dp(18), vertical = metrics.dp(16)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            GlobeIcon(Modifier.size(20.dp))
+            Spacer(Modifier.width(metrics.dp(10)))
+            Text("World Cup Hub", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
+            Text("View Hub", color = GoalioColors.Accent, fontSize = metrics.sp(13), fontWeight = FontWeight.Black, modifier = Modifier.clickable(onClick = onViewHub))
+        }
+    }
+}
+
+@Composable
+private fun StandingTeamRow(team: StandingTeamInfo, index: Int, rows: List<StandingTeamInfo>) {
+    val metrics = rememberGoalioMetrics()
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text((team.rank ?: index + 1).toString(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Bold, modifier = Modifier.width(metrics.dp(50)))
+        TeamStandingName(team, Modifier.weight(1f))
+        Text(team.stageLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.width(metrics.dp(62)))
+        Text((team.points ?: 0).toString(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Bold)
     }
 }
 
@@ -404,19 +484,13 @@ private fun WorldCupHubCard(standings: LeagueStandings?, onViewHub: () -> Unit) 
     val metrics = rememberGoalioMetrics()
     val rows = remember(standings) { standings?.teams.orEmpty().sortedWith(compareBy<StandingTeamInfo> { it.group ?: "" }.thenBy { it.rank ?: 999 }).take(6) }
     Surface(
-        color = GoalioColors.Neutral,
+        color = GoalioColors.Surface1,
         shape = RoundedCornerShape(metrics.dp(10)),
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column {
-            Row(
-                Modifier.fillMaxWidth().background(GoalioColors.Accent).padding(horizontal = metrics.dp(18), vertical = metrics.dp(16)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("World Cup Hub", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
-                Text("View Hub", color = Color.White, fontSize = metrics.sp(13), fontWeight = FontWeight.Black, modifier = Modifier.clickable(onClick = onViewHub))
-            }
+            WorldCupHubHeader(onViewHub)
             Column(Modifier.padding(metrics.dp(18)), verticalArrangement = Arrangement.spacedBy(metrics.dp(13))) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Rank", color = Color(0xFFE4D7BC), fontSize = metrics.sp(15), fontWeight = FontWeight.Black, modifier = Modifier.width(metrics.dp(50)))
@@ -427,14 +501,7 @@ private fun WorldCupHubCard(standings: LeagueStandings?, onViewHub: () -> Unit) 
                 if (rows.isEmpty()) {
                     Text("Standings will appear when ESPN publishes the current table.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
                 } else {
-                    rows.forEach { team ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text((team.rank ?: rows.indexOf(team) + 1).toString(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Bold, modifier = Modifier.width(metrics.dp(50)))
-                            TeamStandingName(team, Modifier.weight(1f))
-                            Text(team.stageLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.width(metrics.dp(62)))
-                            Text((team.points ?: 0).toString(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Bold)
-                        }
-                    }
+                    rows.forEachIndexed { idx, team -> StandingTeamRow(team, idx, rows) }
                 }
             }
         }
@@ -456,24 +523,16 @@ private fun TeamStandingName(team: StandingTeamInfo, modifier: Modifier = Modifi
 }
 
 @Composable
-private fun FunZoneSection() {
-    val metrics = rememberGoalioMetrics()
-    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(16))) {
-        Text("Fun Zone", color = GoalioColors.TextPrimary, fontSize = metrics.sp(23), fontWeight = FontWeight.Black)
-        Row(horizontalArrangement = Arrangement.spacedBy(metrics.dp(16))) {
-            FunTile("Daily Trivia", Modifier.weight(1f))
-            FunTile("Guess Player", Modifier.weight(1f))
-        }
-        Surface(
-            color = Color.Transparent,
-            shape = RoundedCornerShape(metrics.dp(10)),
-            modifier = Modifier.fillMaxWidth().height(metrics.dp(150))
-        ) {
-            Box(
-                Modifier.background(Brush.horizontalGradient(listOf(Color(0xFFD37500), Color(0xFF141108)))).padding(metrics.dp(22))
-            ) {
-                Text("Roll & Win\nEarn points for every goal predicted", color = Color.White, fontSize = metrics.sp(18), lineHeight = metrics.sp(28), fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterStart))
-            }
+private fun FunTileIcon(label: String, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val color = GoalioColors.Accent
+        if (label == "Daily Trivia") {
+            drawRoundRect(color, Offset(size.width * 0.25f, size.height * 0.25f), Size(size.width * 0.5f, size.height * 0.5f), androidx.compose.ui.geometry.CornerRadius(4f, 4f), style = Stroke(2.dp.toPx()))
+            drawLine(color, Offset(size.width * 0.35f, size.height * 0.45f), Offset(size.width * 0.65f, size.height * 0.45f), 2.dp.toPx())
+            drawLine(color, Offset(size.width * 0.35f, size.height * 0.55f), Offset(size.width * 0.55f, size.height * 0.55f), 2.dp.toPx())
+        } else {
+            drawCircle(color, radius = size.minDimension * 0.15f, center = Offset(size.width * 0.5f, size.height * 0.4f), style = Stroke(2.dp.toPx()))
+            drawArc(color, startAngle = 180f, sweepAngle = 180f, useCenter = false, topLeft = Offset(size.width * 0.35f, size.height * 0.55f), size = Size(size.width * 0.3f, size.height * 0.3f), style = Stroke(2.dp.toPx()))
         }
     }
 }
@@ -481,12 +540,33 @@ private fun FunZoneSection() {
 @Composable
 private fun FunTile(label: String, modifier: Modifier = Modifier) {
     val metrics = rememberGoalioMetrics()
-    Surface(color = Color.Black, shape = RoundedCornerShape(metrics.dp(10)), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = modifier.height(metrics.dp(104))) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(label, color = GoalioColors.TextSecondary, fontSize = metrics.sp(16), fontWeight = FontWeight.SemiBold)
+    Surface(
+        color = GoalioColors.Surface1,
+        shape = RoundedCornerShape(metrics.dp(16)),
+        border = BorderStroke(1.dp, GoalioColors.CardBorder),
+        modifier = modifier.height(metrics.dp(110))
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            FunTileIcon(label, Modifier.size(36.dp))
+            Spacer(Modifier.height(8.dp))
+            Text(label, color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), fontWeight = FontWeight.SemiBold)
         }
     }
 }
+
+@Composable
+private fun FunZoneSection() {
+    val metrics = rememberGoalioMetrics()
+    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(16))) {
+        Text("Fun Zone", color = GoalioColors.TextPrimary, fontSize = metrics.sp(23), fontWeight = FontWeight.Black)
+        FunTile("Daily Trivia", Modifier.fillMaxWidth())
+    }
+}
+
 
 @Composable
 private fun TrendIcon(modifier: Modifier, color: Color) = Canvas(modifier) {
