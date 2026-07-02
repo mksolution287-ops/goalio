@@ -206,15 +206,49 @@ private fun HeroMetric(value: String, label: String) {
 @Composable
 private fun WorldCupTabs(selected: String, onSelected: (String) -> Unit) {
     val metrics = rememberGoalioMetrics()
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(metrics.dp(12)),
+        contentPadding = PaddingValues(bottom = metrics.dp(8))
+    ) {
         items(listOf("Groups", "Bracket", "Library")) { tab ->
+            val isSelected = selected == tab
+            val tabBrush = if (isSelected) {
+                Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFF8F3900),
+                        Color(0xFF100600)
+                    )
+                )
+            } else {
+                Brush.linearGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.Transparent
+                    )
+                )
+            }
             Surface(
-                color = if (selected == tab) GoalioColors.Accent else Color.Transparent,
-                shape = RoundedCornerShape(50),
-                border = BorderStroke(1.dp, GoalioColors.Accent),
-                modifier = Modifier.clickable { onSelected(tab) }
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onSelected(tab) },
+                color = Color.Transparent,
+                shape = CircleShape,
+                border = BorderStroke(1.5.dp, Color(0xFFFF8500))
             ) {
-                Text(tab.uppercase(), color = Color.White, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = metrics.dp(16), vertical = metrics.dp(10)))
+                Box(
+                    modifier = Modifier
+                        .background(tabBrush)
+                        .padding(horizontal = metrics.dp(24), vertical = metrics.dp(12)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = tab.uppercase(),
+                        color = Color.White,
+                        fontSize = metrics.sp(12),
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
+                    )
+                }
             }
         }
     }
@@ -701,6 +735,54 @@ private fun WorldCupMatches(cup: WorldCupBootstrapInfo, onOpenMatches: () -> Uni
     }
 }
 
+private val HardcodedLibraryItems = listOf(
+    WorldCupLibraryItemInfo(
+        id = "wc2026-news",
+        title = "FIFA World Cup 2026™ – Latest News & Updates",
+        category = "News",
+        body = "Stay up to date with the very latest FIFA World Cup 2026 news, match reports, team updates, and official announcements straight from FIFA headquarters.",
+        readMinutes = 3,
+        url = "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026",
+        imageUrl = "https://images.unsplash.com/photo-1431324155629-1a6edd1d228a?q=80&w=800&auto=format&fit=crop"
+    ),
+    WorldCupLibraryItemInfo(
+        id = "host-cities-2026",
+        title = "16 Host Cities – USA, Canada & Mexico",
+        category = "Guide",
+        body = "The 2026 edition is staged across three nations and 16 iconic cities: from New York to Los Angeles, Vancouver to Mexico City. Explore every stadium, city profile, and what to expect at each venue.",
+        readMinutes = 8,
+        url = "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/host-cities",
+        imageUrl = "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop"
+    ),
+    WorldCupLibraryItemInfo(
+        id = "knockout-format-2026",
+        title = "The Expanded Format – 48 Teams, 104 Matches",
+        category = "Format",
+        body = "FIFA World Cup 2026 is the first men's edition with 48 teams. Featuring a new Round of 32 knockout stage, the tournament spans 39 days across 104 thrilling matches before the world champion is crowned.",
+        readMinutes = 5,
+        url = "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/match-schedule",
+        imageUrl = "https://images.unsplash.com/photo-1579952360673-2a04953c80e7?q=80&w=800&auto=format&fit=crop"
+    ),
+    WorldCupLibraryItemInfo(
+        id = "tickets-2026",
+        title = "Match Tickets – How to Get Yours",
+        category = "Tickets",
+        body = "Learn about the official FIFA ticketing process for the 2026 World Cup. Register your details, sign up for ballot alerts, and find out how to secure seats for the greatest football show on Earth.",
+        readMinutes = 4,
+        url = "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/tickets",
+        imageUrl = "https://images.unsplash.com/photo-1540747737956-3787293a9fc4?q=80&w=800&auto=format&fit=crop"
+    ),
+    WorldCupLibraryItemInfo(
+        id = "history-wc",
+        title = "FIFA World Cup™ History – 90 Years of Glory",
+        category = "History",
+        body = "From Uruguay 1930 to North America 2026, relive the greatest moments, top scorers, iconic goals and the champions who wrote football history in FIFA's official tournament archive.",
+        readMinutes = 10,
+        url = "https://www.fifa.com/en/tournaments/mens/worldcup",
+        imageUrl = "https://images.unsplash.com/photo-1551958219-acbc92a4d8b2?q=80&w=800&auto=format&fit=crop"
+    )
+)
+
 @Composable
 private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
     val metrics = rememberGoalioMetrics()
@@ -714,16 +796,7 @@ private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
                 Text(cup.randomFact.body, color = Color.White, fontSize = metrics.sp(17), fontWeight = FontWeight.Bold)
             }
         }
-        cup.library.forEach { item ->
-            val finalImageUrl = when {
-                !item.imageUrl.isNullOrBlank() -> item.imageUrl!!
-                item.id == "wc2026-news" -> "https://images.unsplash.com/photo-1431324155629-1a6edd1d228a?q=80&w=800&auto=format&fit=crop"
-                item.id == "host-cities-2026" -> "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop"
-                item.id == "knockout-format-2026" -> "https://images.unsplash.com/photo-1579952360673-2a04953c80e7?q=80&w=800&auto=format&fit=crop"
-                item.id == "tickets-2026" -> "https://images.unsplash.com/photo-1540747737956-3787293a9fc4?q=80&w=800&auto=format&fit=crop"
-                item.id == "history-wc" -> "https://images.unsplash.com/photo-1551958219-acbc92a4d8b2?q=80&w=800&auto=format&fit=crop"
-                else -> "https://images.unsplash.com/photo-1431324155629-1a6edd1d228a?q=80&w=800&auto=format&fit=crop"
-            }
+        HardcodedLibraryItems.forEach { item ->
             Surface(
                 color = GoalioColors.Surface2,
                 shape = RoundedCornerShape(metrics.dp(14)),
@@ -739,7 +812,7 @@ private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
             ) {
                 Column {
                     AsyncImage(
-                        model = finalImageUrl,
+                        model = item.imageUrl,
                         contentDescription = item.title,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
