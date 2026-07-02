@@ -27,6 +27,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,7 +74,7 @@ fun WorldCupScreen(
     val context = LocalContext.current
     val metrics = rememberGoalioMetrics()
     var data by remember { mutableStateOf(WorldCupRepository.cached(context)) }
-    var selected by remember { mutableStateOf("Groups") }
+    var selected by remember { mutableStateOf("GROUPS") }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
@@ -98,18 +103,18 @@ fun WorldCupScreen(
             contentPadding = PaddingValues(metrics.horizontalPadding, metrics.dp(18), metrics.horizontalPadding, metrics.bottomBarPadding),
             verticalArrangement = Arrangement.spacedBy(metrics.dp(22))
         ) {
-            item { GoalioTopBar(title = "WORLD CUP", onBack = onBack, onSettings = onOpenSettings) }
+            item { GoalioTopBar(title = trans("WORLD CUP"), onBack = onBack, onSettings = onOpenSettings) }
             when {
-                data == null && error == null -> item { WorldCupState("Loading World Cup data...") }
+                data == null && error == null -> item { WorldCupLoadingSkeleton() }
                 error != null -> item { WorldCupState(error.orEmpty()) }
                 data != null -> {
                     val cup = data!!
                     item { WorldCupHero(cup) }
                     item { WorldCupTabs(selected) { selected = it } }
                     when (selected) {
-                        "Groups" -> item { WorldCupGroups(cup.groups) }
-                        "Bracket" -> item { WorldCupBracket(cup) }
-                        "Library" -> item { WorldCupLibrary(cup) }
+                        "GROUPS" -> item { WorldCupGroups(cup.groups) }
+                        "BRACKET" -> item { WorldCupBracket(cup) }
+                        "LIBRARY" -> item { WorldCupLibrary(cup) }
                     }
                 }
             }
@@ -124,11 +129,11 @@ private fun WorldCupTopBar(onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text("<", color = Color.White, fontSize = metrics.sp(28), fontWeight = FontWeight.Black, modifier = Modifier.clickable(onClick = onBack))
         Spacer(Modifier.width(metrics.dp(18)))
-        Text("WORLD CUP", color = Color.White, fontSize = metrics.sp(24), fontWeight = FontWeight.Black, letterSpacing = 5.sp)
+        Text(trans("WORLD CUP").uppercase(), color = Color.White, fontSize = metrics.sp(24), fontWeight = FontWeight.Black, letterSpacing = 5.sp)
         Spacer(Modifier.weight(1f))
-        Text("Search", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+        Text(trans("Search"), color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
         Spacer(Modifier.width(metrics.dp(14)))
-        Text("Settings", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+        Text(trans("Settings"), color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
     }
 }
 
@@ -175,7 +180,7 @@ private fun WorldCupHero(cup: WorldCupBootstrapInfo) {
                     )
                 }
                 Spacer(Modifier.height(metrics.dp(12)))
-                Text("NORTH AMERICA 2026", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black)
+                Text(trans("NORTH AMERICA 2026"), color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black)
                 Spacer(Modifier.height(metrics.dp(14)))
                 Row(horizontalArrangement = Arrangement.spacedBy(metrics.dp(32))) {
                     HeroMetric("${cup.tournament.daysToFinal ?: 0}", "DAYS TO FINAL")
@@ -210,7 +215,7 @@ private fun WorldCupTabs(selected: String, onSelected: (String) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(metrics.dp(12)),
         contentPadding = PaddingValues(bottom = metrics.dp(8))
     ) {
-        items(listOf("Groups", "Bracket", "Library")) { tab ->
+        items(listOf("GROUPS", "BRACKET", "LIBRARY")) { tab ->
             val isSelected = selected == tab
             val tabBrush = if (isSelected) {
                 Brush.horizontalGradient(
@@ -233,7 +238,7 @@ private fun WorldCupTabs(selected: String, onSelected: (String) -> Unit) {
                     .clickable { onSelected(tab) },
                 color = Color.Transparent,
                 shape = CircleShape,
-                border = BorderStroke(1.5.dp, Color(0xFFFF8500))
+                border = BorderStroke(1.5.dp, GoalioColors.Tertiary)
             ) {
                 Box(
                     modifier = Modifier
@@ -242,10 +247,10 @@ private fun WorldCupTabs(selected: String, onSelected: (String) -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = tab.uppercase(),
-                        color = Color.White,
+                        text = trans(tab),
+                        color = if (isSelected) Color.White else Color.White.copy(alpha = 0.6f),
                         fontSize = metrics.sp(12),
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp
                     )
                 }
@@ -266,6 +271,8 @@ private fun WorldCupGroups(groups: List<WorldCupGroupInfo>) {
 @Composable
 private fun WorldCupGroupTable(group: WorldCupGroupInfo) {
     val metrics = rememberGoalioMetrics()
+    var isExpanded by remember { mutableStateOf(true) }
+    
     Surface(
         color = GoalioColors.Surface1,
         shape = RoundedCornerShape(metrics.dp(16)),
@@ -276,102 +283,137 @@ private fun WorldCupGroupTable(group: WorldCupGroupInfo) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E2125))
-                    .padding(horizontal = metrics.dp(16), vertical = metrics.dp(12)),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(GoalioColors.Surface2)
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(horizontal = metrics.dp(16), vertical = metrics.dp(14)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(metrics.dp(6), metrics.dp(18))
+                            .background(GoalioColors.Accent, RoundedCornerShape(metrics.dp(3)))
+                    )
+                    Spacer(Modifier.width(metrics.dp(10)))
+                    Text(
+                        text = "${trans("Group")} ${group.code}",
+                        color = Color.White,
+                        fontSize = metrics.sp(15),
+                        fontWeight = FontWeight.Black
+                    )
+                }
                 Text(
-                    "Group ${group.code}",
-                    color = Color.White,
-                    fontSize = metrics.sp(16),
-                    fontWeight = FontWeight.Black
+                    text = if (isExpanded) trans("COLLAPSE") else trans("EXPAND"),
+                    color = GoalioColors.Accent,
+                    fontSize = metrics.sp(11),
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp
                 )
             }
-            GroupTableHeader()
-            group.teams.forEachIndexed { index, team ->
-                if (index > 0) Box(Modifier.fillMaxWidth().height(1.dp).background(GoalioColors.CardBorder))
+
+            if (isExpanded) {
+                val statsScrollState = rememberScrollState()
+                
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = metrics.dp(16), vertical = metrics.dp(12)),
+                        .background(GoalioColors.Neutral)
+                        .padding(horizontal = metrics.dp(16), vertical = metrics.dp(8)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = (team.rank ?: index + 1).toString(),
-                        color = if (index < 2) GoalioColors.Accent else GoalioColors.TextSecondary,
-                        fontSize = metrics.sp(12),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.width(metrics.dp(20))
+                        text = trans("TEAM"),
+                        color = GoalioColors.TextSecondary,
+                        fontSize = metrics.sp(10),
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.width(metrics.dp(130))
                     )
-                    Box(Modifier.size(metrics.dp(20)), contentAlignment = Alignment.Center) {
-                        if (!team.logo.isNullOrBlank()) {
-                            AsyncImage(
-                                model = team.logo,
-                                contentDescription = "${team.name} flag",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier.fillMaxSize()
+                    
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .horizontalScroll(statsScrollState),
+                        horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))
+                    ) {
+                        listOf("MP", "W", "D", "L", "GF", "GA", "GD", "PTS").forEach { label ->
+                            Text(
+                                text = trans(label),
+                                color = GoalioColors.TextSecondary,
+                                fontSize = metrics.sp(10),
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.width(metrics.dp(44)),
+                                textAlign = TextAlign.Center
                             )
-                        } else {
-                            Text(countryFlag(team.name), fontSize = metrics.sp(14))
                         }
                     }
-                    Spacer(Modifier.width(metrics.dp(10)))
-                    Text(
-                        text = team.name,
-                        color = Color.White,
-                        fontSize = metrics.sp(13),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                }
+
+                group.teams.forEachIndexed { index, team ->
+                    if (index > 0) Box(Modifier.fillMaxWidth().height(1.dp).background(GoalioColors.Divider))
+                    
+                    val isQualifying = index < 2
+                    val rowBg = if (isQualifying) GoalioColors.Tertiary.copy(alpha = 0.08f) else Color.Transparent
+                    
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(metrics.dp(2)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(rowBg)
+                            .padding(horizontal = metrics.dp(16), vertical = metrics.dp(12)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        GroupStat(team.played)
-                        GroupStat(team.wins)
-                        GroupStat(team.draws)
-                        GroupStat(team.losses)
-                        GroupStat(team.goalDifference, signed = true)
-                        GroupStat(team.points, bold = true, highlight = true)
+                        Row(
+                            modifier = Modifier.width(metrics.dp(130)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = (team.rank ?: index + 1).toString(),
+                                color = if (isQualifying) GoalioColors.Accent else GoalioColors.TextSecondary,
+                                fontSize = metrics.sp(12),
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.width(metrics.dp(18))
+                            )
+                            Box(Modifier.size(metrics.dp(20)), contentAlignment = Alignment.Center) {
+                                if (!team.logo.isNullOrBlank()) {
+                                    AsyncImage(
+                                        model = team.logo,
+                                        contentDescription = "${team.name} flag",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    Text(countryFlag(team.name), fontSize = metrics.sp(14))
+                                }
+                            }
+                            Spacer(Modifier.width(metrics.dp(8)))
+                            Text(
+                                text = team.name,
+                                color = Color.White,
+                                fontSize = metrics.sp(13),
+                                fontWeight = if (isQualifying) FontWeight.Black else FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .horizontalScroll(statsScrollState),
+                            horizontalArrangement = Arrangement.spacedBy(metrics.dp(8)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            GroupStat(team.played)
+                            GroupStat(team.wins)
+                            GroupStat(team.draws)
+                            GroupStat(team.losses)
+                            GroupStat(team.goalsFor)
+                            GroupStat(team.goalsAgainst)
+                            GroupStat(team.goalDifference, signed = true)
+                            GroupStat(team.points, bold = true, highlight = true)
+                        }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GroupTableHeader() {
-    val metrics = rememberGoalioMetrics()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF14171A))
-            .padding(horizontal = metrics.dp(16), vertical = metrics.dp(8)),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            "TEAM",
-            color = GoalioColors.TextSecondary,
-            fontSize = metrics.sp(10),
-            fontWeight = FontWeight.Black,
-            modifier = Modifier.weight(1f)
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(metrics.dp(2)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            listOf("MP", "W", "D", "L", "GD", "PTS").forEach { label ->
-                Text(
-                    text = label,
-                    color = GoalioColors.TextSecondary,
-                    fontSize = metrics.sp(9),
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.width(metrics.dp(28)),
-                    textAlign = TextAlign.Center
-                )
             }
         }
     }
@@ -388,9 +430,9 @@ private fun GroupStat(value: Int?, signed: Boolean = false, bold: Boolean = fals
     Text(
         text = text,
         color = if (highlight) GoalioColors.Accent else if (bold) Color.White else GoalioColors.TextPrimary,
-        fontSize = metrics.sp(11),
+        fontSize = metrics.sp(13),
         fontWeight = if (bold || highlight) FontWeight.Black else FontWeight.Medium,
-        modifier = Modifier.width(metrics.dp(28)),
+        modifier = Modifier.width(metrics.dp(44)),
         textAlign = TextAlign.Center,
         maxLines = 1
     )
@@ -788,53 +830,79 @@ private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
     val metrics = rememberGoalioMetrics()
     val context = LocalContext.current
     Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
-        SectionTitle("World Cup Library")
+        SectionTitle(trans("World Cup Library"))
         Surface(color = Color(0xFF171717), shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, Color(0xFF2A2A2A)), modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(metrics.dp(18))) {
-                Text(cup.randomFact.title, color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                Text(dynamicTrans(cup.randomFact.title), color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
                 Spacer(Modifier.height(metrics.dp(8)))
-                Text(cup.randomFact.body, color = Color.White, fontSize = metrics.sp(17), fontWeight = FontWeight.Bold)
+                Text(dynamicTrans(cup.randomFact.body), color = Color.White, fontSize = metrics.sp(17), fontWeight = FontWeight.Bold)
             }
         }
         HardcodedLibraryItems.forEach { item ->
+            val assetName = when (item.id) {
+                "wc2026-news" -> "news.jpg"
+                "host-cities-2026" -> "guide.png"
+                "knockout-format-2026" -> "format.webp"
+                "tickets-2026" -> "ticket.webp"
+                "history-wc" -> "history.webp"
+                else -> "news.jpg"
+            }
             Surface(
                 color = GoalioColors.Surface2,
                 shape = RoundedCornerShape(metrics.dp(14)),
                 border = BorderStroke(1.dp, GoalioColors.CardBorder),
-                modifier = Modifier.fillMaxWidth().clickable {
+                onClick = {
                     if (!item.url.isNullOrBlank()) {
                         runCatching {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(intent)
                         }
                     }
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column {
-                    AsyncImage(
-                        model = item.imageUrl,
-                        contentDescription = item.title,
-                        contentScale = ContentScale.Crop,
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(metrics.dp(160))
                             .clip(RoundedCornerShape(topStart = metrics.dp(14), topEnd = metrics.dp(14)))
-                    )
+                    ) {
+                        AsyncImage(
+                            model = "file:///android_asset/$assetName",
+                            contentDescription = dynamicTrans(item.title),
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Black.copy(alpha = 0.1f),
+                                            Color.Black.copy(alpha = 0.65f)
+                                        )
+                                    )
+                                )
+                        )
+                    }
                     Column(Modifier.padding(metrics.dp(18))) {
-                        Text(item.category.uppercase(), color = GoalioColors.Accent, fontSize = metrics.sp(11), fontWeight = FontWeight.Black)
+                        Text(dynamicTrans(item.category).uppercase(), color = GoalioColors.Accent, fontSize = metrics.sp(11), fontWeight = FontWeight.Black)
                         Spacer(Modifier.height(metrics.dp(8)))
-                        Text(item.title, color = Color.White, fontSize = metrics.sp(18), fontWeight = FontWeight.Black)
+                        Text(dynamicTrans(item.title), color = Color.White, fontSize = metrics.sp(18), fontWeight = FontWeight.Black)
                         Spacer(Modifier.height(metrics.dp(4)))
-                        Text(item.body, color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), maxLines = 3, overflow = TextOverflow.Ellipsis)
+                        Text(dynamicTrans(item.body), color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), maxLines = 3, overflow = TextOverflow.Ellipsis)
                         Spacer(Modifier.height(metrics.dp(12)))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("${item.readMinutes} min read", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Bold)
+                            Text("${item.readMinutes} ${trans("min read")}", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Bold)
                             if (!item.url.isNullOrBlank()) {
-                                Text("Read on FIFA.com →", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                                Text("${trans("Read on FIFA.com")} →", color = GoalioColors.Accent, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
                             }
                         }
                     }
@@ -847,7 +915,7 @@ private fun WorldCupLibrary(cup: WorldCupBootstrapInfo) {
 @Composable
 private fun SectionTitle(text: String) {
     val metrics = rememberGoalioMetrics()
-    Text(text, color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black)
+    Text(trans(text), color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black)
 }
 
 @Composable
@@ -855,6 +923,52 @@ private fun WorldCupState(text: String) {
     val metrics = rememberGoalioMetrics()
     Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth()) {
         Text(text, color = GoalioColors.TextSecondary, fontSize = metrics.sp(15), fontWeight = FontWeight.Bold, modifier = Modifier.padding(metrics.dp(18)))
+    }
+}
+
+@Composable
+private fun WorldCupLoadingSkeleton() {
+    val metrics = rememberGoalioMetrics()
+    val transition = rememberInfiniteTransition(label = "worldCupSkeleton")
+    val alpha by transition.animateFloat(
+        initialValue = .26f,
+        targetValue = .68f,
+        animationSpec = infiniteRepeatable(tween(850), RepeatMode.Reverse),
+        label = "worldCupSkeletonAlpha"
+    )
+    val shimmer = Color(0xFF6A6A6A).copy(alpha = alpha)
+    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(18))) {
+        Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(metrics.dp(18)), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth().height(metrics.dp(260))) {
+            Column(Modifier.padding(metrics.dp(22)), verticalArrangement = Arrangement.Bottom) {
+                Box(Modifier.width(metrics.dp(104)).height(metrics.dp(22)).clip(CircleShape).background(shimmer))
+                Spacer(Modifier.height(metrics.dp(14)))
+                Box(Modifier.fillMaxWidth(.72f).height(metrics.dp(28)).clip(CircleShape).background(shimmer.copy(alpha = alpha * .9f)))
+                Spacer(Modifier.height(metrics.dp(18)))
+                Row(horizontalArrangement = Arrangement.spacedBy(metrics.dp(18))) {
+                    repeat(3) {
+                        Box(Modifier.weight(1f).height(metrics.dp(54)).clip(RoundedCornerShape(metrics.dp(12))).background(shimmer.copy(alpha = alpha * .74f)))
+                    }
+                }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
+            repeat(3) {
+                Box(Modifier.width(metrics.dp(106)).height(metrics.dp(42)).clip(RoundedCornerShape(50)).background(shimmer))
+            }
+        }
+        repeat(4) {
+            Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth()) {
+                Row(Modifier.padding(metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(metrics.dp(34)).clip(CircleShape).background(shimmer))
+                    Spacer(Modifier.width(metrics.dp(12)))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(metrics.dp(8))) {
+                        Box(Modifier.fillMaxWidth(.62f).height(metrics.dp(14)).clip(CircleShape).background(shimmer))
+                        Box(Modifier.fillMaxWidth(.42f).height(metrics.dp(10)).clip(CircleShape).background(shimmer.copy(alpha = alpha * .75f)))
+                    }
+                    Box(Modifier.width(metrics.dp(38)).height(metrics.dp(16)).clip(CircleShape).background(shimmer))
+                }
+            }
+        }
     }
 }
 
@@ -876,7 +990,7 @@ private fun androidx.compose.foundation.layout.RowScope.WorldCupNavTab(label: St
     val metrics = rememberGoalioMetrics()
     Surface(color = if (selected) GoalioColors.Accent else Color.Transparent, shape = RoundedCornerShape(50), modifier = Modifier.weight(1f).height(metrics.dp(56)).clickable(onClick = onClick)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(label, color = if (selected) Color.White else Color(0xFFBEB8AA), fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1)
+            Text(trans(label), color = if (selected) Color.White else Color(0xFFBEB8AA), fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1)
         }
     }
 }

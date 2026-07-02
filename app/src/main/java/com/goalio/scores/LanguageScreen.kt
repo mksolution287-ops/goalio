@@ -72,10 +72,16 @@ private val languages = listOf(
 )
 
 @Composable
-fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
+fun LanguageScreen(
+    onBack: () -> Unit,
+    onDone: (String) -> Unit,
+    initialLanguage: String = "en-GB"
+) {
     val metrics = rememberGoalioMetrics()
     var query by rememberSaveable { mutableStateOf("") }
-    var selected by rememberSaveable { mutableStateOf("en-GB") }
+    var selected by rememberSaveable(initialLanguage) {
+        mutableStateOf(initialLanguage.takeIf { it == "system" || languages.any { language -> language.tag == it } } ?: "en-GB")
+    }
     val filtered = remember(query) {
         languages.filter { it.name.contains(query, true) || it.subtitle.contains(query, true) || it.tag.contains(query, true) }
     }
@@ -103,11 +109,13 @@ fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
                     }
                 }
                 Text(
-                    "GOALIO",
+                    APP_DISPLAY_NAME,
                     color = Color.White,
-                    fontSize = metrics.sp(22),
+                    fontSize = metrics.sp(if (metrics.compact) 12 else 14),
                     fontWeight = FontWeight.Black,
-                    letterSpacing = if (metrics.compact) 5.sp else 7.sp,
+                    letterSpacing = 0.sp,
+                    lineHeight = metrics.sp(if (metrics.compact) 14 else 16),
+                    maxLines = 2,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )
@@ -118,7 +126,7 @@ fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
                     border = BorderStroke(1.5.dp, GoalioColors.Tertiary),
                     shape = RoundedCornerShape(50)
                 ) {
-                    Text("DONE", fontWeight = FontWeight.Black, letterSpacing = 1.2.sp, fontSize = metrics.sp(12), modifier = Modifier.padding(horizontal = metrics.dp(17), vertical = metrics.dp(11)))
+                    Text(trans("DONE"), fontWeight = FontWeight.Black, letterSpacing = 1.2.sp, fontSize = metrics.sp(12), modifier = Modifier.padding(horizontal = metrics.dp(17), vertical = metrics.dp(11)))
                 }
             }
             HorizontalDivider(color = GoalioColors.Divider)
@@ -129,35 +137,15 @@ fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
             ) {
                 item {
                     Spacer(Modifier.height(metrics.dp(24)))
-                    Text("LANGUAGE", color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 2.2.sp)
-                    Spacer(Modifier.height(metrics.dp(8)))
-                    Text("Choose your language", color = Color.White, fontSize = metrics.sp(29), fontWeight = FontWeight.Black)
-                    Spacer(Modifier.height(metrics.dp(8)))
-                    Text(
-                        "Scores, match updates and navigation will follow your preferred locale.",
-                        color = GoalioColors.Body,
-                        fontSize = metrics.sp(16),
-                        lineHeight = metrics.sp(23)
-                    )
-                    Spacer(Modifier.height(metrics.dp(22)))
+                    Text(trans("Select Language"), color = Color.White, fontSize = metrics.sp(29), fontWeight = FontWeight.Black)
+                    Spacer(Modifier.height(metrics.dp(18)))
                     SearchBox(query) { query = it }
-                    Spacer(Modifier.height(metrics.dp(24)))
-                    Text(
-                        "DEVICE",
-                        color = GoalioColors.TextSecondary,
-                        fontSize = metrics.sp(13),
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                    Spacer(Modifier.height(metrics.dp(9)))
+                    Spacer(Modifier.height(metrics.dp(16)))
                     LanguageCard(
-                        LanguageOption("system", "System Default", "Use your device language", "⚙"),
+                        LanguageOption("system", trans("System Default"), "", "⚙"),
                         selected == "system"
                     ) { selected = "system" }
-                    Spacer(Modifier.height(metrics.dp(24)))
-                    Text("ALL LANGUAGES", color = GoalioColors.TextSecondary, fontSize = metrics.sp(13), fontWeight = FontWeight.Bold, letterSpacing = 2.sp, modifier = Modifier.padding(horizontal = 4.dp))
-                    Spacer(Modifier.height(metrics.dp(9)))
+                    Spacer(Modifier.height(metrics.dp(10)))
                 }
                 items(filtered, key = { it.tag }) { language ->
                     LanguageCard(language, selected == language.tag) { selected = language.tag }
@@ -182,7 +170,7 @@ private fun SearchBox(value: String, onValueChange: (String) -> Unit) {
             Spacer(Modifier.width(metrics.dp(14)))
             Box(Modifier.weight(1f)) {
                 if (value.isEmpty()) {
-                    Text("Search languages", color = GoalioColors.Placeholder, fontSize = metrics.sp(16))
+                    Text(trans("Search languages"), color = GoalioColors.Placeholder, fontSize = metrics.sp(16))
                 }
                 BasicTextField(
                     value = value,
@@ -230,13 +218,15 @@ private fun LanguageCard(language: LanguageOption, selected: Boolean, onClick: (
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    language.subtitle,
-                    color = GoalioColors.TextTertiary,
-                    fontSize = metrics.sp(12),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (language.subtitle.isNotBlank()) {
+                    Text(
+                        language.subtitle,
+                        color = GoalioColors.TextTertiary,
+                        fontSize = metrics.sp(12),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
             if (selected) {
                 Box(

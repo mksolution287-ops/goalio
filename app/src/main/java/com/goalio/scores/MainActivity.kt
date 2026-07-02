@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +67,11 @@ import kotlinx.coroutines.delay
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+    private companion object {
+        const val PREF_LANGUAGE_RETURN_SCREEN = "language_return_screen"
+        const val PREF_SUPPRESS_NEXT_SPLASH = "suppress_next_splash"
+    }
+
     override fun onResume() {
         super.onResume()
         GoalioAppVisibility.markForeground()
@@ -93,7 +99,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             GoalioTheme(dynamicColor = false) {
                 val settings = remember { getSharedPreferences("goalio_settings", MODE_PRIVATE) }
-                var showSplash by remember { mutableStateOf(true) }
+                val pendingLanguageReturn = remember { settings.getString(PREF_LANGUAGE_RETURN_SCREEN, null) }
+                val suppressNextSplash = remember { settings.getBoolean(PREF_SUPPRESS_NEXT_SPLASH, false) }
+                var currentLanguage by remember { mutableStateOf(settings.getString("language", "en-GB") ?: "en-GB") }
+                var showSplash by remember { mutableStateOf(savedInstanceState == null && !suppressNextSplash) }
                 var languageSelected by remember { mutableStateOf(settings.contains("language")) }
                 var onboardingComplete by remember {
                     mutableStateOf(settings.getBoolean("onboarding_complete", false))
@@ -101,11 +110,30 @@ class MainActivity : ComponentActivity() {
                 var profileComplete by remember {
                     mutableStateOf(settings.getBoolean("profile_complete", false))
                 }
-                var appScreen by remember { mutableStateOf("home") }
+                var profileUsername by remember { mutableStateOf(settings.getString("profile_username", null)) }
+                var appScreen by remember { mutableStateOf(pendingLanguageReturn ?: "home") }
+                var languageReturnScreen by remember { mutableStateOf<String?>(null) }
                 var selectedMatch by remember { mutableStateOf<ScheduleMatch?>(null) }
+                var selectedDetailTab by remember { mutableStateOf("Overview") }
+                val effectiveLanguage = if (currentLanguage == "system") Locale.getDefault().toLanguageTag() else currentLanguage
                 val notificationLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
                 ) { }
+
+                LaunchedEffect(currentLanguage) {
+                    applyLanguage(currentLanguage)
+                    AppLanguageState.current = effectiveLanguage
+                }
+
+                LaunchedEffect(pendingLanguageReturn) {
+                    if (pendingLanguageReturn != null || suppressNextSplash) {
+                        settings.edit()
+                            .remove(PREF_LANGUAGE_RETURN_SCREEN)
+                            .remove(PREF_SUPPRESS_NEXT_SPLASH)
+                            .apply()
+                    }
+                }
+
                 LaunchedEffect(Unit) {
                     delay(2800)
                     showSplash = false
@@ -115,7 +143,7 @@ class MainActivity : ComponentActivity() {
                         // The language screen is composed first, so it remains behind the OS prompt.
                         delay(300)
                         settings.edit().putBoolean("notification_prompt_requested", true).apply()
-                        val appId = getString(R.string.onesignal_app_id)
+                        val appId = GoalioRemoteConfig.oneSignalAppId()
                         if (appId.matches(Regex("[0-9a-fA-F-]{36}"))) {
                             OneSignal.Notifications.requestPermission(false)
                         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -141,27 +169,50 @@ class MainActivity : ComponentActivity() {
                                     .putBoolean("profile_complete", true)
                                     .apply()
                                 profileComplete = true
+                                profileUsername = profile.username
                             }
                         }
                     }
                 }
-                when {
-                    showSplash -> SplashScreen()
-                    !languageSelected -> LanguageScreen(
-                        onBack = { showSplash = true },
-                        onDone = { languageTag ->
-                            settings.edit().putString("language", languageTag).apply()
-                            applyLanguage(languageTag)
-                            languageSelected = true
-                        }
-                    )
-                    !onboardingComplete -> OnboardingScreen(
-                        onBack = { languageSelected = false },
-                        onComplete = {
-                            settings.edit().putBoolean("onboarding_complete", true).apply()
-                            onboardingComplete = true
-                        }
-                    )
+                CompositionLocalProvider(LocalAppLanguage provides effectiveLanguage) {
+                    when {
+                        showSplash -> SplashScreen()
+                        !languageSelected -> LanguageScreen(
+                            onBack = {
+                                val returnScreen = languageReturnScreen
+                                if (returnScreen != null) {
+                                    languageReturnScreen = null
+                                    appScreen = returnScreen
+                                    languageSelected = true
+                                } else if (onboardingComplete) {
+                                    languageSelected = true
+                                } else {
+                                    showSplash = true
+                                }
+                            },
+                            onDone = { languageTag ->
+                                val returnScreen = languageReturnScreen
+                                val editor = settings.edit()
+                                    .putString("language", languageTag)
+                                    .putBoolean(PREF_SUPPRESS_NEXT_SPLASH, true)
+                                if (returnScreen != null) {
+                                    editor.putString(PREF_LANGUAGE_RETURN_SCREEN, returnScreen)
+                                }
+                                editor.apply()
+                                currentLanguage = languageTag
+                                returnScreen?.let { appScreen = it }
+                                languageReturnScreen = null
+                                languageSelected = true
+                            },
+                            initialLanguage = currentLanguage
+                        )
+                        !onboardingComplete -> OnboardingScreen(
+                            onBack = { languageSelected = false },
+                            onComplete = {
+                                settings.edit().putBoolean("onboarding_complete", true).apply()
+                                onboardingComplete = true
+                            }
+                        )
                     !profileComplete -> ProfileSetupScreen(
                         onBack = {
                             settings.edit().putBoolean("onboarding_complete", false).apply()
@@ -180,6 +231,7 @@ class MainActivity : ComponentActivity() {
                                     .putBoolean("profile_complete", true)
                                     .apply()
                                 profileComplete = true
+                                profileUsername = saved.username
                                 null
                             } catch (error: Exception) {
                                 error.message ?: "Full name or username did not match."
@@ -198,6 +250,7 @@ class MainActivity : ComponentActivity() {
                                     .putBoolean("profile_complete", true)
                                     .apply()
                                 profileComplete = true
+                                profileUsername = saved.username
                                 null
                             } catch (error: Exception) {
                                 error.message ?: "Could not save your profile. Check the connection and try again."
@@ -213,6 +266,7 @@ class MainActivity : ComponentActivity() {
                             onOpenSettings = { appScreen = "settings" },
                             onOpenMatch = { match ->
                                 selectedMatch = match
+                                selectedDetailTab = "Overview"
                                 appScreen = "detail"
                             }
                         )
@@ -221,6 +275,7 @@ class MainActivity : ComponentActivity() {
                                 league = match.league,
                                 matchId = match.matchId,
                                 initialMatch = match,
+                                initialTab = selectedDetailTab,
                                 onBack = { appScreen = "matches" },
                                 onOpenHome = { appScreen = "home" },
                                 onOpenMatches = { appScreen = "matches" },
@@ -238,6 +293,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenSettings = { appScreen = "settings" },
                                 onOpenMatch = { match ->
                                     selectedMatch = match
+                                    selectedDetailTab = "Overview"
                                     appScreen = "detail"
                                 }
                             )
@@ -249,14 +305,49 @@ class MainActivity : ComponentActivity() {
                             onOpenGames = { appScreen = "games" },
                             onOpenSettings = { appScreen = "settings" }
                         )
-                        "games" -> GameScreen(onBack = { appScreen = "home" }, onOpenHome = { appScreen = "home" }, onOpenMatches = { appScreen = "matches" }, onOpenWorldCup = { appScreen = "worldcup" }, onOpenSettings = { appScreen = "settings" })
+                        "games" -> GameScreen(
+                            onBack = { appScreen = "home" },
+                            onOpenHome = { appScreen = "home" },
+                            onOpenMatches = { appScreen = "matches" },
+                            onOpenWorldCup = { appScreen = "worldcup" },
+                            onOpenSettings = { appScreen = "settings" },
+                            currentUsername = profileUsername,
+                            onSaveUsername = { username ->
+                                try {
+                                    val saved = GoalioBackendApi.saveProfile(
+                                        ProfileDraft(
+                                            settings.getString("profile_full_name", null).orEmpty(),
+                                            username,
+                                            settings.getStringSet("profile_team_ids", emptySet()).orEmpty(),
+                                            settings.getStringSet("profile_player_ids", emptySet()).orEmpty()
+                                        )
+                                    )
+                                    settings.edit()
+                                        .putString("profile_full_name", saved.name)
+                                        .putString("profile_username", saved.username)
+                                        .putStringSet("profile_team_ids", saved.favoriteTeamIds.toSet())
+                                        .putStringSet("profile_player_ids", saved.favoritePlayerIds.toSet())
+                                        .putStringSet("profile_team_names", saved.favoriteTeams.toSet())
+                                        .putStringSet("profile_player_names", saved.favoritePlayers.toSet())
+                                        .putBoolean("profile_complete", true)
+                                        .apply()
+                                    profileUsername = saved.username
+                                    null
+                                } catch (error: Exception) {
+                                    error.message ?: "Could not save username. Check the connection and try again."
+                                }
+                            }
+                        )
                         "settings" -> SettingsScreen(
                             onBack = { appScreen = "home" }, onHome = { appScreen = "home" },
                             onMatches = { appScreen = "matches" }, onWorldCup = { appScreen = "worldcup" },
                             onGames = { appScreen = "games" },
                             onEditProfile = { profileComplete = false },
-                            onLanguage = { languageSelected = false },
-                            onSignOut = { profileComplete = false }
+                            onLanguage = {
+                                languageReturnScreen = "settings"
+                                languageSelected = false
+                            },
+                            onSignOut = { profileComplete = false; profileUsername = null }
                         )
                         else -> PersonalizedHomeScreen(
                             fallbackName = settings.getString("profile_full_name", null),
@@ -266,8 +357,9 @@ class MainActivity : ComponentActivity() {
                             onOpenWorldCup = { appScreen = "worldcup" },
                             onOpenGames = { appScreen = "games" },
                             onOpenSettings = { appScreen = "settings" },
-                            onOpenMatch = { match ->
+                            onOpenMatch = { match, tab ->
                                 selectedMatch = match
+                                selectedDetailTab = tab
                                 appScreen = "detail"
                             }
                         )
@@ -275,6 +367,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
     }
 
     private fun applyLanguage(languageTag: String) {
@@ -305,12 +398,11 @@ fun SplashScreen() {
         Box(Modifier.fillMaxSize()) {
             Image(
                 painter = painterResource(R.drawable.goalio_logo),
-                contentDescription = "Goalio",
+                contentDescription = APP_DISPLAY_NAME,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .offset(y = metrics.dp(-70))
-                    .size(metrics.dp(if (metrics.compact) 150 else 180))
+                    .size(metrics.dp(180))
             )
             LoadingGoal(
                 modifier = Modifier
@@ -327,8 +419,8 @@ fun SplashScreen() {
 private fun GoalioHomeScreen() {
     GoalioBackground(.4f) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("GOALIO", color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.Bold,
-                letterSpacing = 7.sp)
+            Text(APP_DISPLAY_NAME, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center, maxLines = 2)
         }
     }
 }
@@ -392,4 +484,4 @@ private fun LoadingGoal(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
-private fun SplashPreview() = GoalioTheme(dynamicColor = false) { SplashScreen() }
+fun SplashPreview() = GoalioTheme(dynamicColor = false) { SplashScreen() }

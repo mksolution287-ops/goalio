@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Goalio：サッカー速報</string>
+    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+
+    <!-- General -->
+    <string name="done">完了</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="back">戻る</string>
+    <string name="next">次へ</string>
+    <string name="skip">スキップ</string>
+    <string name="open">開く</string>
+    <string name="edit">編集</string>
+    <string name="search">検索</string>
+    <string name="loading">読み込み中…</string>
+    <string name="saving">保存中…</string>
+    <string name="checking">確認中…</string>
+
+    <!-- Language -->
+    <string name="language">言語</string>
+    <string name="choose_your_language">言語を選択</string>
+    <string name="language_description">スコア、試合のアップデート、ナビゲーションは、設定した言語で表示されます。</string>
+    <string name="device">端末</string>
+    <string name="system_default">システム設定</string>
+    <string name="use_device_language">端末の言語を使用</string>
+    <string name="all_languages">すべての言語</string>
+    <string name="search_languages">言語を検索</string>
+
+    <!-- Navigation -->
+    <string name="home">ホーム</string>
+    <string name="matches">試合</string>
+    <string name="games">ゲーム</string>
+    <string name="play">プレイ</string>
+
+    <!-- Match -->
+    <string name="overview">概要</string>
+    <string name="timeline">タイムライン</string>
+    <string name="stats">統計</string>
+    <string name="ai_insight">AI分析</string>
+    <string name="lineups">スタメン</string>
+    <string name="watch">視聴</string>
+    <string name="match_details">試合詳細</string>
+    <string name="match_center">マッチセンター</string>
+    <string name="tap_full_match_details">タップして試合の詳細をすべて表示</string>
+    <string name="match_stats">試合統計</string>
+    <string name="win_probability">勝利確率</string>
+    <string name="view_analysis">分析を見る</string>
+
+    <string name="referee">主審</string>
+    <string name="stadium">スタジアム</string>
+    <string name="not_listed">リストにありません</string>
+
+    <string name="key_moments">重要シーン</string>
+    <string name="performance_matrix">パフォーマンスマトリクス</string>
+
+    <string name="possession">ボール支配率</string>
+    <string name="shots">シュート数</string>
+    <string name="on_goal">ゴール枠内</string>
+    <string name="corners">コーナーキック</string>
+    <string name="fouls">ファウル</string>
+    <string name="yellow_cards">イエローカード</string>
+    <string name="saves">セーブ数</string>
+    <string name="passes">パス数</string>
+    <string name="accurate_passes">パス成功数</string>
+    <string name="total_shots">総シュート数</string>
+    <string name="shots_on_target">枠内シュート数</string>
+
+    <string name="goalio_ai_summary">Goalio AIサマリー</string>
+    <string name="auto_generated_match_context">自動生成された試合状況</string>
+
+    <!-- Settings -->
+    <string name="settings">設定</string>
+    <string name="settings_subtitle">プロフィール、アラート、アプリの管理</string>
+
+    <string name="preferences">設定</string>
+    <string name="match_notifications">試合通知</string>
+    <string name="on">オン</string>
+    <string name="off">オフ</string>
+
+    <string name="favorite_teams">お気に入りチーム</string>
+    <string name="favorite_players">お気に入り選手</string>
+    <string name="add_teams">チームを追加</string>
+    <string name="add_players">選手を追加</string>
+
+    <string name="app">アプリ</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="version">バージョン</string>
+
+    <!-- Profile -->
+    <string name="edit_profile">プロフィールを編集</string>
+    <string name="member_since">登録日：</string>
+    <string name="recently">最近</string>
+    <string name="level">レベル</string>
+    <string name="mastery">マスタリー</string>
+    <string name="teams">チーム</string>
+    <string name="players">選手</string>
+    <string name="alerts">アラート</string>
+    <string name="sign_out">ログアウト</string>
+
+    <string name="full_name">フルネーム</string>
+    <string name="full_name_hint">例：アレックス・モーガン</string>
+
+    <string name="pick_username">ユーザー名を選択</string>
+    <string name="username_hint">例：GoalGetter99</string>
+
+    <string name="search_teams">チームを検索</string>
+    <string name="search_players">選手を検索</string>
+
+    <string name="leave_account">この端末で%1$sアカウントからログアウト</string>
+    <string name="update_display_name">%1$sの表示名を更新します。</string>
+
+    <!-- World Cup -->
+    <string name="world_cup">ワールドカップ</string>
+    <string name="north_america_2026">北米 2026</string>
+
+    <string name="group">グループ</string>
+    <string name="group_a">グループA</string>
+    <string name="groups">グループ</string>
+
+    <string name="group_a_standings_pending">FIFAが現在の順位表を発表すると、グループAの順位表が表示されます。</string>
+
+    <string name="group_tables">グループ順位表</string>
+    <string name="knockout_path">決勝トーナメント</string>
+    <string name="world_cup_matches">ワールドカップ試合一覧</string>
+    <string name="world_cup_library">ワールドカップライブラリ</string>
+
+    <string name="collapse">折りたたむ</string>
+    <string name="expand">展開</string>
+    <string name="view_all">すべて表示</string>
+    <string name="choose_date">日付を選択</string>
+    <string name="min_read">分</string>
+    <string name="read_on_fifa">FIFA.comで読む</string>
+
+    <!-- Standings -->
+    <string name="rank">順位</string>
+    <string name="team">チーム</string>
+    <string name="stage">ステージ</string>
+
+    <string name="played_short">試</string>
+    <string name="won_short">勝</string>
+    <string name="drawn_short">分</string>
+    <string name="lost_short">敗</string>
+    <string name="goal_difference_short">得失</string>
+    <string name="points_short">勝点</string>
+
+    <!-- Home -->
+    <string name="live_action">ライブマッチ</string>
+    <string name="next_seven_days">今後の7日間</string>
+    <string name="upcoming_today">本日の試合予定</string>
+
+    <!-- Lineups -->
+    <string name="player_lineups">選手ラインアップ</string>
+    <string name="lineup_subtitle">先発メンバー、フォーメーション、ベンチ</string>
+    <string name="starting_xi">先発メンバー</string>
+    <string name="bench">ベンチ</string>
+    <string name="formation">フォーメーション</string>
+    <string name="home_side">ホーム</string>
+    <string name="away_side">アウェイ</string>
+
+    <string name="no_bench_listed">ベンチメンバーの登録なし</string>
+    <string name="unavailable">欠場</string>
+
+    <!-- Watch -->
+    <string name="watch_highlights">視聴 &amp; ハイライト</string>
+    <string name="stream">配信</string>
+    <string name="highlights">ハイライト</string>
+
+    <!-- Football Five -->
+    <string name="football_five">ザ・フットボール・ファイブ</string>
+    <string name="football_five_subtitle">5つの質問。1つのストリーク。順位表を駆け上がろう。</string>
+
+    <string name="test_football_knowledge">フットボールの知識をテスト</string>
+    <string name="quiz_rules">5つの質問 · 各15秒\n正解で +10 XP · 不正解で −5 XP</string>
+
+    <string name="play_now">今すぐプレイ</string>
+    <string name="leaderboard">リーダーボード</string>
+    <string name="top_ten">トップ10</string>
+    <string name="no_leaderboard">リーダーボードのデータがまだありません。プレイしてランクインしよう！</string>
+    <string name="you">あなた</string>
+
+    <!-- Onboarding -->
+    <string name="your_football_your_way">あなたのフットボールを、あなたのスタイルで。</string>
+    <string name="swipe_to_explore">スワイプして探索</string>
+
+    <string name="built_for_matchday">マッチデーのための設計</string>
+    <string name="feature">機能</string>
+
+    <string name="never_miss_kick">一瞬のキックも見逃さない</string>
+    <string name="never_miss_kick_subtitle">ライブスコア、リアルタイム統計、即時マッチアラートで、試合の興奮をそのまま体験。</string>
+
+    <string name="live_match_center">ライブマッチセンター</string>
+    <string name="deep_stats">詳細な統計</string>
+    <string name="custom_alerts">カスタムアラート</string>
+
+    <string name="track_tournaments">すべてのトーナメントを追跡</string>
+    <string name="track_tournaments_subtitle">ワールドカップや主要リーグの日程、順位表、試合詳細をチェック。</string>
+
+    <string name="fixtures">試合日程</string>
+
+    <string name="build_dashboard">ダッシュボードを作成</string>
+    <string name="build_dashboard_subtitle">お気に入りのチームや選手をピン留めして、ホームフィードに関心のあるフットボールを表示。</string>
+
+    <string name="favorites">お気に入り</string>
+    <string name="player_heroes">スター選手</string>
+    <string name="smart_feed">スマートフィード</string>
+
+    <!-- Profile Setup -->
+    <string name="build_your_profile">プロフィールを作成</string>
+    <string name="profile_title">%1$sを自分好みに</string>
+    <string name="profile_intro">ユーザー情報、チーム、選手を選択してください。これらはいつでも更新できます。</string>
+
+    <string name="your_identity">ユーザー情報</string>
+    <string name="identity_subtitle">新しいプロフィールを作成するか、安全に復元します。</string>
+
+    <string name="favorite_teams_subtitle">フォローしているクラブや国を中心としたフィードを作成します。</string>
+    <string name="favorite_players_subtitle">見逃したくない選手をピン留めします。</string>
+
+    <string name="loading_teams_players">チームと選手を読み込み中…</string>
+    <string name="retry_favorites">お気に入りの読み込みを再試行</string>
+
+    <string name="loading_teams">チームを読み込み中…</string>
+    <string name="load_more_teams">さらに6チームを読み込む</string>
+
+    <string name="loading_players">選手を読み込み中…</string>
+    <string name="load_more_players">さらに6選手を読み込む</string>
+
+    <string name="selected">選択済み</string>
+    <string name="load_six_more">さらに6つ読み込む</string>
+    <string name="maximum_six_selections">最大6つまで選択可能。</string>
+
+    <!-- Authentication -->
+    <string name="signing_in">サインイン中…</string>
+    <string name="sign_in">サインイン</string>
+    <string name="continue_label">続ける</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">試合速報</string>
+    <string name="notification_channel_description">キックオフのリマインダー、ライブスコア、ゴール通知。</string>
+    <string name="notification_next_match">次の試合</string>
+    <string name="notification_kickoff">キックオフ</string>
+    <string name="notification_view_match">試合を見る</string>
+    <string name="notification_match_reminder">試合リマインダー</string>
+    <string name="notification_upcoming_match">今後の試合</string>
+    <string name="notification_match_in_24_hours">試合開始まで24時間</string>
+    <string name="notification_match_in_1_hour">試合開始まで1時間</string>
+    <string name="notification_kickoff_now">まもなくキックオフ</string>
+
+</resources>

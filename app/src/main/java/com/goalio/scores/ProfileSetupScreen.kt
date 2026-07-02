@@ -61,9 +61,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -123,7 +125,6 @@ fun ProfileSetupScreen(
 ) {
     val metrics = rememberGoalioMetrics()
     var fullName by rememberSaveable { mutableStateOf("") }
-    var username by rememberSaveable { mutableStateOf("") }
     var teamQuery by rememberSaveable { mutableStateOf("") }
     var playerQuery by rememberSaveable { mutableStateOf("") }
     var teamCompetitionId by rememberSaveable { mutableStateOf<Int?>(null) }
@@ -145,11 +146,6 @@ fun ProfileSetupScreen(
     var playerSelectionError by remember { mutableStateOf<String?>(null) }
     var submitting by remember { mutableStateOf(false) }
     var submitError by remember { mutableStateOf<String?>(null) }
-    var usernameAvailable by remember { mutableStateOf<Boolean?>(null) }
-    var usernameError by remember { mutableStateOf<String?>(null) }
-    var checkingUsername by remember { mutableStateOf(false) }
-    var identityMatches by remember { mutableStateOf<Boolean?>(null) }
-    var checkingIdentity by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val remoteConfig = remember { FirebaseRemoteConfig.getInstance() }
     val teamLimit = remoteConfig.getLong("profile_teams_limit").toInt()
@@ -164,9 +160,7 @@ fun ProfileSetupScreen(
         label = "profile action color"
     )
     val fullNameValid = isValidFullName(fullName)
-    val usernameRuleValid = isValidUsername(username)
-    val existingProfile = identityMatches == true
-    val valid = fullNameValid && usernameRuleValid && !checkingUsername && !checkingIdentity && (usernameAvailable == true || existingProfile)
+    val valid = fullNameValid
     val teams = remember(teamQuery, teamCatalog, teamCompetitionId) {
         teamCatalog.asSequence()
             .filter { teamCompetitionId == null || teamCompetitionId in it.competitionIds }
@@ -241,30 +235,6 @@ fun ProfileSetupScreen(
             .onFailure { catalogError = it.userFacingBackendMessage("Could not load players for this competition.") }
         playerFilterLoading = false
     }
-    LaunchedEffect(username) {
-        usernameAvailable = null
-        usernameError = null
-        checkingUsername = false
-        if (!usernameRuleValid) return@LaunchedEffect
-        delay(350)
-        checkingUsername = true
-        runCatching { GoalioBackendApi.isUsernameAvailable(username) }
-            .onSuccess { usernameAvailable = it }
-            .onFailure { usernameError = it.userFacingBackendMessage("Could not check username.") }
-        checkingUsername = false
-    }
-    LaunchedEffect(fullName, username, usernameAvailable) {
-        identityMatches = null
-        checkingIdentity = false
-        if (usernameAvailable != false || !fullNameValid || !usernameRuleValid) return@LaunchedEffect
-        delay(350)
-        checkingIdentity = true
-        runCatching { GoalioBackendApi.profileIdentityMatches(fullName.trim(), username.trim()) }
-            .onSuccess { identityMatches = it }
-            .onFailure { identityMatches = false }
-        checkingIdentity = false
-    }
-
     BackHandler(onBack = onBack)
     GoalioBackground(.18f) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -275,9 +245,9 @@ fun ProfileSetupScreen(
                 verticalArrangement = Arrangement.spacedBy(metrics.dp(18))
             ) {
                 item {
-                    Text("BUILD YOUR PROFILE", color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 2.sp)
-                    Text("Make Goalio yours", color = Color.White, fontSize = metrics.sp(29), fontWeight = FontWeight.Black)
-                    Text("Choose your identity, teams and players. You can update these anytime.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
+                    Text(trans("BUILD YOUR PROFILE"), color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                    Text(stringResource(R.string.profile_title, APP_DISPLAY_NAME), color = Color.White, fontSize = metrics.sp(25), fontWeight = FontWeight.Black, maxLines = 2)
+                    Text(trans("Choose your identity, teams and players. You can update these anytime."), color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
                 }
                 item {
                     Surface(
@@ -287,35 +257,12 @@ fun ProfileSetupScreen(
                         modifier = Modifier.fillMaxWidth().animateContentSize()
                     ) {
                         Column(Modifier.padding(metrics.dp(18))) {
-                            ProfileStepHeader("01", "Your identity", "Create a new profile or recover one securely.")
+                            ProfileStepHeader("01", "Your identity", "Add your name now. Pick a username later in Games.")
                             Spacer(Modifier.height(20.dp))
                             LabeledInput("FULL NAME", "e.g., Alex Morgan", fullName, { fullName = it }, true)
                             if (fullName.isNotBlank() && !fullNameValid) {
                                 FieldMessage("Enter first and last name; every name must have at least 2 letters.", false)
                             }
-                            Spacer(Modifier.height(18.dp))
-                            LabeledInput(
-                                "PICK YOUR USERNAME",
-                                "e.g., GoalGetter99",
-                                username,
-                                { value ->
-                                    username = value.lowercase().filter { it in 'a'..'z' || it.isDigit() || it == '_' }.take(20)
-                                },
-                                false,
-                                showValid = usernameAvailable == true
-                            )
-                            when {
-                                username.isBlank() -> Unit
-                                !usernameRuleValid -> FieldMessage("3–20 characters; start with a letter. Use letters, numbers, or single underscores.", false)
-                                checkingUsername -> FieldMessage("Checking username…", true)
-                                usernameAvailable == true -> FieldMessage("Username is available", true)
-                                usernameAvailable == false && checkingIdentity -> FieldMessage("Checking profile details…", true)
-                                usernameAvailable == false && identityMatches == true -> FieldMessage("Existing profile matched", true)
-                                usernameAvailable == false && identityMatches == false -> FieldMessage("That username is taken, but the full name does not match.", false)
-                                usernameAvailable == false -> FieldMessage("That username is already taken", false)
-                                usernameError != null -> FieldMessage(usernameError.orEmpty(), false)
-                            }
-                            if (existingProfile) FieldMessage("Profile verified. Use the button below to sign in.", true)
                             Spacer(Modifier.height(28.dp))
                             ProfileStepHeader("02", "Favorite teams", "Build a feed around the clubs and nations you follow.")
                             if (catalogLoading) {
@@ -331,7 +278,7 @@ fun ProfileSetupScreen(
                                     colors = ButtonDefaults.buttonColors(containerColor = Field, contentColor = Color.White),
                                     shape = RoundedCornerShape(50)
                                 ) {
-                                    Text("RETRY LOADING FAVORITES", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    Text(trans("RETRY LOADING FAVORITES"), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                             Spacer(Modifier.height(17.dp))
@@ -418,7 +365,7 @@ fun ProfileSetupScreen(
                                     colors = ButtonDefaults.buttonColors(containerColor = Field, contentColor = Color.White),
                                     shape = RoundedCornerShape(50)
                                 ) {
-                                    Text(if (loadingMoreTeams) "LOADING..." else "LOAD 6 MORE TEAMS", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    Text(trans(if (loadingMoreTeams) "LOADING..." else "LOAD 6 MORE TEAMS"), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                             Spacer(Modifier.height(28.dp))
@@ -485,7 +432,7 @@ fun ProfileSetupScreen(
                                     colors = ButtonDefaults.buttonColors(containerColor = Field, contentColor = Color.White),
                                     shape = RoundedCornerShape(50)
                                 ) {
-                                    Text(if (loadingMorePlayers) "LOADING..." else "LOAD 6 MORE PLAYERS", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                    Text(trans(if (loadingMorePlayers) "LOADING..." else "LOAD 6 MORE PLAYERS"), fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -507,11 +454,7 @@ fun ProfileSetupScreen(
                         onClick = {
                             scope.launch {
                                 submitting = true
-                                submitError = if (existingProfile) {
-                                    onSignIn(fullName.trim(), username.trim())
-                                } else {
-                                    onComplete(ProfileDraft(fullName.trim(), username.trim().lowercase(), selectedTeams, selectedPlayers))
-                                }
+                                submitError = onComplete(ProfileDraft(fullName.trim(), "", selectedTeams, selectedPlayers))
                                 submitting = false
                             }
                         },
@@ -526,8 +469,8 @@ fun ProfileSetupScreen(
                         border = BorderStroke(2.dp, GoalioColors.Tertiary),
                         shape = RoundedCornerShape(50)
                     ) {
-                        Crossfade(targetState = Triple(submitting, existingProfile, checkingUsername || checkingIdentity), label = "profile action") { state ->
-                            Text(when { state.first -> if (state.second) "SIGNING IN..." else "SAVING..."; state.third -> "CHECKING..."; state.second -> "SIGN IN"; else -> "CONTINUE" }, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
+                        Crossfade(targetState = submitting, label = "profile action") { saving ->
+                            Text(trans(if (saving) "SAVING..." else "CONTINUE"), fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
                         }
                     }
                         }
@@ -546,8 +489,8 @@ private fun ProfileStepHeader(number: String, title: String, subtitle: String) {
         }
         Spacer(Modifier.width(13.dp))
         Column(Modifier.weight(1f)) {
-            Text(title, color = GoalioColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black)
-            Text(subtitle, color = GoalioColors.TextSecondary, fontSize = 12.sp, lineHeight = 16.sp)
+            Text(trans(title), color = GoalioColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black)
+            Text(trans(subtitle), color = GoalioColors.TextSecondary, fontSize = 12.sp, lineHeight = 16.sp)
         }
     }
 }
@@ -562,9 +505,9 @@ private fun ProfileHeader(onBack: () -> Unit) {
         Box(Modifier.size(metrics.dp(38)).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(metrics.dp(25)))
         }
-        Spacer(Modifier.weight(1f))
-        Text("Goalio", color = Color.White, fontSize = metrics.sp(23), fontWeight = FontWeight.ExtraBold, letterSpacing = 3.sp)
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.width(metrics.dp(8)))
+        Text(APP_DISPLAY_NAME, color = Color.White, fontSize = metrics.sp(14), fontWeight = FontWeight.ExtraBold, lineHeight = metrics.sp(16), textAlign = TextAlign.Center, maxLines = 2, modifier = Modifier.weight(1f))
+        Spacer(Modifier.width(metrics.dp(8)))
         Spacer(Modifier.size(metrics.dp(38)))
     }
 }
@@ -579,7 +522,7 @@ private fun LabeledInput(
     showValid: Boolean = false
 ) {
     Column {
-        Text(label, color = GoalioColors.Caption, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = .8.sp)
+        Text(trans(label), color = GoalioColors.Caption, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = .8.sp)
         Spacer(Modifier.height(7.dp))
         Row(
             Modifier.fillMaxWidth().height(60.dp).background(Field, RoundedCornerShape(13.dp))
@@ -587,7 +530,7 @@ private fun LabeledInput(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(Modifier.weight(1f)) {
-                if (value.isEmpty()) Text(hint, color = GoalioColors.Placeholder, fontSize = 16.sp)
+                if (value.isEmpty()) Text(trans(hint), color = GoalioColors.Placeholder, fontSize = 16.sp)
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
@@ -609,7 +552,7 @@ private fun LabeledInput(
 @Composable
 private fun FieldMessage(text: String, success: Boolean) {
     Text(
-        text,
+        trans(text),
         color = if (success) GoalioColors.Success else GoalioColors.Error,
         fontSize = 11.sp,
         modifier = Modifier.padding(start = 4.dp, top = 6.dp)
@@ -650,7 +593,7 @@ private fun SearchInput(hint: String, value: String, onValueChange: (String) -> 
         SearchGlyph(Modifier.size(21.dp), GoalioColors.Icon)
         Spacer(Modifier.width(13.dp))
         Box(Modifier.weight(1f)) {
-            if (value.isEmpty()) Text(hint, color = GoalioColors.Placeholder, fontSize = 15.sp)
+            if (value.isEmpty()) Text(trans(hint), color = GoalioColors.Placeholder, fontSize = 15.sp)
             BasicTextField(value, onValueChange, singleLine = true, textStyle = TextStyle(Color.White, 15.sp), modifier = Modifier.fillMaxWidth())
         }
     }

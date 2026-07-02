@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- General -->
+    <string name="app_name">Goalio: Футбол онлайн</string>
+    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+
+    <string name="done">Готово</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="back">Назад</string>
+    <string name="next">Далее</string>
+    <string name="skip">Пропустить</string>
+    <string name="open">Открыть</string>
+    <string name="edit">Изменить</string>
+    <string name="search">Поиск</string>
+    <string name="loading">Загрузка…</string>
+    <string name="saving">Сохранение…</string>
+    <string name="checking">Проверка…</string>
+
+    <!-- Language -->
+    <string name="language">Язык</string>
+    <string name="choose_your_language">Выберите язык</string>
+    <string name="language_description">Счёт, обновления матчей и навигация будут отображаться на выбранном вами языке.</string>
+    <string name="device">Устройство</string>
+    <string name="system_default">Системный язык</string>
+    <string name="use_device_language">Использовать язык устройства</string>
+    <string name="all_languages">Все языки</string>
+    <string name="search_languages">Поиск языка</string>
+
+    <!-- Navigation -->
+    <string name="home">Главная</string>
+    <string name="matches">Матчи</string>
+    <string name="games">Игры</string>
+    <string name="play">Играть</string>
+
+    <!-- Match -->
+    <string name="overview">Обзор</string>
+    <string name="timeline">Хронология</string>
+    <string name="stats">Статистика</string>
+    <string name="ai_insight">Анализ ИИ</string>
+    <string name="lineups">Составы</string>
+    <string name="watch">Смотреть</string>
+    <string name="match_details">Детали матча</string>
+    <string name="match_center">Match Center</string>
+    <string name="tap_full_match_details">Нажмите, чтобы открыть все детали матча</string>
+    <string name="match_stats">Статистика матча</string>
+    <string name="win_probability">Вероятность победы</string>
+    <string name="view_analysis">Смотреть анализ</string>
+
+    <string name="referee">Судья</string>
+    <string name="stadium">Стадион</string>
+    <string name="not_listed">Нет данных</string>
+
+    <string name="key_moments">Ключевые моменты</string>
+    <string name="performance_matrix">Матрица показателей</string>
+
+    <string name="possession">Владение</string>
+    <string name="shots">Удары</string>
+    <string name="on_goal">В створ</string>
+    <string name="corners">Угловые</string>
+    <string name="fouls">Фолы</string>
+    <string name="yellow_cards">Жёлтые карточки</string>
+    <string name="saves">Сейвы</string>
+    <string name="passes">Передачи</string>
+    <string name="accurate_passes">Точные передачи</string>
+    <string name="total_shots">Всего ударов</string>
+    <string name="shots_on_target">Удары в створ</string>
+
+    <string name="goalio_ai_summary">ИИ-сводка Goalio</string>
+    <string name="auto_generated_match_context">Автоматически сформированный обзор матча</string>
+
+    <!-- Settings -->
+    <string name="settings">Настройки</string>
+    <string name="settings_subtitle">Профиль, уведомления и настройки приложения</string>
+
+    <string name="preferences">Предпочтения</string>
+    <string name="match_notifications">Уведомления о матчах</string>
+    <string name="on">Вкл</string>
+    <string name="off">Выкл</string>
+
+    <string name="favorite_teams">Любимые команды</string>
+    <string name="favorite_players">Любимые игроки</string>
+    <string name="add_teams">Добавить команды</string>
+    <string name="add_players">Добавить игроков</string>
+
+    <string name="app">Приложение</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="version">Версия</string>
+
+    <!-- Profile -->
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="member_since">Участник с</string>
+    <string name="recently">недавно</string>
+    <string name="level">Уровень</string>
+    <string name="mastery">Мастерство</string>
+    <string name="teams">Команды</string>
+    <string name="players">Игроки</string>
+    <string name="alerts">Уведомления</string>
+    <string name="sign_out">Выйти</string>
+
+    <string name="full_name">Полное имя</string>
+    <string name="full_name_hint">например, Alex Morgan</string>
+
+    <string name="pick_username">Придумайте имя пользователя</string>
+    <string name="username_hint">например, GoalGetter99</string>
+
+    <string name="search_teams">Поиск команд</string>
+    <string name="search_players">Поиск игроков</string>
+
+    <string name="leave_account">Выйти из аккаунта %1$s на этом устройстве</string>
+    <string name="update_display_name">Обновите отображаемое имя в %1$s.</string>
+
+    <!-- World Cup -->
+    <string name="world_cup">Чемпионат мира</string>
+    <string name="north_america_2026">Северная Америка 2026</string>
+
+    <string name="group">Группа</string>
+    <string name="group_a">Группа A</string>
+    <string name="groups">Группы</string>
+
+    <string name="group_a_standings_pending">Таблица группы A появится, когда ФИФА опубликует актуальное положение команд.</string>
+
+    <string name="group_tables">Турнирные таблицы групп</string>
+    <string name="knockout_path">Путь на выбывание</string>
+    <string name="world_cup_matches">Матчи чемпионата мира</string>
+    <string name="world_cup_library">Медиатека ЧМ</string>
+
+    <string name="collapse">Свернуть</string>
+    <string name="expand">Развернуть</string>
+    <string name="view_all">Показать все</string>
+    <string name="choose_date">Выбрать дату</string>
+    <string name="min_read">мин. чтения</string>
+    <string name="read_on_fifa">Читать на FIFA.com</string>
+
+    <!-- Standings -->
+    <string name="rank">Место</string>
+    <string name="team">Команда</string>
+    <string name="stage">Стадия</string>
+
+    <string name="played_short">И</string>
+    <string name="won_short">В</string>
+    <string name="drawn_short">Н</string>
+    <string name="lost_short">П</string>
+    <string name="goal_difference_short">РМ</string>
+    <string name="points_short">О</string>
+
+    <!-- Home -->
+    <string name="live_action">В прямом эфире</string>
+    <string name="next_seven_days">Ближайшие 7 дней</string>
+    <string name="upcoming_today">Сегодня</string>
+
+    <!-- Lineups -->
+    <string name="player_lineups">Составы команд</string>
+    <string name="lineup_subtitle">Стартовый состав, схема и запасные</string>
+    <string name="starting_xi">Стартовый состав</string>
+    <string name="bench">Запасные</string>
+    <string name="formation">Схема игры</string>
+    <string name="home_side">Хозяева</string>
+    <string name="away_side">Гости</string>
+
+    <string name="no_bench_listed">Список запасных недоступен</string>
+    <string name="unavailable">Недоступно</string>
+
+    <!-- Watch -->
+    <string name="watch_highlights">Видео и обзоры</string>
+    <string name="stream">Трансляция</string>
+    <string name="highlights">Обзоры</string>
+
+    <!-- Football Five -->
+    <string name="football_five">The Football Five</string>
+    <string name="football_five_subtitle">5 вопросов. 1 серия правильных ответов. Поднимайтесь в таблице.</string>
+
+    <string name="test_football_knowledge">Проверьте свои знания о футболе</string>
+    <string name="quiz_rules">5 вопросов · по 15 секунд каждый\n+10 XP за верный ответ · −5 XP за неверный</string>
+
+    <string name="play_now">Играть сейчас</string>
+    <string name="leaderboard">Таблица лидеров</string>
+    <string name="top_ten">Топ-10</string>
+    <string name="no_leaderboard">Пока нет данных таблицы лидеров. Сыграйте, чтобы попасть в рейтинг!</string>
+    <string name="you">Вы</string>
+
+    <!-- Onboarding -->
+    <string name="your_football_your_way">Ваш футбол. Как удобно вам.</string>
+    <string name="swipe_to_explore">Проведите пальцем, чтобы узнать больше</string>
+
+    <string name="built_for_matchday">Создано для дня матча</string>
+    <string name="feature">Функция</string>
+
+    <string name="never_miss_kick">Не пропустите ни одного матча</string>
+    <string name="never_miss_kick_subtitle">Следите за игрой в реальном времени: живой счёт, статистика и мгновенные уведомления о матчах.</string>
+
+    <string name="live_match_center">Матч-центр в реальном времени</string>
+    <string name="deep_stats">Подробная статистика</string>
+    <string name="custom_alerts">Персональные уведомления</string>
+
+    <string name="track_tournaments">Следите за каждым турниром</string>
+    <string name="track_tournaments_subtitle">Следите за расписанием, турнирными таблицами и деталями матчей чемпионата мира и крупнейших лиг.</string>
+
+    <string name="fixtures">Расписание матчей</string>
+
+    <string name="build_dashboard">Настройте свою ленту</string>
+    <string name="build_dashboard_subtitle">Закрепите любимые команды и игроков, чтобы главная страница открывалась с важного для вас футбола.</string>
+
+    <string name="favorites">Избранное</string>
+    <string name="player_heroes">Ваши футбольные кумиры</string>
+    <string name="smart_feed">Умная лента</string>
+
+    <!-- Profile Setup -->
+    <string name="build_your_profile">Создайте профиль</string>
+    <string name="profile_title">Настройте %1$s под себя</string>
+    <string name="profile_intro">Выберите свою личность, команды и игроков. Вы сможете изменить их в любое время.</string>
+
+    <string name="your_identity">Ваш профиль</string>
+    <string name="identity_subtitle">Создайте новый профиль или безопасно восстановите существующий.</string>
+
+    <string name="favorite_teams_subtitle">Сформируйте ленту вокруг клубов и сборных, за которыми вы следите.</string>
+    <string name="favorite_players_subtitle">Закрепите игроков, матчи которых вы не хотите пропускать.</string>
+
+    <string name="loading_teams_players">Загрузка команд и игроков…</string>
+    <string name="retry_favorites">Повторить загрузку избранного</string>
+
+    <string name="loading_teams">Загрузка команд…</string>
+    <string name="load_more_teams">Загрузить ещё 6 команд</string>
+
+    <string name="loading_players">Загрузка игроков…</string>
+    <string name="load_more_players">Загрузить ещё 6 игроков</string>
+
+    <string name="selected">выбрано</string>
+    <string name="load_six_more">Загрузить ещё 6</string>
+    <string name="maximum_six_selections">Максимум 6 вариантов.</string>
+
+    <!-- Authentication -->
+    <string name="signing_in">Выполняется вход…</string>
+    <string name="sign_in">Войти</string>
+    <string name="continue_label">Продолжить</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Обновления матчей</string>
+    <string name="notification_channel_description">Напоминания о начале, счёт в реальном времени и уведомления о голах.</string>
+    <string name="notification_next_match">Следующий матч</string>
+    <string name="notification_kickoff">Начало матча</string>
+    <string name="notification_view_match">Смотреть матч</string>
+    <string name="notification_match_reminder">Напоминание о матче</string>
+    <string name="notification_upcoming_match">Предстоящий матч</string>
+    <string name="notification_match_in_24_hours">Матч через 24 часа</string>
+    <string name="notification_match_in_1_hour">Матч через 1 час</string>
+    <string name="notification_kickoff_now">Матч начинается</string>
+
+</resources>

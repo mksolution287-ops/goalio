@@ -141,14 +141,14 @@ fun OnboardingScreen(onBack: () -> Unit, onComplete: () -> Unit) {
                 )
             ) {
                 Text(
-                    if (finalPage) "Done" else "Next",
+                    trans(if (finalPage) "Done" else "Next"),
                     fontSize = metrics.sp(19),
                     fontWeight = FontWeight.ExtraBold
                 )
             }
             Spacer(Modifier.height(metrics.dp(12)))
             Text(
-                if (finalPage) "Your football. Your way." else "Swipe to explore",
+                trans(if (finalPage) "Your football. Your way." else "Swipe to explore"),
                 color = Color(0xFF858585),
                 fontSize = metrics.sp(12),
                 letterSpacing = 1.1.sp,
@@ -204,7 +204,7 @@ private fun OnboardingHeader(currentPage: Int, pageCount: Int, onBack: () -> Uni
         }
         Spacer(Modifier.width(metrics.dp(10)))
         Column {
-            Text("GOALIO", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black, letterSpacing = 3.5.sp)
+            Text(APP_DISPLAY_NAME, color = Color.White, fontSize = metrics.sp(14), fontWeight = FontWeight.Black, lineHeight = metrics.sp(16), maxLines = 2)
             Text(
                 "${(currentPage + 1).toString().padStart(2, '0')}  /  ${pageCount.toString().padStart(2, '0')}",
                 color = GoalioColors.Tertiary,
@@ -222,7 +222,7 @@ private fun OnboardingHeader(currentPage: Int, pageCount: Int, onBack: () -> Uni
             modifier = Modifier.clickable(onClick = onSkip)
         ) {
             Text(
-                "Skip",
+                trans("Skip"),
                 fontSize = metrics.sp(15),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = metrics.dp(20), vertical = metrics.dp(9))
@@ -258,7 +258,7 @@ private fun OnboardingAnimation(index: Int, modifier: Modifier = Modifier) {
 @Composable
 private fun OnboardingPageTextAndPills(page: OnboardingPage, metrics: GoalioMetrics) {
     Text(
-        "BUILT FOR MATCHDAY",
+        trans("BUILT FOR MATCHDAY"),
         color = GoalioColors.Tertiary,
         fontSize = metrics.sp(11),
         letterSpacing = 2.sp,
@@ -266,7 +266,7 @@ private fun OnboardingPageTextAndPills(page: OnboardingPage, metrics: GoalioMetr
     )
     Spacer(Modifier.height(metrics.dp(8)))
     Text(
-        page.title,
+        trans(page.title),
         color = Color.White,
         fontSize = metrics.sp(29),
         lineHeight = metrics.sp(34),
@@ -275,7 +275,7 @@ private fun OnboardingPageTextAndPills(page: OnboardingPage, metrics: GoalioMetr
     )
     Spacer(Modifier.height(metrics.dp(12)))
     Text(
-        page.subtitle,
+        trans(page.subtitle),
         color = Color(0xFFE0E0E0),
         fontSize = metrics.sp(16),
         lineHeight = metrics.sp(23),
@@ -324,7 +324,7 @@ private fun OnboardingPageContent(index: Int, page: OnboardingPage) {
                     .padding(horizontal = metrics.dp(12), vertical = metrics.dp(7))
             ) {
                 Text(
-                    "FEATURE  ${(index + 1).toString().padStart(2, '0')}",
+                    "${trans("FEATURE")}  ${(index + 1).toString().padStart(2, '0')}",
                     color = Color.White,
                     fontSize = metrics.sp(10),
                     fontWeight = FontWeight.ExtraBold,
@@ -365,7 +365,7 @@ private fun FeaturePill(text: String, modifier: Modifier = Modifier) {
             Box(Modifier.size(6.dp).clip(CircleShape).background(GoalioColors.Tertiary))
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text,
+                    trans(text),
                     color = Color.White,
                     fontSize = 9.sp,
                     letterSpacing = .35.sp,

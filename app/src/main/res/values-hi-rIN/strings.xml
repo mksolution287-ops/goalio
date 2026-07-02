@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Goalio: लाइव फुटबॉल स्कोर</string>
+    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+
+    <!-- General -->
+    <string name="done">हो गया</string>
+    <string name="save">सहेजें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="back">वापस</string>
+    <string name="next">आगे</string>
+    <string name="skip">छोड़ें</string>
+    <string name="open">खोलें</string>
+    <string name="edit">संपादित करें</string>
+    <string name="search">खोजें</string>
+    <string name="loading">लोड हो रहा है…</string>
+    <string name="saving">सहेजा जा रहा है…</string>
+    <string name="checking">जाँच की जा रही है…</string>
+
+    <!-- Language -->
+    <string name="language">भाषा</string>
+    <string name="choose_your_language">अपनी भाषा चुनें</string>
+    <string name="language_description">स्कोर, मैच अपडेट और नेविगेशन आपकी पसंदीदा भाषा में दिखाई देंगे।</string>
+    <string name="device">डिवाइस</string>
+    <string name="system_default">सिस्टम डिफ़ॉल्ट</string>
+    <string name="use_device_language">अपने डिवाइस की भाषा का उपयोग करें</string>
+    <string name="all_languages">सभी भाषाएँ</string>
+    <string name="search_languages">भाषाएँ खोजें</string>
+
+    <!-- Navigation -->
+    <string name="home">होम</string>
+    <string name="matches">मैच</string>
+    <string name="games">गेम्स</string>
+    <string name="play">खेलें</string>
+
+    <!-- Match -->
+    <string name="overview">अवलोकन</string>
+    <string name="timeline">टाइमलाइन</string>
+    <string name="stats">आँकड़े</string>
+    <string name="ai_insight">एआई इनसाइट</string>
+    <string name="lineups">लाइनअप</string>
+    <string name="watch">देखें</string>
+    <string name="match_details">मैच विवरण</string>
+    <string name="match_center">मैच सेंटर</string>
+    <string name="tap_full_match_details">पूरा मैच विवरण देखने के लिए टैप करें</string>
+    <string name="match_stats">मैच के आँकड़े</string>
+    <string name="win_probability">जीत की संभावना</string>
+    <string name="view_analysis">विश्लेषण देखें</string>
+
+    <string name="referee">रेफरी</string>
+    <string name="stadium">स्टेडियम</string>
+    <string name="not_listed">सूचीबद्ध नहीं है</string>
+
+    <string name="key_moments">मुख्य पल</string>
+    <string name="performance_matrix">परफॉर्मेंस मैट्रिक्स</string>
+
+    <string name="possession">बॉल पजेशन</string>
+    <string name="shots">शॉट्स</string>
+    <string name="on_goal">गोल पर</string>
+    <string name="corners">कॉर्नर्स</string>
+    <string name="fouls">फाउल्स</string>
+    <string name="yellow_cards">पीले कार्ड</string>
+    <string name="saves">सेव्स</string>
+    <string name="passes">पासेज</string>
+    <string name="accurate_passes">सटीक पासेज</string>
+    <string name="total_shots">कुल शॉट्स</string>
+    <string name="shots_on_target">शॉट्स ऑन टारगेट</string>
+
+    <string name="goalio_ai_summary">Goalio एआई सारांश</string>
+    <string name="auto_generated_match_context">स्वचालित रूप से जनरेट किया गया मैच संदर्भ</string>
+
+    <!-- Settings -->
+    <string name="settings">सेटिंग्स</string>
+    <string name="settings_subtitle">प्रोफ़ाइल, अलर्ट और ऐप नियंत्रण</string>
+
+    <string name="preferences">प्राथमिकताएँ</string>
+    <string name="match_notifications">मैच नोटिफिकेशन</string>
+    <string name="on">चालू</string>
+    <string name="off">बंद</string>
+
+    <string name="favorite_teams">पसंदीदा टीमें</string>
+    <string name="favorite_players">पसंदीदा खिलाड़ी</string>
+    <string name="add_teams">टीमें जोड़ें</string>
+    <string name="add_players">खिलाड़ी जोड़ें</string>
+
+    <string name="app">ऐप</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="version">वर्शन</string>
+
+    <!-- Profile -->
+    <string name="edit_profile">प्रोफ़ाइल संपादित करें</string>
+    <string name="member_since">इस समय से सदस्य</string>
+    <string name="recently">हाल ही में</string>
+    <string name="level">लेवल</string>
+    <string name="mastery">मास्टरी</string>
+    <string name="teams">टीमें</string>
+    <string name="players">खिलाड़ी</string>
+    <string name="alerts">अलर्ट</string>
+    <string name="sign_out">साइन आउट</string>
+
+    <string name="full_name">पूरा नाम</string>
+    <string name="full_name_hint">जैसे: एलेक्स मॉर्गन</string>
+
+    <string name="pick_username">अपना यूजरनेम चुनें</string>
+    <string name="username_hint">जैसे: GoalGetter99</string>
+
+    <string name="search_teams">टीमें खोजें</string>
+    <string name="search_players">खिलाड़ी खोजें</string>
+
+    <string name="leave_account">इस डिवाइस पर इस %1$s खाते को छोड़ें</string>
+    <string name="update_display_name">%1$s के लिए अपना डिस्प्ले नाम अपडेट करें।</string>
+
+    <!-- World Cup -->
+    <string name="world_cup">विश्व कप</string>
+    <string name="north_america_2026">उत्तरी अमेरिका 2026</string>
+
+    <string name="group">ग्रुप</string>
+    <string name="group_a">ग्रुप A</string>
+    <string name="groups">ग्रुप</string>
+
+    <string name="group_a_standings_pending">फीफा (FIFA) द्वारा वर्तमान रैंकिंग जारी करने पर ग्रुप A की तालिका यहाँ दिखाई देगी।</string>
+
+    <string name="group_tables">ग्रुप तालिकाएँ</string>
+    <string name="knockout_path">नॉकआउट पाथ</string>
+    <string name="world_cup_matches">विश्व कप मैच</string>
+    <string name="world_cup_library">विश्व कप लाइब्रेरी</string>
+
+    <string name="collapse">समेटें</string>
+    <string name="expand">विस्तार करें</string>
+    <string name="view_all">सभी देखें</string>
+    <string name="choose_date">तारीख चुनें</string>
+    <string name="min_read">मिनट पठन</string>
+    <string name="read_on_fifa">FIFA.com पर पढ़ें</string>
+
+    <!-- Standings -->
+    <string name="rank">रैंक</string>
+    <string name="team">टीम</string>
+    <string name="stage">चरण</string>
+
+    <string name="played_short">खे</string>
+    <string name="won_short">जी</string>
+    <string name="drawn_short">ड्रॉ</string>
+    <string name="lost_short">हा</string>
+    <string name="goal_difference_short">अं</string>
+    <string name="points_short">अंक</string>
+
+    <!-- Home -->
+    <string name="live_action">लाइव एक्शन</string>
+    <string name="next_seven_days">अगले 7 दिन</string>
+    <string name="upcoming_today">आज के आगामी मैच</string>
+
+    <!-- Lineups -->
+    <string name="player_lineups">खिलाड़ी लाइनअप</string>
+    <string name="lineup_subtitle">शुरुआती XI, फॉर्मेशन और बेंच</string>
+    <string name="starting_xi">शुरुआती XI</string>
+    <string name="bench">बेंच</string>
+    <string name="formation">फॉर्मेशन</string>
+    <string name="home_side">होम</string>
+    <string name="away_side">अवे</string>
+
+    <string name="no_bench_listed">कोई बेंच सूचीबद्ध नहीं है</string>
+    <string name="unavailable">अनुपलब्ध</string>
+
+    <!-- Watch -->
+    <string name="watch_highlights">देखें और हाइलाइट्स</string>
+    <string name="stream">स्ट्रीम</string>
+    <string name="highlights">हाइलाइट्स</string>
+
+    <!-- Football Five -->
+    <string name="football_five">द फुटबॉल फाइव</string>
+    <string name="football_five_subtitle">5 सवाल। 1 स्ट्रीक। तालिका में ऊपर बढ़ें।</string>
+
+    <string name="test_football_knowledge">अपने फुटबॉल ज्ञान का परीक्षण करें</string>
+    <string name="quiz_rules">5 सवाल · प्रत्येक के लिए 15 सेकंड\nसही होने पर +10 XP · गलत होने पर −5 XP</string>
+
+    <string name="play_now">अभी खेलें</string>
+    <string name="leaderboard">लीडरबोर्ड</string>
+    <string name="top_ten">शीर्ष 10</string>
+    <string name="no_leaderboard">अभी कोई लीडरबोर्ड डेटा नहीं है। रैंकिंग पाने के लिए खेलें!</string>
+    <string name="you">आप</string>
+
+    <!-- Onboarding -->
+    <string name="your_football_your_way">आपका फुटबॉल। आपका तरीका।</string>
+    <string name="swipe_to_explore">एक्सप्लोर करने के लिए स्वाइप करें</string>
+
+    <string name="built_for_matchday">मैच के दिन के लिए निर्मित</string>
+    <string name="feature">फ़ीचर</string>
+
+    <string name="never_miss_kick">एक भी किक कभी न चूकें</string>
+    <string name="never_miss_kick_subtitle">लाइव स्कोर, रियल-टाइम आँकड़े और तुरंत मैच अलर्ट के साथ खेल का वैसा ही अनुभव करें जैसा वह घटित होता है।</string>
+
+    <string name="live_match_center">लाइव मैच सेंटर</string>
+    <string name="deep_stats">डीप स्टैट्स</string>
+    <string name="custom_alerts">कस्टम अलर्ट</string>
+
+    <string name="track_tournaments">हर टूर्नामेंट ट्रैक करें</string>
+    <string name="track_tournaments_subtitle">विश्व कप और सबसे बड़ी लीगों के फिक्स्चर, स्टैंडिंग और मैच विवरण फ़ॉलो करें।</string>
+
+    <string name="fixtures">फिक्स्चर</string>
+
+    <string name="build_dashboard">अपना डैशबोर्ड बनाएँ</string>
+    <string name="build_dashboard_subtitle">अपनी पसंदीदा टीमों and खिलाड़ियों को पिन करें ताकि आपका होम फ़ीड आपके पसंदीदा फुटबॉल के साथ खुले।</string>
+
+    <string name="favorites">पसंदीदा</string>
+    <string name="player_heroes">प्लेयर हीरोज़</string>
+    <string name="smart_feed">स्मार्ट फीड</string>
+
+    <!-- Profile Setup -->
+    <string name="build_your_profile">अपनी प्रोफ़ाइल बनाएँ</string>
+    <string name="profile_title">%1$s को अपना बनाएँ</string>
+    <string name="profile_intro">अपनी पहचान, टीमें और खिलाड़ी चुनें। आप इन्हें कभी भी अपडेट कर सकते हैं।</string>
+
+    <string name="your_identity">आपकी पहचान</string>
+    <string name="identity_subtitle">एक नई प्रोफ़ाइल बनाएँ या किसी पुरानी प्रोफ़ाइल को सुरक्षित रूप से रिकवर करें।</string>
+
+    <string name="favorite_teams_subtitle">जिन क्लबों और देशों को आप फ़ॉलो करते हैं, उनके आस-पास एक फ़ीड बनाएँ।</string>
+    <string name="favorite_players_subtitle">उन खिलाड़ियों को पिन करें जिन्हें आप कभी मिस नहीं करना चाहते।</string>
+
+    <string name="loading_teams_players">टीमें और खिलाड़ी लोड हो रहे हैं…</string>
+    <string name="retry_favorites">पसंदीदा दोबारा लोड करने का प्रयास करें</string>
+
+    <string name="loading_teams">टीमें लोड हो रही हैं…</string>
+    <string name="load_more_teams">6 और टीमें लोड करें</string>
+
+    <string name="loading_players">खिलाड़ी लोड हो रहे हैं…</string>
+    <string name="load_more_players">6 और खिलाड़ी लोड करें</string>
+
+    <string name="selected">चयनित</string>
+    <string name="load_six_more">6 और लोड करें</string>
+    <string name="maximum_six_selections">अधिकतम 6 चयन।</string>
+
+    <!-- Authentication -->
+    <string name="signing_in">साइन इन हो रहा है…</string>
+    <string name="sign_in">साइन इन करें</string>
+    <string name="continue_label">जारी रखें</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">मैच अपडेट</string>
+    <string name="notification_channel_description">किकऑफ रिमाइंडर, लाइव स्कोर और गोल अलर्ट।</string>
+    <string name="notification_next_match">अगला मैच</string>
+    <string name="notification_kickoff">किकऑफ</string>
+    <string name="notification_view_match">मैच देखें</string>
+    <string name="notification_match_reminder">मैच रिमाइंडर</string>
+    <string name="notification_upcoming_match">आगामी मैच</string>
+    <string name="notification_match_in_24_hours">24 घंटे में मैच</string>
+    <string name="notification_match_in_1_hour">1 घंटे में मैच</string>
+    <string name="notification_kickoff_now">अभी किकऑफ</string>
+
+</resources>

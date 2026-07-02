@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- General -->
+    <string name="app_name">Goalio: Live-Fußballergebnisse</string>
+    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+
+    <string name="done">Fertig</string>
+    <string name="save">Speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="back">Zurück</string>
+    <string name="next">Weiter</string>
+    <string name="skip">Überspringen</string>
+    <string name="open">Öffnen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="search">Suche</string>
+    <string name="loading">Wird geladen…</string>
+    <string name="saving">Wird gespeichert…</string>
+    <string name="checking">Wird geprüft…</string>
+
+    <!-- Language -->
+    <string name="language">Sprache</string>
+    <string name="choose_your_language">Sprache auswählen</string>
+    <string name="language_description">Ergebnisse, Spielupdates und Navigation folgen deiner bevorzugten Sprache.</string>
+    <string name="device">Gerät</string>
+    <string name="system_default">Systemstandard</string>
+    <string name="use_device_language">Gerätesprache verwenden</string>
+    <string name="all_languages">Alle Sprachen</string>
+    <string name="search_languages">Sprachen suchen</string>
+
+    <!-- Navigation -->
+    <string name="home">Start</string>
+    <string name="matches">Spiele</string>
+    <string name="games">Spiele</string>
+    <string name="play">Spielen</string>
+
+    <!-- Match -->
+    <string name="overview">Übersicht</string>
+    <string name="timeline">Zeitleiste</string>
+    <string name="stats">Statistiken</string>
+    <string name="ai_insight">KI-Analyse</string>
+    <string name="lineups">Aufstellungen</string>
+    <string name="watch">Ansehen</string>
+    <string name="match_details">Spieldetails</string>
+    <string name="match_center">Match Center</string>
+    <string name="tap_full_match_details">Tippen, um alle Spieldetails zu öffnen</string>
+    <string name="match_stats">Spielstatistik</string>
+    <string name="win_probability">Siegwahrscheinlichkeit</string>
+    <string name="view_analysis">Analyse ansehen</string>
+
+    <string name="referee">Schiedsrichter</string>
+    <string name="stadium">Stadion</string>
+    <string name="not_listed">Nicht angegeben</string>
+
+    <string name="key_moments">Schlüsselmomente</string>
+    <string name="performance_matrix">Leistungsanalyse</string>
+
+    <string name="possession">Ballbesitz</string>
+    <string name="shots">Torschüsse</string>
+    <string name="on_goal">Aufs Tor</string>
+    <string name="corners">Ecken</string>
+    <string name="fouls">Fouls</string>
+    <string name="yellow_cards">Gelbe Karten</string>
+    <string name="saves">Paraden</string>
+    <string name="passes">Pässe</string>
+    <string name="accurate_passes">Genaue Pässe</string>
+    <string name="total_shots">Torschüsse gesamt</string>
+    <string name="shots_on_target">Schüsse aufs Tor</string>
+
+    <string name="goalio_ai_summary">Goalio KI-Zusammenfassung</string>
+    <string name="auto_generated_match_context">Automatisch generierter Spielkontext</string>
+
+    <!-- Settings -->
+    <string name="settings">Einstellungen</string>
+    <string name="settings_subtitle">Profil, Benachrichtigungen und App-Einstellungen</string>
+
+    <string name="preferences">Einstellungen</string>
+    <string name="match_notifications">Spielbenachrichtigungen</string>
+    <string name="on">Ein</string>
+    <string name="off">Aus</string>
+
+    <string name="favorite_teams">Lieblingsteams</string>
+    <string name="favorite_players">Lieblingsspieler</string>
+    <string name="add_teams">Teams hinzufügen</string>
+    <string name="add_players">Spieler hinzufügen</string>
+
+    <string name="app">App</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
+    <string name="version">Version</string>
+
+    <!-- Profile -->
+    <string name="edit_profile">Profil bearbeiten</string>
+    <string name="member_since">Mitglied seit</string>
+    <string name="recently">kürzlich</string>
+    <string name="level">Level</string>
+    <string name="mastery">Erfahrungsstufe</string>
+    <string name="teams">Teams</string>
+    <string name="players">Spieler</string>
+    <string name="alerts">Benachrichtigungen</string>
+    <string name="sign_out">Abmelden</string>
+
+    <string name="full_name">Vollständiger Name</string>
+    <string name="full_name_hint">z. B. Alex Morgan</string>
+
+    <string name="pick_username">Wähle deinen Benutzernamen</string>
+    <string name="username_hint">z. B. GoalGetter99</string>
+
+    <string name="search_teams">Teams suchen</string>
+    <string name="search_players">Spieler suchen</string>
+
+    <string name="leave_account">Dieses %1$s-Konto auf diesem Gerät abmelden</string>
+    <string name="update_display_name">Aktualisiere deinen Anzeigenamen für %1$s.</string>
+
+    <!-- World Cup -->
+    <string name="world_cup">Weltmeisterschaft</string>
+    <string name="north_america_2026">Nordamerika 2026</string>
+
+    <string name="group">Gruppe</string>
+    <string name="group_a">Gruppe A</string>
+    <string name="groups">Gruppen</string>
+
+    <string name="group_a_standings_pending">Die Tabelle für Gruppe A wird angezeigt, sobald die FIFA die aktuellen Tabellenstände veröffentlicht.</string>
+
+    <string name="group_tables">Gruppentabellen</string>
+    <string name="knockout_path">Der Weg durch die K.-o.-Runde</string>
+    <string name="world_cup_matches">WM-Spiele</string>
+    <string name="world_cup_library">WM-Mediathek</string>
+
+    <string name="collapse">Einklappen</string>
+    <string name="expand">Ausklappen</string>
+    <string name="view_all">Alle anzeigen</string>
+    <string name="choose_date">Datum wählen</string>
+    <string name="min_read">Min. Lesezeit</string>
+    <string name="read_on_fifa">Auf FIFA.com lesen</string>
+
+    <!-- Standings -->
+    <string name="rank">Rang</string>
+    <string name="team">Team</string>
+    <string name="stage">Phase</string>
+
+    <string name="played_short">Sp</string>
+    <string name="won_short">S</string>
+    <string name="drawn_short">U</string>
+    <string name="lost_short">N</string>
+    <string name="goal_difference_short">TD</string>
+    <string name="points_short">PKT</string>
+
+    <!-- Home -->
+    <string name="live_action">Live-Action</string>
+    <string name="next_seven_days">Nächste 7 Tage</string>
+    <string name="upcoming_today">Heute anstehend</string>
+
+    <!-- Lineups -->
+    <string name="player_lineups">Aufstellungen</string>
+    <string name="lineup_subtitle">Startelf, Formation und Ersatzbank</string>
+    <string name="starting_xi">Startelf</string>
+    <string name="bench">Ersatzbank</string>
+    <string name="formation">Aufstellung</string>
+    <string name="home_side">Heim</string>
+    <string name="away_side">Auswärts</string>
+
+    <string name="no_bench_listed">Keine Ersatzbank verfügbar</string>
+    <string name="unavailable">Nicht verfügbar</string>
+
+    <!-- Watch -->
+    <string name="watch_highlights">Ansehen &amp; Highlights</string>
+    <string name="stream">Stream</string>
+    <string name="highlights">Highlights</string>
+
+    <!-- Football Five -->
+    <string name="football_five">The Football Five</string>
+    <string name="football_five_subtitle">5 Fragen. 1 Serie. Klettere die Tabelle hoch.</string>
+
+    <string name="test_football_knowledge">Teste dein Fußballwissen</string>
+    <string name="quiz_rules">5 Fragen · je 15 Sekunden\n+10 XP richtig · −5 XP falsch</string>
+
+    <string name="play_now">Jetzt spielen</string>
+    <string name="leaderboard">Bestenliste</string>
+    <string name="top_ten">Top 10</string>
+    <string name="no_leaderboard">Noch keine Daten in der Bestenliste. Spiele, um platziert zu werden!</string>
+    <string name="you">Du</string>
+
+    <!-- Onboarding -->
+    <string name="your_football_your_way">Dein Fußball. Deine Art.</string>
+    <string name="swipe_to_explore">Zum Entdecken wischen</string>
+
+    <string name="built_for_matchday">Gemacht für den Spieltag</string>
+    <string name="feature">Funktion</string>
+
+    <string name="never_miss_kick">Verpasse nie einen Anstoß</string>
+    <string name="never_miss_kick_subtitle">Erlebe das Spiel live mit Echtzeit-Ergebnissen, Statistiken und sofortigen Spielbenachrichtigungen.</string>
+
+    <string name="live_match_center">Live Match Center</string>
+    <string name="deep_stats">Detaillierte Statistiken</string>
+    <string name="custom_alerts">Individuelle Benachrichtigungen</string>
+
+    <string name="track_tournaments">Verfolge jedes Turnier</string>
+    <string name="track_tournaments_subtitle">Verfolge Spielpläne, Tabellen und Spieldetails der Weltmeisterschaft und der größten Ligen.</string>
+
+    <string name="fixtures">Spielpläne</string>
+
+    <string name="build_dashboard">Gestalte dein Dashboard</string>
+    <string name="build_dashboard_subtitle">Pinne Lieblingsteams und -spieler an, damit dein Startbildschirm mit dem Fußball beginnt, der dir wichtig ist.</string>
+
+    <string name="favorites">Favoriten</string>
+    <string name="player_heroes">Deine Fußballhelden</string>
+    <string name="smart_feed">Smarter Feed</string>
+
+    <!-- Profile Setup -->
+    <string name="build_your_profile">Erstelle dein Profil</string>
+    <string name="profile_title">Mach %1$s zu deinem</string>
+    <string name="profile_intro">Wähle deine Identität, Teams und Spieler. Du kannst diese jederzeit ändern.</string>
+
+    <string name="your_identity">Deine Identität</string>
+    <string name="identity_subtitle">Erstelle ein neues Profil oder stelle eines sicher wieder her.</string>
+
+    <string name="favorite_teams_subtitle">Erstelle einen Feed rund um die Vereine und Nationalmannschaften, die du verfolgst.</string>
+    <string name="favorite_players_subtitle">Pinne die Spieler an, die du nie verpassen möchtest.</string>
+
+    <string name="loading_teams_players">Teams und Spieler werden geladen…</string>
+    <string name="retry_favorites">Favoriten erneut laden</string>
+
+    <string name="loading_teams">Teams werden geladen…</string>
+    <string name="load_more_teams">6 weitere Teams laden</string>
+
+    <string name="loading_players">Spieler werden geladen…</string>
+    <string name="load_more_players">6 weitere Spieler laden</string>
+
+    <string name="selected">ausgewählt</string>
+    <string name="load_six_more">6 weitere laden</string>
+    <string name="maximum_six_selections">Maximal 6 Auswahlen.</string>
+
+    <!-- Authentication -->
+    <string name="signing_in">Anmeldung läuft…</string>
+    <string name="sign_in">Anmelden</string>
+    <string name="continue_label">Weiter</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Spiel-Updates</string>
+    <string name="notification_channel_description">Anstoß-Erinnerungen, Live-Ergebnisse und Torbenachrichtigungen.</string>
+    <string name="notification_next_match">Nächstes Spiel</string>
+    <string name="notification_kickoff">Anstoß</string>
+    <string name="notification_view_match">Spiel ansehen</string>
+    <string name="notification_match_reminder">Spielerinnerung</string>
+    <string name="notification_upcoming_match">Bevorstehendes Spiel</string>
+    <string name="notification_match_in_24_hours">Spiel in 24 Stunden</string>
+    <string name="notification_match_in_1_hour">Spiel in 1 Stunde</string>
+    <string name="notification_kickoff_now">Anstoß jetzt</string>
+
+</resources>

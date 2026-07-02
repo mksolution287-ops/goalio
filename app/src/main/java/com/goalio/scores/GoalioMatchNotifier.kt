@@ -10,33 +10,39 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.text.format.DateUtils
+import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 object GoalioMatchNotifier {
     private const val CHANNEL_ID = "goalio_live_match_alerts"
-    private const val CHANNEL_NAME = "Live match alerts"
     private const val UPCOMING_NOTIFICATION_ID = 90210
+    private const val NOTIFICATION_GROUP = "goalio_match_updates"
 
     fun scheduleUpcoming(context: Context, matches: List<ScheduleMatch>) {
         val now = System.currentTimeMillis()
         val upcoming = matches.asSequence().filter { it.state == "pre" }
             .mapNotNull { match -> match.kickoffEpochMillis()?.takeIf { it > now }?.let { match to it } }
             .sortedBy { it.second }.take(20).toList()
-        if (upcoming.isEmpty()) return
+        if (upcoming.isEmpty()) {
+            NotificationManagerCompat.from(context).cancel(UPCOMING_NOTIFICATION_ID)
+            return
+        }
         showUpcomingCountdown(context, upcoming.first().first, upcoming.first().second)
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         upcoming.forEach { (match, kickoff) ->
-            listOf(24 * 60 * 60 * 1000L to "Match in 24 hours", 60 * 60 * 1000L to "Match in 1 hour", 0L to "Kickoff now")
-                .forEach { (before, title) ->
+            listOf(
+                24 * 60 * 60 * 1000L to R.string.notification_match_in_24_hours,
+                60 * 60 * 1000L to R.string.notification_match_in_1_hour,
+                0L to R.string.notification_kickoff_now
+            ).forEach { (before, titleRes) ->
                     val trigger = kickoff - before
                     if (trigger <= now) return@forEach
                     val intent = Intent(context, MatchReminderReceiver::class.java).apply {
-                        putExtra("title", title)
+                        putExtra("title", context.getString(titleRes))
                         putExtra("message", match.compactNotificationName())
                         putExtra("kickoff", kickoff)
                     }
@@ -71,22 +77,17 @@ object GoalioMatchNotifier {
                 "${matchClockText(kickoff)} • ${event.message}"
             } ?: event.message
             val builder = NotificationCompat.Builder(appContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.ic_stat_goalio)
+                .setColor(ContextCompat.getColor(appContext, R.color.goalio_tertiary))
                 .setContentTitle(event.title)
                 .setContentText(contentText)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_EVENT)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setGroup(NOTIFICATION_GROUP)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
-            event.kickoffEpochMillis?.let { kickoff ->
-                builder
-                    .setWhen(kickoff)
-                    .setShowWhen(true)
-                    .setUsesChronometer(true)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && kickoff > System.currentTimeMillis()) {
-                    builder.setChronometerCountDown(true)
-                }
-            }
             val notification = builder.build()
             manager.notify(event.id.hashCode(), notification)
         }
@@ -104,22 +105,59 @@ object GoalioMatchNotifier {
     private fun showUpcomingCountdown(context: Context, match: ScheduleMatch, kickoff: Long) {
         if (!canNotify(context)) return
         ensureChannel(context)
-        val text = "${match.compactNotificationName()} • Starts in"
-        val updatedAt = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
-        val builder = baseBuilder(context, "Next match", text)
-            .setSubText("Updated $updatedAt")
-            .setWhen(kickoff).setShowWhen(true).setUsesChronometer(true).setOngoing(false)
-            .setOnlyAlertOnce(true).setSilent(true)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) builder.setChronometerCountDown(true)
+        val now = System.currentTimeMillis()
+        val relativeKickoff = DateUtils.getRelativeTimeSpanString(
+            kickoff,
+            now,
+            DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.FORMAT_ABBREV_RELATIVE
+        )
+        val kickoffTime = DateFormat.getTimeFormat(context).format(Date(kickoff))
+        val kickoffLine = "${context.getString(R.string.notification_kickoff)} $relativeKickoff • $kickoffTime"
+        val venue = match.venue?.name?.takeIf(String::isNotBlank)
+        val expandedText = listOfNotNull(kickoffLine, venue).joinToString("\n")
+        val launch = contentIntent(context)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_goalio)
+            .setColor(ContextCompat.getColor(context, R.color.goalio_tertiary))
+            .setContentTitle(match.compactNotificationName())
+            .setContentText(kickoffLine)
+            .setSubText(context.getString(R.string.notification_next_match))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(expandedText))
+            .setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setGroup(NOTIFICATION_GROUP)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(true)
+            .setTimeoutAfter((kickoff - now).coerceAtLeast(0L) + DateUtils.HOUR_IN_MILLIS)
+            .setContentIntent(launch)
+            .addAction(0, context.getString(R.string.open), launch)
+            .setOngoing(false)
+            .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
         NotificationManagerCompat.from(context).notify(UPCOMING_NOTIFICATION_ID, builder.build())
     }
 
     private fun baseBuilder(context: Context, title: String, text: String): NotificationCompat.Builder {
-        val launch = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        return NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_launcher_foreground)
+        val launch = contentIntent(context)
+        return NotificationCompat.Builder(context, CHANNEL_ID).setSmallIcon(R.drawable.ic_stat_goalio)
+            .setColor(ContextCompat.getColor(context, R.color.goalio_tertiary))
             .setContentTitle(title).setContentText(text).setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            .setPriority(NotificationCompat.PRIORITY_HIGH).setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(launch)
+            .setPriority(NotificationCompat.PRIORITY_HIGH).setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setGroup(NOTIFICATION_GROUP)
+            .setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(launch)
     }
+
+    private fun contentIntent(context: Context): PendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        },
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 
     private fun canNotify(context: Context): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
         ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
@@ -127,10 +165,13 @@ object GoalioMatchNotifier {
     private fun ensureChannel(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = context.getSystemService(NotificationManager::class.java)
-        if (manager.getNotificationChannel(CHANNEL_ID) != null) return
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "Alerts when tracked football matches start or the score changes."
+            NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.notification_channel_name),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = context.getString(R.string.notification_channel_description)
             }
         )
     }
@@ -148,7 +189,11 @@ object GoalioMatchNotifier {
 
 class MatchReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        GoalioMatchNotifier.showScheduled(context, intent.getStringExtra("title") ?: "Match reminder",
-            intent.getStringExtra("message") ?: "Upcoming match", intent.getLongExtra("kickoff", System.currentTimeMillis()))
+        GoalioMatchNotifier.showScheduled(
+            context,
+            intent.getStringExtra("title") ?: context.getString(R.string.notification_match_reminder),
+            intent.getStringExtra("message") ?: context.getString(R.string.notification_upcoming_match),
+            intent.getLongExtra("kickoff", System.currentTimeMillis())
+        )
     }
 }

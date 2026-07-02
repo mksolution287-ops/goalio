@@ -15,7 +15,7 @@ import com.goalio.scores.ui.theme.GoalioColors
 data class BackendProfile(
     val userId: String,
     val name: String,
-    val username: String,
+    val username: String?,
     val favoriteTeamIds: List<String>,
     val favoritePlayerIds: List<String>,
     val favoriteTeams: List<String>,
@@ -272,7 +272,7 @@ object GoalioBackendApi {
         path = "/api/v1/users/profile",
         body = JSONObject().apply {
             put("name", draft.fullName)
-            put("username", draft.username.lowercase())
+            if (draft.username.isNotBlank()) put("username", draft.username.lowercase())
             put("favoriteTeamIds", JSONArray(draft.teamIds.toList()))
             put("favoritePlayerIds", JSONArray(draft.playerIds.toList()))
             put("onboardingCompleted", true)
@@ -290,6 +290,27 @@ object GoalioBackendApi {
     suspend fun getHome(): BackendHome = request("GET", "/api/v1/home") { json ->
         BackendHome(json.getString("greeting"), parseProfile(json.getJSONObject("profile")))
     }
+
+    suspend fun translateText(text: String, targetLanguage: String): String = request(
+        "POST",
+        "/api/v1/translate/text",
+        JSONObject().put("text", text).put("target_language", targetLanguage)
+    ) { it.optString("translated_text", text) }
+
+    suspend fun translateBatch(texts: List<String>, targetLanguage: String): Map<String, String> = request(
+        "POST",
+        "/api/v1/translate/batch",
+        JSONObject().put("texts", JSONArray(texts)).put("target_language", targetLanguage)
+    ) { json ->
+        val values = json.getJSONObject("translations")
+        buildMap { values.keys().forEach { key -> put(key, values.optString(key, key)) } }
+    }
+
+    suspend fun translateJson(data: JSONObject, targetLanguage: String): JSONObject = request(
+        "POST",
+        "/api/v1/translate/json",
+        JSONObject().put("data", data).put("target_language", targetLanguage)
+    ) { it.optJSONObject("data") ?: data }
 
     suspend fun isUsernameAvailable(username: String): Boolean = request(
         "GET", "/api/v1/users/username/availability?username=${encode(username)}"
@@ -438,7 +459,7 @@ object GoalioBackendApi {
     private fun parseProfile(json: JSONObject) = BackendProfile(
         userId = json.getString("userId"),
         name = json.getString("name"),
-        username = json.getString("username"),
+        username = json.nullableString("username"),
         favoriteTeamIds = json.optJSONArray("favoriteTeamIds").toStrings(),
         favoritePlayerIds = json.optJSONArray("favoritePlayerIds").toStrings(),
         favoriteTeams = json.optJSONArray("favoriteTeams").toStrings(),

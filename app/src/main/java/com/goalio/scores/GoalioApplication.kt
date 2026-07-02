@@ -5,10 +5,21 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.onesignal.OneSignal
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class GoalioApplication : Application() {
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
+        applicationScope.launch {
+            runCatching { TranslationManager.get(this@GoalioApplication).warmCache() }
+                .onFailure(FirebaseCrashlytics.getInstance()::recordException)
+        }
 
         FirebaseCrashlytics.getInstance().apply {
             setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
@@ -21,22 +32,24 @@ class GoalioApplication : Application() {
                     .setMinimumFetchIntervalInSeconds(if (BuildConfig.DEBUG) 0 else 3600)
                     .build()
             )
-            setDefaultsAsync(R.xml.remote_config_defaults)
-            fetchAndActivate()
-                .addOnSuccessListener {
-                    FirebaseCrashlytics.getInstance().setCustomKey(
-                        "backend_base_url",
-                        getString("backend_base_url").ifBlank { BuildConfig.BACKEND_BASE_URL }
-                    )
-                }
-                .addOnFailureListener { error ->
-                    FirebaseCrashlytics.getInstance().recordException(error)
+            setDefaultsAsync(R.xml.remote_config_defaults).addOnCompleteListener {
+                OneSignal.initWithContext(this@GoalioApplication, GoalioRemoteConfig.oneSignalAppId())
+                fetchAndActivate()
+                    .addOnSuccessListener {
+                        FirebaseCrashlytics.getInstance().setCustomKey(
+                            "backend_base_url",
+                            getString("backend_base_url").ifBlank { BuildConfig.BACKEND_BASE_URL }
+                        )
+                    }
+                    .addOnFailureListener { error ->
+                        FirebaseCrashlytics.getInstance().recordException(error)
+                    }
                 }
         }
+    }
 
-        val oneSignalAppId = getString(R.string.onesignal_app_id)
-        if (oneSignalAppId.matches(Regex("[0-9a-fA-F-]{36}"))) {
-            OneSignal.initWithContext(this, oneSignalAppId)
-        }
+    companion object {
+        lateinit var instance: GoalioApplication
+            private set
     }
 }

@@ -52,13 +52,18 @@ object MatchRepository {
             .orEmpty()
         publishMatches(persistedCanonical, overwrite = false)
         publishMatches(range, overwrite = false)
-        return range.map { canonicalMatches.value[matchKey(it.league, it.matchId)] ?: it }
+        val source = range.ifEmpty {
+            persistedCanonical.filter { match ->
+                match.localCacheDate()?.toString()?.let { it >= from && it <= to } ?: true
+            }
+        }
+        return source.map { canonicalMatches.value[matchKey(it.league, it.matchId)] ?: it }
     }
 
     suspend fun refreshFeed(context: Context, from: String, to: String): MatchFeedResult {
         val previousMatches = cachedFeed(context, from, to)
         val before = previousMatches.scoreSignature()
-        val matches = coroutineScope {
+        val rawMatches = coroutineScope {
             leagues.map { league ->
                 async {
                     runCatching { GoalioBackendApi.getScheduleRange(league, from, to).matches }
@@ -67,15 +72,18 @@ object MatchRepository {
             }.flatMap { it.await() }
         }.distinctBy { "${it.league}:${it.matchId}" }
             .sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
-        val changed = before.isNotBlank() && before != matches.scoreSignature()
-        val notificationEvents = matchNotificationEvents(previousMatches, matches)
+        if (rawMatches.isEmpty() && previousMatches.isNotEmpty()) {
+            return MatchFeedResult(previousMatches, scoreChanged = false)
+        }
+        val changed = before.isNotBlank() && before != rawMatches.scoreSignature()
+        val notificationEvents = matchNotificationEvents(previousMatches, rawMatches)
+        val matches = rawMatches.localized(context)
         publishMatches(matches, overwrite = true)
         GoalioMatchNotifier.scheduleUpcoming(context, canonicalMatches.value.values.toList())
-        val canonicalSnapshot = canonicalMatches.value.values.toList()
         withContext(Dispatchers.IO) {
             context.cachePrefs().edit()
-                .putString(feedKey(from, to), JSONArray(matches.map { it.toJson() }).toString())
-                .putString(CANONICAL_MATCHES, JSONArray(canonicalSnapshot.map { it.toJson() }).toString())
+                .putString(feedKey(from, to), JSONArray(rawMatches.map { it.toJson() }).toString())
+                .putString(CANONICAL_MATCHES, JSONArray(rawMatches.map { it.toJson() }).toString())
                 .apply()
         }
         return MatchFeedResult(matches.map { canonicalMatches.value[matchKey(it.league, it.matchId)] ?: it }, changed, notificationEvents)
@@ -90,12 +98,13 @@ object MatchRepository {
     }
 
     suspend fun refreshDetail(context: Context, league: String, matchId: String): MatchDetail {
-        val detail = GoalioBackendApi.getMatchDetail(league, matchId)
+        val rawDetail = GoalioBackendApi.getMatchDetail(league, matchId)
             .reconcile(canonicalMatches.value[matchKey(league, matchId)])
+        val detail = rawDetail.localized(context)
         canonicalDetails.update { it + (matchKey(league, matchId) to detail) }
         withContext(Dispatchers.IO) {
             context.cachePrefs().edit()
-                .putString(detailKey(league, matchId), detail.toJson().toString())
+                .putString(detailKey(league, matchId), rawDetail.toJson().toString())
                 .apply()
         }
         return detail
@@ -161,6 +170,79 @@ object MatchRepository {
 
 private fun matchKey(league: String, matchId: String) = "$league:$matchId"
 
+private suspend fun List<ScheduleMatch>.localized(context: Context): List<ScheduleMatch> {
+    val language = AppLanguageState.current
+    if (TranslationManager.isEnglish(language)) return this
+    val manager = TranslationManager.get(context)
+    val texts = flatMap { match ->
+        listOfNotNull(
+            match.name,
+            match.shortName,
+            match.statusDescription,
+            match.venue?.name,
+            match.venue?.city
+        )
+    }
+    val translated = manager.translateBatch(texts, language)
+    fun String?.tr(): String? = this?.let { translated[it] ?: it }
+    return map { match ->
+        match.copy(
+            name = match.name.tr(),
+            shortName = match.shortName.tr(),
+            statusDescription = match.statusDescription.tr(),
+            venue = match.venue?.copy(
+                name = match.venue.name.tr(),
+                city = match.venue.city.tr()
+            )
+        )
+    }
+}
+
+private suspend fun MatchDetail.localized(context: Context): MatchDetail {
+    val language = AppLanguageState.current
+    if (TranslationManager.isEnglish(language)) return this
+    val manager = TranslationManager.get(context)
+    val texts = buildList {
+        listOfNotNull(summary, venue?.name, venue?.city, weather?.displayValue, weather?.condition).forEach(::add)
+        officials.forEach { listOfNotNull(it.role).forEach(::add) }
+        playerLeaders.forEach { group ->
+            listOfNotNull(group.category).forEach(::add)
+            group.players.forEach { player -> listOfNotNull(player.position, player.mainStat).forEach(::add) }
+        }
+        lineups.forEach { team ->
+            listOfNotNull(team.teamName, team.formation, team.coach).forEach(::add)
+            team.starters.forEach { player -> listOfNotNull(player.position).forEach(::add) }
+            team.substitutes.forEach { player -> listOfNotNull(player.position).forEach(::add) }
+        }
+    }
+    val translated = manager.translateBatch(texts, language)
+    fun String?.tr(): String? = this?.let { translated[it] ?: it }
+    return copy(
+        summary = summary.tr(),
+        venue = venue?.copy(name = venue.name.tr(), city = venue.city.tr()),
+        weather = weather?.copy(displayValue = weather.displayValue.tr(), condition = weather.condition.tr()),
+        officials = officials.map { it.copy(role = it.role.tr()) },
+        playerLeaders = playerLeaders.map { group ->
+            group.copy(
+                category = group.category.tr(),
+                players = group.players.map { player ->
+                    player.copy(position = player.position.tr(), mainStat = player.mainStat.tr())
+                }
+            )
+        },
+        lineups = lineups.map { team ->
+            team.copy(
+                teamName = team.teamName.tr(),
+                formation = team.formation.tr(),
+                coach = team.coach.tr(),
+                starters = team.starters.map { player -> player.copy(position = player.position.tr()) },
+                substitutes = team.substitutes.map { player -> player.copy(position = player.position.tr()) }
+            )
+        },
+        events = events
+    )
+}
+
 private fun MatchDetail.reconcile(match: ScheduleMatch?): MatchDetail {
     if (match == null) return this
     return copy(
@@ -201,6 +283,12 @@ private fun matchNotificationEvents(
 
 private fun ScheduleMatch.scorePair(): String =
     "${homeTeam?.score ?: "-"}:${awayTeam?.score ?: "-"}"
+
+private fun ScheduleMatch.localCacheDate(): java.time.LocalDate? = runCatching {
+    java.time.OffsetDateTime.parse(kickoff)
+        .atZoneSameInstant(java.time.ZoneId.systemDefault())
+        .toLocalDate()
+}.getOrNull()
 
 internal fun ScheduleMatch.compactNotificationName(): String {
     val home = homeTeam?.abbreviation ?: homeTeam?.shortName ?: homeTeam?.name ?: "Home"

@@ -21,8 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.SportsSoccer
@@ -41,10 +39,8 @@ import com.goalio.scores.ui.theme.GoalioColors
 
 @Composable
 fun GoalioTopBar(
-    title: String = "GOALIO",
+    title: String = APP_DISPLAY_NAME,
     onBack: (() -> Unit)? = null,
-    onSearch: () -> Unit = {},
-    onNotifications: () -> Unit = {},
     onSettings: () -> Unit
 ) {
     Row(Modifier.fillMaxWidth().heightIn(min = 48.dp, max = 58.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -52,11 +48,17 @@ fun GoalioTopBar(
             ChromeIcon(Icons.AutoMirrored.Filled.ArrowBack, "Back", onBack)
             Spacer(Modifier.width(12.dp))
         }
-        Text(title, color = GoalioColors.Secondary, fontSize = 26.sp, fontWeight = FontWeight.Black, letterSpacing = 4.sp, modifier = Modifier.weight(1f))
-        ChromeIcon(Icons.Default.Search, "Search", onSearch)
-        Spacer(Modifier.width(16.dp))
-        ChromeIcon(Icons.Default.Notifications, "Notifications", onNotifications)
-        Spacer(Modifier.width(16.dp))
+        val isBrandTitle = title == APP_DISPLAY_NAME
+        Text(
+            trans(title),
+            color = GoalioColors.Secondary,
+            fontSize = if (isBrandTitle) 15.sp else 26.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = if (isBrandTitle) 0.sp else 4.sp,
+            lineHeight = if (isBrandTitle) 17.sp else 30.sp,
+            maxLines = if (isBrandTitle) 2 else 1,
+            modifier = Modifier.weight(1f)
+        )
         ChromeIcon(Icons.Default.Settings, "Settings", onSettings)
     }
 }
@@ -91,7 +93,7 @@ fun GoalioBottomBar(modifier: Modifier = Modifier, selected: String, onHome: () 
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
                         Icon(bottomBarIcon(label), contentDescription = label, tint = fg, modifier = Modifier.size(24.dp))
                         Spacer(Modifier.height(4.dp))
-                        Text(label, color = fg, fontWeight = FontWeight.Bold, fontSize = 10.sp, maxLines = 1)
+                        Text(trans(label), color = fg, fontWeight = FontWeight.Bold, fontSize = 10.sp, maxLines = 1)
                     }
                 }
             }

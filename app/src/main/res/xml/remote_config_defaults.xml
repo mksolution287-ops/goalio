@@ -6,6 +6,16 @@
         <value>https://goalio-backend-sd2p.onrender.com</value>
     </entry>
 
+    <entry>
+        <key>privacy_policy_url</key>
+        <value>https://goalio.app/privacy</value>
+    </entry>
+
+    <entry>
+        <key>onesignal_app_id</key>
+        <value>4159dbb2-0f8d-4da3-945d-dc590d14f729</value>
+    </entry>
+
     <!-- Profile setup feature switch. -->
     <entry>
         <key>profile_setup_enabled</key>

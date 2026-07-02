@@ -9,8 +9,30 @@ import org.json.JSONObject
 object QuizRepository {
     private const val PREFS = "goalio_quiz_cache"
     private const val LEADERBOARD = "leaderboard"
-    suspend fun start() = GoalioBackendApi.startQuiz()
-    suspend fun answer(sessionId: String, questionId: String, answerIndex: Int) = GoalioBackendApi.answerQuiz(sessionId, questionId, answerIndex)
+    suspend fun start(): QuizSessionInfo {
+        val session = GoalioBackendApi.startQuiz()
+        val language = AppLanguageState.current
+        if (TranslationManager.isEnglish(language)) return session
+        val source = session.questions.flatMap { listOf(it.category, it.prompt) + it.options }
+        val translations = TranslationManager.get(GoalioApplication.instance).translateBatch(source, language)
+        return session.copy(questions = session.questions.map { question ->
+            question.copy(
+                category = translations[question.category] ?: question.category,
+                prompt = translations[question.prompt] ?: question.prompt,
+                options = question.options.map { translations[it] ?: it }
+            )
+        })
+    }
+
+    suspend fun answer(sessionId: String, questionId: String, answerIndex: Int): QuizAnswerInfo {
+        val result = GoalioBackendApi.answerQuiz(sessionId, questionId, answerIndex)
+        val language = AppLanguageState.current
+        if (TranslationManager.isEnglish(language)) return result
+        return result.copy(
+            explanation = TranslationManager.get(GoalioApplication.instance)
+                .translateText(result.explanation, language)
+        )
+    }
     fun cachedLeaderboard(context: Context): QuizLeaderboardInfo? = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(LEADERBOARD, null)?.let { raw ->
         runCatching { JSONObject(raw).toLeaderboard() }.getOrNull()
     }
