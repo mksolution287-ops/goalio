@@ -36,8 +36,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -557,7 +560,7 @@ private fun ProfileHeader(onBack: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(Modifier.size(metrics.dp(38)).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
-            BackGlyph(Modifier.size(metrics.dp(25)), Color.White)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(metrics.dp(25)))
         }
         Spacer(Modifier.weight(1f))
         Text("Goalio", color = Color.White, fontSize = metrics.sp(23), fontWeight = FontWeight.ExtraBold, letterSpacing = 3.sp)

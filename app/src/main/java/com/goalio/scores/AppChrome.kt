@@ -2,8 +2,30 @@ package com.goalio.scores
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -11,72 +33,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.goalio.scores.ui.theme.GoalioColors
 
 @Composable
-fun GoalioTopBar(title: String = "GOALIO", onBack: (() -> Unit)? = null, onSearch: () -> Unit = {}, onNotifications: () -> Unit = {}, onSettings: () -> Unit) {
+fun GoalioTopBar(
+    title: String = "GOALIO",
+    onBack: (() -> Unit)? = null,
+    onSearch: () -> Unit = {},
+    onNotifications: () -> Unit = {},
+    onSettings: () -> Unit
+) {
     Row(Modifier.fillMaxWidth().heightIn(min = 48.dp, max = 58.dp), verticalAlignment = Alignment.CenterVertically) {
-        if (onBack != null) Text("‹", color = Color.White, fontSize = 38.sp, modifier = Modifier.clickable(onClick = onBack).padding(end = 12.dp))
+        if (onBack != null) {
+            ChromeIcon(Icons.AutoMirrored.Filled.ArrowBack, "Back", onBack)
+            Spacer(Modifier.width(12.dp))
+        }
         Text(title, color = GoalioColors.Secondary, fontSize = 26.sp, fontWeight = FontWeight.Black, letterSpacing = 4.sp, modifier = Modifier.weight(1f))
-        ChromeIcon(R.drawable.ic_search, "Search", onSearch)
-        Spacer(Modifier.width(16.dp)); ChromeIcon(R.drawable.ic_bell, "Notifications", onNotifications)
-        Spacer(Modifier.width(16.dp)); ChromeIcon(R.drawable.ic_settings, "Settings", onSettings)
+        ChromeIcon(Icons.Default.Search, "Search", onSearch)
+        Spacer(Modifier.width(16.dp))
+        ChromeIcon(Icons.Default.Notifications, "Notifications", onNotifications)
+        Spacer(Modifier.width(16.dp))
+        ChromeIcon(Icons.Default.Settings, "Settings", onSettings)
     }
 }
 
-@Composable private fun ChromeIcon(icon: Int, description: String, onClick: () -> Unit) {
-    Icon(painterResource(icon), description, tint = GoalioColors.Secondary, modifier = Modifier.size(25.dp).clickable(onClick = onClick))
-}
-
 @Composable
-private fun BottomBarIcon(label: String, tint: Color, modifier: Modifier = Modifier) {
-    androidx.compose.foundation.Canvas(modifier) {
-        val w = size.width
-        val h = size.height
-        when (label) {
-            "Home" -> {
-                val path = androidx.compose.ui.graphics.Path().apply {
-                    moveTo(w * 0.5f, h * 0.2f)
-                    lineTo(w * 0.2f, h * 0.5f)
-                    lineTo(w * 0.2f, h * 0.85f)
-                    lineTo(w * 0.8f, h * 0.85f)
-                    lineTo(w * 0.8f, h * 0.5f)
-                    close()
-                }
-                drawPath(path, tint, style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
-            }
-            "Matches" -> {
-                drawCircle(tint, w * 0.36f, style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
-                drawArc(tint, 45f, 90f, false, style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
-                drawArc(tint, 225f, 90f, false, style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
-            }
-            "World Cup" -> {
-                val path = androidx.compose.ui.graphics.Path().apply {
-                    moveTo(w * 0.32f, h * 0.2f)
-                    lineTo(w * 0.68f, h * 0.2f)
-                    lineTo(w * 0.64f, h * 0.5f)
-                    lineTo(w * 0.54f, h * 0.5f)
-                    lineTo(w * 0.54f, h * 0.72f)
-                    lineTo(w * 0.64f, h * 0.72f)
-                    lineTo(w * 0.64f, h * 0.8f)
-                    lineTo(w * 0.36f, h * 0.8f)
-                    lineTo(w * 0.36f, h * 0.72f)
-                    lineTo(w * 0.46f, h * 0.72f)
-                    lineTo(w * 0.46f, h * 0.5f)
-                    lineTo(w * 0.36f, h * 0.5f)
-                    close()
-                }
-                drawPath(path, tint, style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
-            }
-            else -> {
-                drawRoundRect(tint, androidx.compose.ui.geometry.Offset(w * 0.18f, h * 0.32f), androidx.compose.ui.geometry.Size(w * 0.64f, h * 0.36f), androidx.compose.ui.geometry.CornerRadius(6.dp.toPx(), 6.dp.toPx()), style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
-                drawCircle(tint, 2.dp.toPx(), androidx.compose.ui.geometry.Offset(w * 0.68f, h * 0.5f))
-                drawCircle(tint, 2.dp.toPx(), androidx.compose.ui.geometry.Offset(w * 0.6f, h * 0.5f))
-            }
+private fun ChromeIcon(icon: ImageVector, description: String, onClick: () -> Unit) {
+    Surface(color = Color.Transparent, shape = CircleShape, modifier = Modifier.size(30.dp).clickable(onClick = onClick)) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(icon, description, tint = GoalioColors.Secondary, modifier = Modifier.size(24.dp))
         }
     }
 }
@@ -100,7 +89,7 @@ fun GoalioBottomBar(modifier: Modifier = Modifier, selected: String, onHome: () 
                     modifier = Modifier.weight(1f).height(62.dp).clickable(onClick = action)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
-                        BottomBarIcon(label, fg, Modifier.size(24.dp))
+                        Icon(bottomBarIcon(label), contentDescription = label, tint = fg, modifier = Modifier.size(24.dp))
                         Spacer(Modifier.height(4.dp))
                         Text(label, color = fg, fontWeight = FontWeight.Bold, fontSize = 10.sp, maxLines = 1)
                     }
@@ -108,5 +97,12 @@ fun GoalioBottomBar(modifier: Modifier = Modifier, selected: String, onHome: () 
             }
         }
     }
+}
+
+private fun bottomBarIcon(label: String): ImageVector = when (label) {
+    "Home" -> Icons.Default.Home
+    "Matches" -> Icons.Default.SportsSoccer
+    "World Cup" -> Icons.Default.EmojiEvents
+    else -> Icons.Default.SportsEsports
 }
 
