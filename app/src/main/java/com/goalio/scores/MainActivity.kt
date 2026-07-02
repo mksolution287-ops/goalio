@@ -156,6 +156,7 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                     !onboardingComplete -> OnboardingScreen(
+                        onBack = { languageSelected = false },
                         onComplete = {
                             settings.edit().putBoolean("onboarding_complete", true).apply()
                             onboardingComplete = true

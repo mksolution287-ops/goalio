@@ -1,8 +1,9 @@
 package com.goalio.scores
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -10,6 +11,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,13 +24,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -58,7 +58,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -155,8 +154,12 @@ fun ProfileSetupScreen(
     val playerLimit = remoteConfig.getLong("profile_players_limit").toInt()
         .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
     val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
-    val keyboardVisible = WindowInsets.ime.getBottom(density) > 0
+    val actionInteraction = remember { MutableInteractionSource() }
+    val actionPressed by actionInteraction.collectIsPressedAsState()
+    val actionColor by animateColorAsState(
+        if (actionPressed || submitting) GoalioColors.Tertiary else Color(0xFF241000),
+        label = "profile action color"
+    )
     val fullNameValid = isValidFullName(fullName)
     val usernameRuleValid = isValidUsername(username)
     val existingProfile = identityMatches == true
@@ -485,16 +488,15 @@ fun ProfileSetupScreen(
                         }
                     }
                 }
-            }
-            AnimatedVisibility(visible = !keyboardVisible) {
-                Surface(color = GoalioColors.Surface1, border = BorderStroke(1.dp, GoalioColors.CardBorder)) {
-                    Column {
+                item {
+                    Surface(color = GoalioColors.Neutral, shape = RoundedCornerShape(metrics.dp(18)), border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(metrics.dp(16))) {
                     if (submitError != null) {
                         Text(
                             submitError.orEmpty(),
                             color = GoalioColors.Error,
                             fontSize = 12.sp,
-                            modifier = Modifier.padding(horizontal = 26.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp)
                         )
                     }
                     Button(
@@ -510,10 +512,11 @@ fun ProfileSetupScreen(
                                 submitting = false
                             }
                         },
-                        modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = metrics.horizontalPadding, vertical = metrics.dp(14)).height(metrics.dp(56)),
+                        modifier = Modifier.fillMaxWidth().height(metrics.dp(58)),
+                        interactionSource = actionInteraction,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF241000),
-                            contentColor = GoalioColors.TextPrimary,
+                            containerColor = actionColor,
+                            contentColor = GoalioColors.Secondary,
                             disabledContainerColor = Color(0xFF140A02),
                             disabledContentColor = GoalioColors.Tertiary.copy(alpha = .48f)
                         ),
@@ -524,6 +527,7 @@ fun ProfileSetupScreen(
                             Text(when { state.first -> if (state.second) "SIGNING IN..." else "SAVING..."; state.third -> "CHECKING..."; state.second -> "SIGN IN"; else -> "CONTINUE" }, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
                         }
                     }
+                        }
                     }
                 }
             }

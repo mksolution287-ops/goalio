@@ -130,7 +130,9 @@ data class WorldCupLibraryItemInfo(
     val title: String,
     val category: String,
     val body: String,
-    val readMinutes: Int
+    val readMinutes: Int,
+    val url: String? = null,
+    val imageUrl: String? = null
 )
 
 data class WorldCupFactInfo(val title: String, val body: String)

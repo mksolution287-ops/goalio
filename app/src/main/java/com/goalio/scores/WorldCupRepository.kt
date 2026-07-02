@@ -65,6 +65,8 @@ private fun WorldCupBootstrapInfo.toJson() = JSONObject().apply {
         put("category", item.category)
         put("body", item.body)
         put("readMinutes", item.readMinutes)
+        putNullable("url", item.url)
+        putNullable("imageUrl", item.imageUrl)
     } }))
     put("randomFact", JSONObject().apply {
         put("title", randomFact.title)
@@ -169,7 +171,15 @@ private fun JSONObject.toWorldCupBootstrapInfo() = WorldCupBootstrapInfo(
     library = buildList {
         val source = optJSONArray("library")
         if (source != null) for (index in 0 until source.length()) source.getJSONObject(index).run {
-            add(WorldCupLibraryItemInfo(getString("id"), getString("title"), getString("category"), getString("body"), optInt("readMinutes", 4)))
+            add(WorldCupLibraryItemInfo(
+                id = getString("id"),
+                title = getString("title"),
+                category = getString("category"),
+                body = getString("body"),
+                readMinutes = optInt("readMinutes", 4),
+                url = nullableString("url"),
+                imageUrl = nullableString("imageUrl")
+            ))
         }
     },
     randomFact = getJSONObject("randomFact").run { WorldCupFactInfo(getString("title"), getString("body")) }
