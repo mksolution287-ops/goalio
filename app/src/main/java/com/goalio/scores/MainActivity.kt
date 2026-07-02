@@ -271,14 +271,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun applyLanguage(languageTag: String) {
-        if (languageTag == "system") return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             getSystemService(android.app.LocaleManager::class.java)
-                .applicationLocales = LocaleList.forLanguageTags(languageTag)
+                .applicationLocales = if (languageTag == "system") LocaleList.getEmptyLocaleList() else LocaleList.forLanguageTags(languageTag)
         } else {
             @Suppress("DEPRECATION")
             resources.updateConfiguration(
-                resources.configuration.apply { setLocale(Locale.forLanguageTag(languageTag)) },
+                resources.configuration.apply { setLocale(if (languageTag == "system") Locale.getDefault() else Locale.forLanguageTag(languageTag)) },
                 resources.displayMetrics
             )
         }

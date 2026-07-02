@@ -204,6 +204,28 @@ data class MatchLineupInfo(
     val home: NormalizedTeamLineupInfo, val away: NormalizedTeamLineupInfo
 )
 
+data class MatchHighlightInfo(
+    val status: String, val provider: String?, val url: String?, val embedUrl: String?,
+    val thumbnailUrl: String?, val publishedAt: String?
+)
+
+data class MatchOfficialMediaInfo(val highlightsPageUrl: String?, val matchUrl: String?)
+data class MatchMediaInfo(
+    val matchId: String, val highlight: MatchHighlightInfo, val official: MatchOfficialMediaInfo,
+    val source: String, val lastCheckedAt: String
+)
+
+data class WatchProviderInfo(
+    val name: String, val type: String, val url: String, val appPackage: String?,
+    val isFree: Boolean?, val note: String?
+)
+
+data class MatchWatchInfo(
+    val matchId: String, val country: String, val status: String,
+    val providers: List<WatchProviderInfo>, val fallback: WatchProviderInfo,
+    val message: String?, val disclaimer: String
+)
+
 data class MatchTimelineEvent(
     val minute: String?,
     val type: String?,
@@ -322,6 +344,14 @@ object GoalioBackendApi {
     suspend fun getMatchLineup(league: String, eventId: String): MatchLineupInfo = request(
         "GET", "/api/v1/matches/${encodePath(eventId)}/lineup?league=${encode(league)}"
     ) { json -> json.toMatchLineup() }
+
+    suspend fun getMatchMedia(eventId: String): MatchMediaInfo = request(
+        "GET", "/api/v1/matches/${encodePath(eventId)}/media"
+    ) { json -> json.toMatchMedia() }
+
+    suspend fun getMatchWatch(eventId: String, country: String): MatchWatchInfo = request(
+        "GET", "/api/v1/matches/${encodePath(eventId)}/watch?country=${encode(country)}"
+    ) { json -> json.toMatchWatch() }
 
     suspend fun getStandings(league: String, season: Int? = null): LeagueStandings = request(
         "GET",
@@ -624,6 +654,34 @@ object GoalioBackendApi {
         isStale = optBoolean("isStale", false),
         home = getJSONObject("home").toNormalizedTeamLineup(),
         away = getJSONObject("away").toNormalizedTeamLineup()
+    )
+
+    private fun JSONObject.toMatchMedia() = MatchMediaInfo(
+        matchId = getString("matchId"),
+        highlight = getJSONObject("highlight").run {
+            MatchHighlightInfo(getString("status"), nullableString("provider"), nullableString("url"), nullableString("embedUrl"), nullableString("thumbnailUrl"), nullableString("publishedAt"))
+        },
+        official = getJSONObject("official").run {
+            MatchOfficialMediaInfo(nullableString("highlightsPageUrl"), nullableString("matchUrl"))
+        },
+        source = getString("source"), lastCheckedAt = getString("lastCheckedAt")
+    )
+
+    private fun JSONObject.toMatchWatch() = MatchWatchInfo(
+        matchId = getString("matchId"), country = getString("country"), status = getString("status"),
+        providers = optJSONArray("providers").toWatchProviders(),
+        fallback = getJSONObject("fallback").toWatchProvider(),
+        message = nullableString("message"), disclaimer = getString("disclaimer")
+    )
+
+    private fun JSONArray?.toWatchProviders(): List<WatchProviderInfo> = buildList {
+        if (this@toWatchProviders != null) for (index in 0 until length()) add(getJSONObject(index).toWatchProvider())
+    }
+
+    private fun JSONObject.toWatchProvider() = WatchProviderInfo(
+        name = getString("name"), type = getString("type"), url = getString("url"),
+        appPackage = nullableString("appPackage"),
+        isFree = if (isNull("isFree")) null else optBoolean("isFree"), note = nullableString("note")
     )
 
     private fun JSONObject.toNormalizedTeamLineup() = NormalizedTeamLineupInfo(

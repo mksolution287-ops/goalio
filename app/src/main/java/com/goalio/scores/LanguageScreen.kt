@@ -58,21 +58,28 @@ private data class LanguageOption(
 )
 
 private val languages = listOf(
-    LanguageOption("de", "Deutsch", "German", "DEU"),
-    LanguageOption("en-US", "English (US)", "Default Content Language", "USA"),
-    LanguageOption("es", "Espanol", "Spanish", "ESP"),
-    LanguageOption("fr", "Francais", "French", "FRA"),
-    LanguageOption("it", "Italiano", "Italian", "ITA"),
-    LanguageOption("pt", "Portugues", "Portuguese", "POR")
+    LanguageOption("en-GB", "English", "English (UK) · Global", "🇬🇧"),
+    LanguageOption("es-419", "Español", "Spanish · Latinoamérica", "🇪🇸"),
+    LanguageOption("fr-FR", "Français", "French · France", "🇫🇷"),
+    LanguageOption("de-DE", "Deutsch", "German · Deutschland", "🇩🇪"),
+    LanguageOption("pt-BR", "Português (Brasil)", "Portuguese · Brazil", "🇧🇷"),
+    LanguageOption("ja-JP", "日本語", "Japanese · Japan", "🇯🇵"),
+    LanguageOption("zh-CN", "简体中文", "Simplified Chinese · China", "🇨🇳"),
+    LanguageOption("zh-TW", "繁體中文", "Traditional Chinese · Taiwan", "🇹🇼"),
+    LanguageOption("ko-KR", "한국어", "Korean · South Korea", "🇰🇷"),
+    LanguageOption("ar-SA", "العربية", "Arabic · الشرق الأوسط", "🇸🇦"),
+    LanguageOption("it-IT", "Italiano", "Italian · Italia", "🇮🇹"),
+    LanguageOption("ru-RU", "Русский", "Russian · Россия", "🇷🇺"),
+    LanguageOption("hi-IN", "हिन्दी", "Hindi · भारत", "🇮🇳")
 )
 
 @Composable
 fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
     val metrics = rememberGoalioMetrics()
     var query by rememberSaveable { mutableStateOf("") }
-    var selected by rememberSaveable { mutableStateOf("en-US") }
+    var selected by rememberSaveable { mutableStateOf("en-GB") }
     val filtered = remember(query) {
-        languages.filter { it.name.contains(query, true) || it.subtitle.contains(query, true) }
+        languages.filter { it.name.contains(query, true) || it.subtitle.contains(query, true) || it.tag.contains(query, true) }
     }
 
     BackHandler(onBack = onBack)
@@ -146,7 +153,7 @@ fun LanguageScreen(onBack: () -> Unit, onDone: (String) -> Unit) {
                     )
                     Spacer(Modifier.height(metrics.dp(9)))
                     LanguageCard(
-                        LanguageOption("system", "System Default", "English (UK)", "SYS"),
+                        LanguageOption("system", "System Default", "Use your device language", "⚙"),
                         selected == "system"
                     ) { selected = "system" }
                     Spacer(Modifier.height(metrics.dp(19)))
@@ -199,7 +206,7 @@ private fun LanguageCard(language: LanguageOption, selected: Boolean, onClick: (
             if (selected) 1.5.dp else 1.dp,
             if (selected) GoalioColors.Accent else GoalioColors.CardBorder
         ),
-        modifier = Modifier.fillMaxWidth().height(metrics.dp(82))
+        modifier = Modifier.fillMaxWidth().height(metrics.dp(88))
     ) {
         Row(Modifier.padding(horizontal = metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
             Surface(
@@ -209,7 +216,7 @@ private fun LanguageCard(language: LanguageOption, selected: Boolean, onClick: (
                 modifier = Modifier.size(metrics.dp(46))
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(language.badge, color = Color.White, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+                    Text(language.badge, color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black)
                 }
             }
             Spacer(Modifier.width(metrics.dp(16)))
@@ -217,7 +224,7 @@ private fun LanguageCard(language: LanguageOption, selected: Boolean, onClick: (
                 Text(
                     language.name,
                     color = GoalioColors.TextPrimary,
-                    fontSize = metrics.sp(21),
+                    fontSize = metrics.sp(if (language.name.length > 18) 18 else 21),
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

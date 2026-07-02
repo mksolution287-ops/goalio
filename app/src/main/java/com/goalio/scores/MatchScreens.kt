@@ -1,5 +1,7 @@
 package com.goalio.scores
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import android.widget.TextView
 import androidx.compose.animation.Crossfade
@@ -212,6 +214,10 @@ fun MatchDetailScreen(
     var lineupLoading by remember { mutableStateOf(lineup == null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lineupError by remember { mutableStateOf<String?>(null) }
+    var media by remember { mutableStateOf<MatchMediaInfo?>(null) }
+    var watch by remember { mutableStateOf<MatchWatchInfo?>(null) }
+    var mediaLoading by remember { mutableStateOf(true) }
+    var mediaError by remember { mutableStateOf<String?>(null) }
     var selectedTab by rememberSaveable { mutableStateOf("Overview") }
     var previousScore by remember { mutableStateOf(detail?.scoreSignature() ?: initialMatch?.scoreSignature().orEmpty()) }
 
@@ -221,6 +227,22 @@ fun MatchDetailScreen(
                 detail = shared
                 previousScore = shared.scoreSignature()
             }
+        }
+    }
+
+    LaunchedEffect(matchId) {
+        val country = Locale.getDefault().country.takeIf { it.length == 2 } ?: "IN"
+        while (true) {
+            mediaLoading = media == null && watch == null
+            val mediaResult = runCatching { GoalioBackendApi.getMatchMedia(matchId) }
+            val watchResult = runCatching { GoalioBackendApi.getMatchWatch(matchId, country) }
+            mediaResult.onSuccess { media = it }
+            watchResult.onSuccess { watch = it }
+            mediaError = if (mediaResult.isFailure && watchResult.isFailure) {
+                mediaResult.exceptionOrNull()?.message ?: "Media information is unavailable."
+            } else null
+            mediaLoading = false
+            delay(15 * 60 * 1000L)
         }
     }
 
@@ -300,7 +322,7 @@ fun MatchDetailScreen(
                     "Player Lineups" -> item { PlayerLineupsSection(lineup, lineupLoading, lineupError) }
                     else -> item { OverviewContent(shown) }
                 }
-                item { StreamHighlights() }
+                item { StreamHighlights(media, watch, mediaLoading, mediaError) }
             }
         }
         GoalioBottomBar(Modifier.align(Alignment.BottomCenter), "Matches", onOpenHome, onOpenMatches, onOpenWorldCup, onOpenGames)
@@ -892,18 +914,106 @@ private fun HtmlSummaryText(html: String) {
 }
 
 @Composable
-private fun StreamHighlights() {
+private fun StreamHighlights(media: MatchMediaInfo?, watch: MatchWatchInfo?, loading: Boolean, error: String?) {
     val metrics = rememberGoalioMetrics()
-    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
-        Text("STREAM & HIGHLIGHTS", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
-        Row(horizontalArrangement = Arrangement.spacedBy(metrics.dp(18))) {
-            repeat(3) {
-                Box(Modifier.size(metrics.dp(56)).clip(CircleShape).background(GoalioColors.Surface1), contentAlignment = Alignment.Center) {
-                    Box(Modifier.size(metrics.dp(12)).clip(CircleShape).background(GoalioColors.TextTertiary.copy(alpha = .5f)))
-                }
+    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(12))) {
+        Text("WATCH & HIGHLIGHTS", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
+        when {
+            loading -> MatchStateCard("Finding official ways to watch…")
+            error != null && media == null && watch == null -> MatchStateCard(error)
+            else -> {
+                WatchProvidersCard(watch)
+                HighlightCard(media)
             }
         }
     }
+}
+
+@Composable
+private fun WatchProvidersCard(watch: MatchWatchInfo?) {
+    val metrics = rememberGoalioMetrics()
+    val providers = watch?.providers.orEmpty()
+    Surface(color = GoalioColors.Neutral, shape = RoundedCornerShape(metrics.dp(18)), border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(metrics.dp(18)), verticalArrangement = Arrangement.spacedBy(metrics.dp(13))) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                MediaGlyph("play")
+                Spacer(Modifier.width(metrics.dp(12)))
+                Column(Modifier.weight(1f)) {
+                    Text("STREAM", color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
+                    Text(if (providers.isNotEmpty()) "Official ways to watch" else "Official match centre", color = GoalioColors.Secondary, fontSize = metrics.sp(19), fontWeight = FontWeight.Black)
+                }
+                watch?.country?.let { MediaBadge(it) }
+            }
+            if (providers.isNotEmpty()) {
+                providers.forEach { ProviderRow(it) }
+            } else {
+                Text(watch?.message ?: "Broadcaster information is not available for your region yet.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(14))
+                watch?.fallback?.let { MediaActionButton("OPEN ${it.name.uppercase()}", it.url) }
+            }
+            Text(watch?.disclaimer ?: "Streaming availability depends on your region and broadcaster rights.", color = GoalioColors.TextTertiary, fontSize = metrics.sp(10))
+        }
+    }
+}
+
+@Composable
+private fun ProviderRow(provider: WatchProviderInfo) {
+    val metrics = rememberGoalioMetrics()
+    Surface(color = Color(0xFF241000), shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, GoalioColors.Tertiary), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(metrics.dp(14)), verticalArrangement = Arrangement.spacedBy(metrics.dp(8))) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(provider.name, color = GoalioColors.Secondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
+                MediaBadge(when (provider.isFree) { true -> "FREE"; false -> "PAID"; null -> "OFFICIAL" })
+            }
+            provider.note?.let { Text(it, color = GoalioColors.TextSecondary, fontSize = metrics.sp(12)) }
+            MediaActionButton("WATCH ON ${provider.name.uppercase()}", provider.url)
+        }
+    }
+}
+
+@Composable
+private fun HighlightCard(media: MatchMediaInfo?) {
+    val metrics = rememberGoalioMetrics()
+    val highlight = media?.highlight
+    val context = LocalContext.current
+    val primaryUrl = highlight?.url ?: media?.official?.matchUrl ?: media?.official?.highlightsPageUrl
+    Surface(color = GoalioColors.Neutral, shape = RoundedCornerShape(metrics.dp(18)), border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
+            if (!highlight?.thumbnailUrl.isNullOrBlank()) {
+                Box(Modifier.fillMaxWidth().height(metrics.dp(176)).clip(RoundedCornerShape(topStart = metrics.dp(18), topEnd = metrics.dp(18)))) {
+                    AsyncImage(highlight?.thumbnailUrl, "Official highlights", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                    Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = .78f)))))
+                    Box(Modifier.size(metrics.dp(56)).background(GoalioColors.Tertiary, CircleShape).align(Alignment.Center).clickable { primaryUrl?.let { context.openOfficialUrl(it) } }, contentAlignment = Alignment.Center) { Text("▶", color = GoalioColors.Primary, fontSize = metrics.sp(23)) }
+                }
+            }
+            Column(Modifier.padding(start = metrics.dp(18), end = metrics.dp(18), bottom = metrics.dp(18)), verticalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MediaGlyph("video")
+                    Spacer(Modifier.width(metrics.dp(12)))
+                    Column(Modifier.weight(1f)) {
+                        Text("HIGHLIGHTS", color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
+                        Text(if (highlight?.status == "available") "Official match highlights" else if (media?.official?.matchUrl != null) "Official full match available" else "Highlights coming soon", color = GoalioColors.Secondary, fontSize = metrics.sp(19), fontWeight = FontWeight.Black)
+                    }
+                    MediaBadge((highlight?.status ?: "PENDING").uppercase())
+                }
+                Text(when { highlight?.status == "available" -> "Published by ${highlight.provider ?: "an official channel"}."; media?.official?.matchUrl != null -> "The verified full match is ready while official highlights are being prepared."; else -> "We’ll show the verified official video as soon as it is published." }, color = GoalioColors.TextSecondary, fontSize = metrics.sp(13))
+                primaryUrl?.let { MediaActionButton(if (highlight?.status == "available") "WATCH HIGHLIGHTS" else if (media?.official?.matchUrl != null) "WATCH OFFICIAL MATCH" else "OPEN FIFA HIGHLIGHTS", it) }
+            }
+        }
+    }
+}
+
+@Composable private fun MediaBadge(label: String) = Surface(color = GoalioColors.Surface3, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, GoalioColors.Border)) { Text(label, color = GoalioColors.TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) }
+
+@Composable private fun MediaActionButton(label: String, url: String) {
+    val context = LocalContext.current
+    Surface(color = Color(0xFF241000), shape = RoundedCornerShape(50), border = BorderStroke(2.dp, GoalioColors.Tertiary), modifier = Modifier.fillMaxWidth().clickable { context.openOfficialUrl(url) }) { Text(label, color = GoalioColors.Secondary, fontWeight = FontWeight.Black, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 14.dp, horizontal = 16.dp)) }
+}
+
+@Composable private fun MediaGlyph(kind: String) = Box(Modifier.size(42.dp).background(GoalioColors.Surface3, CircleShape), contentAlignment = Alignment.Center) { Text(if (kind == "play") "▶" else "▣", color = GoalioColors.Tertiary, fontSize = 18.sp, fontWeight = FontWeight.Black) }
+
+private fun android.content.Context.openOfficialUrl(url: String) {
+    runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+        .onFailure { Toast.makeText(this, "Could not open this official link", Toast.LENGTH_SHORT).show() }
 }
 
 @Composable
