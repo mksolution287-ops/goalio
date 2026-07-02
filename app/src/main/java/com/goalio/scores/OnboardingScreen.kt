@@ -1,5 +1,6 @@
 package com.goalio.scores
 
+import android.graphics.Typeface
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -38,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +55,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.goalio.scores.ui.theme.GoalioColors
 import kotlinx.coroutines.launch
 
@@ -173,6 +180,59 @@ private fun OnboardingHeader(onSkip: () -> Unit) {
 }
 
 @Composable
+private fun OnboardingAnimation(index: Int, modifier: Modifier = Modifier) {
+    val assetName = when (index) {
+        0 -> "xag5k7cbUw.json"
+        1 -> "A92h7xNCQ6.json"
+        else -> "Football team players.json"
+    }
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset(assetName))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever,
+        speed = 1.6f
+    )
+    val fontMap = remember {
+        mapOf("HelveticaNeueLTStd-MdEx" to Typeface.create("sans-serif", Typeface.BOLD))
+    }
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = modifier,
+        fontMap = fontMap
+    )
+}
+
+@Composable
+private fun OnboardingPageTextAndPills(page: OnboardingPage, metrics: GoalioMetrics) {
+    Text(
+        page.title,
+        color = Color.White,
+        fontSize = metrics.sp(27),
+        lineHeight = metrics.sp(32),
+        fontWeight = FontWeight.ExtraBold,
+        textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(metrics.dp(12)))
+    Text(
+        page.subtitle,
+        color = Color(0xFFE0E0E0),
+        fontSize = metrics.sp(16),
+        lineHeight = metrics.sp(23),
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(.94f)
+    )
+    Spacer(Modifier.height(metrics.dp(18)))
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        page.features.forEach { FeaturePill(it) }
+    }
+}
+
+@Composable
 private fun OnboardingPageContent(index: Int, page: OnboardingPage) {
     val metrics = rememberGoalioMetrics()
     Column(
@@ -182,37 +242,14 @@ private fun OnboardingPageContent(index: Int, page: OnboardingPage) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-            when (index) {
-                0 -> AlertPhoneIllustration(Modifier.fillMaxWidth(if (metrics.compact) .88f else .76f).aspectRatio(.72f))
-                1 -> TournamentIllustration(Modifier.fillMaxWidth(.92f).aspectRatio(1.3f))
-                else -> DashboardIllustration(Modifier.fillMaxWidth(.92f).aspectRatio(1.3f))
-            }
+            OnboardingAnimation(
+                index = index,
+                modifier = Modifier
+                    .fillMaxWidth(if (index == 0 && metrics.compact) .88f else .92f)
+                    .aspectRatio(if (index == 0) 1.0f else 1.3f)
+            )
         }
-        Text(
-            page.title,
-            color = Color.White,
-            fontSize = metrics.sp(27),
-            lineHeight = metrics.sp(32),
-            fontWeight = FontWeight.ExtraBold,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(metrics.dp(12)))
-        Text(
-            page.subtitle,
-            color = Color(0xFFE0E0E0),
-            fontSize = metrics.sp(16),
-            lineHeight = metrics.sp(23),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(.94f)
-        )
-        Spacer(Modifier.height(metrics.dp(18)))
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            page.features.forEach { FeaturePill(it) }
-        }
+        OnboardingPageTextAndPills(page, metrics)
         Spacer(Modifier.height(metrics.dp(18)))
     }
 }
@@ -250,57 +287,3 @@ private fun PagerDots(selected: Int, count: Int) {
     }
 }
 
-@Composable
-private fun AlertPhoneIllustration(modifier: Modifier = Modifier) {
-    val transition = rememberInfiniteTransition(label = "phone glow")
-    val glow by transition.animateFloat(.2f, .62f, infiniteRepeatable(tween(1500), RepeatMode.Reverse), label = "glow")
-    Canvas(modifier) {
-        val phoneWidth = size.width * .68f
-        val phoneHeight = size.height * .92f
-        val left = (size.width - phoneWidth) / 2f
-        val top = size.height * .04f
-        drawCircle(GoalioColors.Accent.copy(alpha = glow * .28f), size.minDimension * .58f, Offset(size.width / 2f, size.height / 2f))
-        drawRoundRect(Color(0xFF2B2F2E), Offset(left, top), Size(phoneWidth, phoneHeight), androidx.compose.ui.geometry.CornerRadius(52f, 52f))
-        drawRoundRect(Color(0xFF0B0F0E), Offset(left + 14f, top + 14f), Size(phoneWidth - 28f, phoneHeight - 28f), androidx.compose.ui.geometry.CornerRadius(42f, 42f))
-        drawRoundRect(Color(0xFF2B2F2E), Offset(size.width * .38f, top + 14f), Size(size.width * .24f, size.height * .07f), androidx.compose.ui.geometry.CornerRadius(18f, 18f))
-        drawRoundRect(Color(0xFF292D2C), Offset(left + phoneWidth * .1f, top + phoneHeight * .13f), Size(phoneWidth * .8f, phoneHeight * .18f), androidx.compose.ui.geometry.CornerRadius(20f, 20f))
-        drawCircle(Color(0xFFFF3030), size.minDimension * .035f, Offset(left + phoneWidth * .24f, top + phoneHeight * .22f))
-        drawRoundRect(Color(0xFF727776), Offset(left + phoneWidth * .35f, top + phoneHeight * .205f), Size(phoneWidth * .26f, phoneHeight * .035f), androidx.compose.ui.geometry.CornerRadius(8f, 8f))
-        drawCircle(Color(0xFF5B574F), size.minDimension * .055f, Offset(left + phoneWidth * .7f, top + phoneHeight * .22f))
-        drawRoundRect(Color(0xFF272B2A), Offset(left + phoneWidth * .1f, top + phoneHeight * .42f), Size(phoneWidth * .72f, phoneHeight * .045f), androidx.compose.ui.geometry.CornerRadius(8f, 8f))
-        drawRoundRect(Color(0xFF272B2A), Offset(left + phoneWidth * .1f, top + phoneHeight * .5f), Size(phoneWidth * .48f, phoneHeight * .045f), androidx.compose.ui.geometry.CornerRadius(8f, 8f))
-    }
-}
-
-@Composable
-private fun TournamentIllustration(modifier: Modifier = Modifier) = Canvas(modifier) {
-    drawCircle(GoalioColors.Accent.copy(alpha = .16f), size.minDimension * .42f, center)
-    repeat(4) { index ->
-        val y = size.height * (.18f + index * .18f)
-        drawRoundRect(GoalioColors.Surface2, Offset(size.width * .1f, y), Size(size.width * .32f, 30f), androidx.compose.ui.geometry.CornerRadius(14f, 14f))
-        drawRoundRect(GoalioColors.Surface2, Offset(size.width * .58f, y), Size(size.width * .32f, 30f), androidx.compose.ui.geometry.CornerRadius(14f, 14f))
-        drawLine(GoalioColors.Accent.copy(alpha = .65f), Offset(size.width * .42f, y + 15f), Offset(size.width * .5f, y + 15f), 3f, StrokeCap.Round)
-        drawLine(GoalioColors.Accent.copy(alpha = .65f), Offset(size.width * .5f, y + 15f), Offset(size.width * .58f, y + 15f), 3f, StrokeCap.Round)
-    }
-    drawRoundRect(GoalioColors.Accent, Offset(size.width * .38f, size.height * .72f), Size(size.width * .24f, 42f), androidx.compose.ui.geometry.CornerRadius(18f, 18f))
-}
-
-@Composable
-private fun DashboardIllustration(modifier: Modifier = Modifier) = Canvas(modifier) {
-    drawCircle(GoalioColors.Accent.copy(alpha = .14f), size.minDimension * .44f, center)
-    val card = androidx.compose.ui.geometry.CornerRadius(26f, 26f)
-    drawRoundRect(GoalioColors.Surface1, Offset(size.width * .1f, size.height * .14f), Size(size.width * .8f, size.height * .66f), card)
-    drawRoundRect(GoalioColors.CardBorder, Offset(size.width * .1f, size.height * .14f), Size(size.width * .8f, size.height * .66f), card, style = Stroke(2f))
-    drawCircle(GoalioColors.Accent, size.minDimension * .055f, Offset(size.width * .24f, size.height * .3f))
-    drawRoundRect(Color(0xFF343837), Offset(size.width * .34f, size.height * .26f), Size(size.width * .36f, 18f), androidx.compose.ui.geometry.CornerRadius(8f, 8f))
-    drawRoundRect(Color(0xFF343837), Offset(size.width * .18f, size.height * .45f), Size(size.width * .64f, 18f), androidx.compose.ui.geometry.CornerRadius(8f, 8f))
-    drawRoundRect(Color(0xFF343837), Offset(size.width * .18f, size.height * .58f), Size(size.width * .42f, 18f), androidx.compose.ui.geometry.CornerRadius(8f, 8f))
-    val path = Path().apply {
-        moveTo(size.width * .16f, size.height * .78f)
-        lineTo(size.width * .26f, size.height * .67f)
-        lineTo(size.width * .38f, size.height * .72f)
-        lineTo(size.width * .54f, size.height * .55f)
-        lineTo(size.width * .82f, size.height * .62f)
-    }
-    drawPath(path, GoalioColors.Accent.copy(alpha = .8f), style = Stroke(5f, cap = StrokeCap.Round))
-}
