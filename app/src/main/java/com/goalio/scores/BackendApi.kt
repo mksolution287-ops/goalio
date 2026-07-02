@@ -279,10 +279,10 @@ object GoalioBackendApi {
 
     suspend fun getProfile(): BackendProfile = request("GET", "/api/v1/users/profile") { parseProfile(it) }
 
-    suspend fun signInExistingProfile(name: String, username: String): BackendProfile {
+    suspend fun signInExistingProfile(name: String, username: String): BackendProfile = withContext(Dispatchers.IO) {
         val token = request("POST", "/api/v1/auth/profile-login", JSONObject().put("name", name).put("username", username)) { it.getString("customToken") }
         Tasks.await(FirebaseAuth.getInstance().signInWithCustomToken(token))
-        return getProfile()
+        getProfile()
     }
 
     suspend fun getHome(): BackendHome = request("GET", "/api/v1/home") { json ->
@@ -293,8 +293,13 @@ object GoalioBackendApi {
         "GET", "/api/v1/users/username/availability?username=${encode(username)}"
     ) { it.getBoolean("available") }
 
-    suspend fun getTeams(limit: Int = 6, cursor: String? = null): BackendPage<FavoriteTeam> = request(
-        "GET", pagedPath("/api/v1/football/teams", limit, cursor)
+    suspend fun profileIdentityMatches(name: String, username: String): Boolean = request(
+        "POST", "/api/v1/users/profile/identity-match",
+        JSONObject().put("name", name).put("username", username)
+    ) { it.getBoolean("matched") }
+
+    suspend fun getTeams(limit: Int = 6, cursor: String? = null, competitionId: Int? = null): BackendPage<FavoriteTeam> = request(
+        "GET", pagedPath("/api/v1/football/teams", limit, cursor) + (competitionId?.let { "&competitionId=$it" } ?: "")
     ) { json ->
         BackendPage(
             items = json.getJSONArray("items").toTeamList(),
@@ -302,8 +307,8 @@ object GoalioBackendApi {
         )
     }
 
-    suspend fun getPlayers(limit: Int = 6, cursor: String? = null): BackendPage<FavoritePlayer> = request(
-        "GET", pagedPath("/api/v1/football/players", limit, cursor)
+    suspend fun getPlayers(limit: Int = 6, cursor: String? = null, competitionId: Int? = null): BackendPage<FavoritePlayer> = request(
+        "GET", pagedPath("/api/v1/football/players", limit, cursor) + (competitionId?.let { "&competitionId=$it" } ?: "")
     ) { json ->
         BackendPage(
             items = json.getJSONArray("items").toPlayerList(),
