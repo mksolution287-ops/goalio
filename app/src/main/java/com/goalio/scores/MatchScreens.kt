@@ -77,21 +77,21 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-private data class LeagueFilter(val code: String?, val label: String)
+private data class LeagueFilter(val code: String?, val label: String, val mark: String, val markColor: Color)
 private data class StatPair(val home: String, val away: String) {
     fun display(): String = "$home / $away"
 }
 private data class MomentStyle(val label: String, val icon: String, val color: Color)
 
 private val LeagueFilters = listOf(
-    LeagueFilter("fifa.world", "World Cup"),
-    LeagueFilter("eng.1", "Premier League"),
-    LeagueFilter("uefa.champions", "Champions League"),
-    LeagueFilter("esp.1", "LaLiga"),
-    LeagueFilter("ita.1", "Serie A"),
-    LeagueFilter("ger.1", "Bundesliga"),
-    LeagueFilter("fra.1", "Ligue 1"),
-    LeagueFilter("uefa.europa", "Europa League")
+    LeagueFilter("fifa.world", "World Cup", "WC", Color(0xFFFF8500)),
+    LeagueFilter("eng.1", "Premier League", "PL", Color(0xFF7A3CFF)),
+    LeagueFilter("uefa.champions", "Champions League", "CL", Color(0xFF2F7DFF)),
+    LeagueFilter("esp.1", "LaLiga", "LL", Color(0xFFFF4D4D)),
+    LeagueFilter("ita.1", "Serie A", "SA", Color(0xFF25A6FF)),
+    LeagueFilter("ger.1", "Bundesliga", "BL", Color(0xFFE03012)),
+    LeagueFilter("fra.1", "Ligue 1", "L1", Color(0xFF20D97A)),
+    LeagueFilter("uefa.europa", "Europa League", "EL", Color(0xFFFFA31A))
 )
 
 @Composable
@@ -106,7 +106,7 @@ fun MatchScreen(
     val context = LocalContext.current
     val metrics = rememberGoalioMetrics()
     val today = remember { LocalDate.now() }
-    var selectedDate by rememberSaveable { mutableStateOf(today.toString()) }
+    var selectedDate by remember { mutableStateOf(today.toString()) }
     var selectedLeague by rememberSaveable { mutableStateOf("fifa.world") }
     var matches by remember { mutableStateOf(emptyList<ScheduleMatch>()) }
     var loading by remember { mutableStateOf(true) }
@@ -114,7 +114,7 @@ fun MatchScreen(
 
     LaunchedEffect(selectedDate) {
         MatchRepository.matchUpdates.collect { canonical ->
-            val shared = canonical.values.filter { it.localKickoffDate()?.toString() == selectedDate }
+            val shared = canonical.values.filter { it.matchesCalendarDate(selectedDate) }
             if (shared.isNotEmpty()) {
                 matches = shared.sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
             }
@@ -125,13 +125,13 @@ fun MatchScreen(
         val localDate = LocalDate.parse(selectedDate)
         val fetchFrom = localDate.minusDays(1).toString()
         val fetchTo = localDate.plusDays(1).toString()
-        matches = MatchRepository.cachedFeed(context, fetchFrom, fetchTo).filter { it.localKickoffDate() == localDate }
+        matches = MatchRepository.cachedFeed(context, fetchFrom, fetchTo).filter { it.matchesCalendarDate(selectedDate) }
         loading = matches.isEmpty()
         while (true) {
             errorMessage = null
             runCatching { MatchRepository.refreshFeed(context, fetchFrom, fetchTo) }
                 .onSuccess { result ->
-                    matches = result.matches.filter { it.localKickoffDate() == localDate }
+                    matches = result.matches.filter { it.matchesCalendarDate(selectedDate) }
                     if (result.scoreChanged && GoalioAppVisibility.isForeground) {
                         Toast.makeText(context, "Goal update received", Toast.LENGTH_SHORT).show()
                     }
@@ -171,7 +171,7 @@ fun MatchScreen(
             }
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(metrics.dp(13))) {
-                    items((-14..30).map { selectedLocalDate.plusDays(it.toLong()) }) { day ->
+                    items(matchCalendarStrip(today, selectedLocalDate)) { day ->
                         DateCard(day, selected = day.toString() == selectedDate) {
                             selectedDate = day.toString()
                         }
@@ -489,12 +489,32 @@ private fun LeagueChip(league: LeagueFilter, selected: Boolean, onClick: () -> U
         shape = RoundedCornerShape(metrics.dp(12)),
         modifier = Modifier.clickable(onClick = onClick)
     ) {
-        Row(Modifier.padding(horizontal = metrics.dp(16), vertical = metrics.dp(12)), verticalAlignment = Alignment.CenterVertically) {
-            if (league.code == "fifa.world") {
-                Text("T", color = Color.White, fontSize = metrics.sp(13), fontWeight = FontWeight.Black)
-                Spacer(Modifier.width(metrics.dp(9)))
-            }
+        Row(Modifier.padding(horizontal = metrics.dp(13), vertical = metrics.dp(10)), verticalAlignment = Alignment.CenterVertically) {
+            LeagueBadge(league, selected)
+            Spacer(Modifier.width(metrics.dp(9)))
             Text(league.label, fontSize = metrics.sp(16), fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+private fun LeagueBadge(league: LeagueFilter, selected: Boolean) {
+    val metrics = rememberGoalioMetrics()
+    Surface(
+        color = if (selected) league.markColor else league.markColor.copy(alpha = .18f),
+        contentColor = if (selected) Color.Black else league.markColor,
+        shape = RoundedCornerShape(metrics.dp(8)),
+        border = BorderStroke(1.dp, league.markColor.copy(alpha = if (selected) 1f else .55f)),
+        modifier = Modifier.size(metrics.dp(25))
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                league.mark,
+                fontSize = metrics.sp(9),
+                fontWeight = FontWeight.Black,
+                letterSpacing = .2.sp,
+                maxLines = 1
+            )
         }
     }
 }
@@ -1462,3 +1482,17 @@ private fun formatKickoff(value: String?): String {
 private fun ScheduleMatch.localKickoffDate(): LocalDate? = runCatching {
     OffsetDateTime.parse(kickoff).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
 }.getOrNull()
+
+private fun ScheduleMatch.officialKickoffDate(): LocalDate? = runCatching {
+    OffsetDateTime.parse(kickoff).toLocalDate()
+}.getOrNull()
+
+private fun ScheduleMatch.matchesCalendarDate(date: String): Boolean {
+    val selected = runCatching { LocalDate.parse(date) }.getOrNull() ?: return false
+    return officialKickoffDate() == selected || localKickoffDate() == selected
+}
+
+private fun matchCalendarStrip(today: LocalDate, selected: LocalDate): List<LocalDate> {
+    val visible = (-2..45).map { today.plusDays(it.toLong()) }
+    return if (selected in visible) visible else listOf(selected) + visible
+}
