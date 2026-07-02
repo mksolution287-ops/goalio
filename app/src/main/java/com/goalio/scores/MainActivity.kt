@@ -166,13 +166,19 @@ class MainActivity : ComponentActivity() {
                             settings.edit().putBoolean("onboarding_complete", false).apply()
                             onboardingComplete = false
                         },
-                        onSkip = {
-                            settings.edit().putBoolean("profile_complete", true).apply()
-                            profileComplete = true
-                        },
                         onSignIn = { name, username ->
                             try {
-                                GoalioBackendApi.signInExistingProfile(name, username)
+                                val saved = GoalioBackendApi.signInExistingProfile(name, username)
+                                settings.edit()
+                                    .putString("profile_full_name", saved.name)
+                                    .putString("profile_username", saved.username)
+                                    .putStringSet("profile_team_ids", saved.favoriteTeamIds.toSet())
+                                    .putStringSet("profile_player_ids", saved.favoritePlayerIds.toSet())
+                                    .putStringSet("profile_team_names", saved.favoriteTeams.toSet())
+                                    .putStringSet("profile_player_names", saved.favoritePlayers.toSet())
+                                    .putBoolean("profile_complete", true)
+                                    .apply()
+                                profileComplete = true
                                 null
                             } catch (error: Exception) {
                                 error.message ?: "Full name or username did not match."

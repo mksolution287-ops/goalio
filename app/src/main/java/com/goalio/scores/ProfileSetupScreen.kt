@@ -2,6 +2,8 @@ package com.goalio.scores
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -24,6 +26,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -54,6 +58,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -111,7 +116,6 @@ private val FeaturedPlayerKeys = listOf("messi", "ronaldo", "mbapp", "haaland", 
 @Composable
 fun ProfileSetupScreen(
     onBack: () -> Unit,
-    onSkip: () -> Unit,
     onSignIn: suspend (String, String) -> String?,
     onComplete: suspend (ProfileDraft) -> String?
 ) {
@@ -131,6 +135,8 @@ fun ProfileSetupScreen(
     var catalogLoading by remember { mutableStateOf(true) }
     var loadingMoreTeams by remember { mutableStateOf(false) }
     var loadingMorePlayers by remember { mutableStateOf(false) }
+    var teamFilterLoading by remember { mutableStateOf(false) }
+    var playerFilterLoading by remember { mutableStateOf(false) }
     var catalogError by remember { mutableStateOf<String?>(null) }
     var catalogReloadKey by remember { mutableStateOf(0) }
     var teamSelectionError by remember { mutableStateOf<String?>(null) }
@@ -140,7 +146,8 @@ fun ProfileSetupScreen(
     var usernameAvailable by remember { mutableStateOf<Boolean?>(null) }
     var usernameError by remember { mutableStateOf<String?>(null) }
     var checkingUsername by remember { mutableStateOf(false) }
-    var signedInExisting by remember { mutableStateOf(false) }
+    var identityMatches by remember { mutableStateOf<Boolean?>(null) }
+    var checkingIdentity by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val remoteConfig = remember { FirebaseRemoteConfig.getInstance() }
     val teamLimit = remoteConfig.getLong("profile_teams_limit").toInt()
@@ -148,9 +155,12 @@ fun ProfileSetupScreen(
     val playerLimit = remoteConfig.getLong("profile_players_limit").toInt()
         .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val keyboardVisible = WindowInsets.ime.getBottom(density) > 0
     val fullNameValid = isValidFullName(fullName)
     val usernameRuleValid = isValidUsername(username)
-    val valid = fullNameValid && usernameAvailable == true
+    val existingProfile = identityMatches == true
+    val valid = fullNameValid && usernameRuleValid && !checkingUsername && !checkingIdentity && (usernameAvailable == true || existingProfile)
     val teams = remember(teamQuery, teamCatalog, teamCompetitionId) {
         teamCatalog.asSequence()
             .filter { teamCompetitionId == null || teamCompetitionId in it.competitionIds }
@@ -209,6 +219,22 @@ fun ProfileSetupScreen(
             nextPlayerCursor = page.nextCursor
         }
     }
+    LaunchedEffect(teamCompetitionId) {
+        val competitionId = teamCompetitionId ?: return@LaunchedEffect
+        teamFilterLoading = true
+        runCatching { GoalioBackendApi.getTeams(limit = 20, competitionId = competitionId) }
+            .onSuccess { page -> teamCatalog = (teamCatalog + page.items).distinctBy { it.id }; nextTeamCursor = page.nextCursor }
+            .onFailure { catalogError = it.userFacingBackendMessage("Could not load teams for this competition.") }
+        teamFilterLoading = false
+    }
+    LaunchedEffect(playerCompetitionId) {
+        val competitionId = playerCompetitionId ?: return@LaunchedEffect
+        playerFilterLoading = true
+        runCatching { GoalioBackendApi.getPlayers(limit = 20, competitionId = competitionId) }
+            .onSuccess { page -> playerCatalog = (playerCatalog + page.items.map { it.withCompetitionIds(teamCatalog) }).distinctBy { it.id }; nextPlayerCursor = page.nextCursor }
+            .onFailure { catalogError = it.userFacingBackendMessage("Could not load players for this competition.") }
+        playerFilterLoading = false
+    }
     LaunchedEffect(username) {
         usernameAvailable = null
         usernameError = null
@@ -221,25 +247,41 @@ fun ProfileSetupScreen(
             .onFailure { usernameError = it.userFacingBackendMessage("Could not check username.") }
         checkingUsername = false
     }
+    LaunchedEffect(fullName, username, usernameAvailable) {
+        identityMatches = null
+        checkingIdentity = false
+        if (usernameAvailable != false || !fullNameValid || !usernameRuleValid) return@LaunchedEffect
+        delay(350)
+        checkingIdentity = true
+        runCatching { GoalioBackendApi.profileIdentityMatches(fullName.trim(), username.trim()) }
+            .onSuccess { identityMatches = it }
+            .onFailure { identityMatches = false }
+        checkingIdentity = false
+    }
 
     BackHandler(onBack = onBack)
     GoalioBackground(.18f) {
-        Column(Modifier.fillMaxSize().statusBarsPadding().imePadding()) {
-            ProfileHeader(onBack, onSkip)
+        Column(Modifier.fillMaxSize().statusBarsPadding()) {
+            ProfileHeader(onBack)
             LazyColumn(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).imePadding(),
                 contentPadding = PaddingValues(start = metrics.horizontalPadding, end = metrics.horizontalPadding, top = metrics.dp(10), bottom = metrics.dp(24)),
                 verticalArrangement = Arrangement.spacedBy(metrics.dp(18))
             ) {
+                item {
+                    Text("BUILD YOUR PROFILE", color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                    Text("Make Goalio yours", color = Color.White, fontSize = metrics.sp(29), fontWeight = FontWeight.Black)
+                    Text("Choose your identity, teams and players. You can update these anytime.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
+                }
                 item {
                     Surface(
                         color = Panel,
                         border = BorderStroke(1.dp, GoalioColors.CardBorder),
                         shape = RoundedCornerShape(metrics.dp(24)),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().animateContentSize()
                     ) {
                         Column(Modifier.padding(metrics.dp(18))) {
-                            Text("Identity", color = Color.White, fontSize = metrics.sp(25), fontWeight = FontWeight.Black)
+                            ProfileStepHeader("01", "Your identity", "Create a new profile or recover one securely.")
                             Spacer(Modifier.height(20.dp))
                             LabeledInput("FULL NAME", "e.g., Alex Morgan", fullName, { fullName = it }, true)
                             if (fullName.isNotBlank() && !fullNameValid) {
@@ -261,35 +303,15 @@ fun ProfileSetupScreen(
                                 !usernameRuleValid -> FieldMessage("3–20 characters; start with a letter. Use letters, numbers, or single underscores.", false)
                                 checkingUsername -> FieldMessage("Checking username…", true)
                                 usernameAvailable == true -> FieldMessage("Username is available", true)
+                                usernameAvailable == false && checkingIdentity -> FieldMessage("Checking profile details…", true)
+                                usernameAvailable == false && identityMatches == true -> FieldMessage("Existing profile matched", true)
+                                usernameAvailable == false && identityMatches == false -> FieldMessage("That username is taken, but the full name does not match.", false)
                                 usernameAvailable == false -> FieldMessage("That username is already taken", false)
                                 usernameError != null -> FieldMessage(usernameError.orEmpty(), false)
                             }
-                            if (usernameAvailable == false && fullNameValid) {
-                                Spacer(Modifier.height(12.dp))
-                                Button(
-                                    enabled = !submitting,
-                                    onClick = {
-                                        scope.launch {
-                                            submitting = true
-                                            val signInError = onSignIn(fullName.trim(), username.trim())
-                                            submitting = false
-                                            if (signInError == null) {
-                                                signedInExisting = true
-                                                usernameAvailable = true
-                                                submitError = null
-                                            } else submitError = signInError
-                                        }
-                                    },
-                                    border = BorderStroke(2.dp, GoalioColors.Tertiary),
-                                    shape = RoundedCornerShape(50),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF241000), contentColor = Color.White),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) { Text("SIGN IN TO EXISTING PROFILE", fontWeight = FontWeight.Black) }
-                            }
-                            if (signedInExisting) FieldMessage("Signed in. Choose favorites and continue to update your profile.", true)
+                            if (existingProfile) FieldMessage("Profile verified. Use the button below to sign in.", true)
                             Spacer(Modifier.height(28.dp))
-                            Text("Follow your favorites", color = Color.White, fontSize = metrics.sp(23), fontWeight = FontWeight.Black)
-                            Text("Get live updates for the teams you love.", color = GoalioColors.Body, fontSize = metrics.sp(16))
+                            ProfileStepHeader("02", "Favorite teams", "Build a feed around the clubs and nations you follow.")
                             if (catalogLoading) {
                                 FieldMessage("Loading teams and players...", true)
                             }
@@ -310,6 +332,7 @@ fun ProfileSetupScreen(
                             SearchInput("Search teams...", teamQuery) { teamQuery = it }
                             Spacer(Modifier.height(12.dp))
                             CompetitionFilterRow(teamCompetitionId) { teamCompetitionId = it }
+                            if (teamFilterLoading) FieldMessage("Loading teams…", true)
                             Text(
                                 "${selectedTeams.size}/$teamLimit teams selected",
                                 color = Muted,
@@ -374,7 +397,7 @@ fun ProfileSetupScreen(
                                                 if (teamQuery.trim().length >= 2) {
                                                     GoalioBackendApi.searchTeams(teamQuery, limit = 6, cursor = cursor)
                                                 } else {
-                                                    GoalioBackendApi.getTeams(limit = 6, cursor = cursor)
+                                                    GoalioBackendApi.getTeams(limit = 6, cursor = cursor, competitionId = teamCompetitionId)
                                                 }
                                             }.onSuccess { page ->
                                                 teamCatalog = (teamCatalog + page.items).distinctBy { it.id }
@@ -393,14 +416,12 @@ fun ProfileSetupScreen(
                                 }
                             }
                             Spacer(Modifier.height(28.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Who's your hero?", color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                                SearchGlyph(Modifier.size(25.dp), Color.White)
-                            }
+                            ProfileStepHeader("03", "Favorite players", "Pin the players you never want to miss.")
                             Spacer(Modifier.height(12.dp))
                             SearchInput("Search players...", playerQuery) { playerQuery = it }
                             Spacer(Modifier.height(12.dp))
                             CompetitionFilterRow(playerCompetitionId) { playerCompetitionId = it }
+                            if (playerFilterLoading) FieldMessage("Loading players…", true)
                             Text(
                                 "${selectedPlayers.size}/$playerLimit players selected",
                                 color = Muted,
@@ -442,7 +463,7 @@ fun ProfileSetupScreen(
                                                 if (playerQuery.trim().length >= 2) {
                                                     GoalioBackendApi.searchPlayers(playerQuery, limit = 6, cursor = cursor)
                                                 } else {
-                                                    GoalioBackendApi.getPlayers(limit = 6, cursor = cursor)
+                                                    GoalioBackendApi.getPlayers(limit = 6, cursor = cursor, competitionId = playerCompetitionId)
                                                 }
                                             }.onSuccess { page ->
                                                 playerCatalog = (playerCatalog + page.items.map { it.withCompetitionIds(teamCatalog) })
@@ -465,8 +486,9 @@ fun ProfileSetupScreen(
                     }
                 }
             }
-            Surface(color = GoalioColors.Surface1, border = BorderStroke(1.dp, GoalioColors.CardBorder)) {
-                Column {
+            AnimatedVisibility(visible = !keyboardVisible) {
+                Surface(color = GoalioColors.Surface1, border = BorderStroke(1.dp, GoalioColors.CardBorder)) {
+                    Column {
                     if (submitError != null) {
                         Text(
                             submitError.orEmpty(),
@@ -478,15 +500,13 @@ fun ProfileSetupScreen(
                     Button(
                         enabled = valid && !submitting,
                         onClick = {
-                            val draft = ProfileDraft(
-                                fullName = fullName.trim(),
-                                username = username.trim().lowercase(),
-                                teamIds = selectedTeams,
-                                playerIds = selectedPlayers
-                            )
                             scope.launch {
                                 submitting = true
-                                submitError = onComplete(draft)
+                                submitError = if (existingProfile) {
+                                    onSignIn(fullName.trim(), username.trim())
+                                } else {
+                                    onComplete(ProfileDraft(fullName.trim(), username.trim().lowercase(), selectedTeams, selectedPlayers))
+                                }
                                 submitting = false
                             }
                         },
@@ -494,13 +514,16 @@ fun ProfileSetupScreen(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF241000),
                             contentColor = GoalioColors.TextPrimary,
-                            disabledContainerColor = GoalioColors.Disabled,
-                            disabledContentColor = GoalioColors.TextTertiary
+                            disabledContainerColor = Color(0xFF140A02),
+                            disabledContentColor = GoalioColors.Tertiary.copy(alpha = .48f)
                         ),
                         border = BorderStroke(2.dp, GoalioColors.Tertiary),
                         shape = RoundedCornerShape(50)
                     ) {
-                        Text(if (submitting) "SAVING..." else "CONTINUE  >", fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
+                        Crossfade(targetState = Triple(submitting, existingProfile, checkingUsername || checkingIdentity), label = "profile action") { state ->
+                            Text(when { state.first -> if (state.second) "SIGNING IN..." else "SAVING..."; state.third -> "CHECKING..."; state.second -> "SIGN IN"; else -> "CONTINUE" }, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
+                        }
+                    }
                     }
                 }
             }
@@ -509,7 +532,21 @@ fun ProfileSetupScreen(
 }
 
 @Composable
-private fun ProfileHeader(onBack: () -> Unit, onSkip: () -> Unit) {
+private fun ProfileStepHeader(number: String, title: String, subtitle: String) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Surface(color = Color(0xFF241000), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, GoalioColors.Tertiary), modifier = Modifier.size(44.dp)) {
+            Box(contentAlignment = Alignment.Center) { Text(number, color = GoalioColors.Tertiary, fontSize = 12.sp, fontWeight = FontWeight.Black) }
+        }
+        Spacer(Modifier.width(13.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, color = GoalioColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black)
+            Text(subtitle, color = GoalioColors.TextSecondary, fontSize = 12.sp, lineHeight = 16.sp)
+        }
+    }
+}
+
+@Composable
+private fun ProfileHeader(onBack: () -> Unit) {
     val metrics = rememberGoalioMetrics()
     Row(
         Modifier.fillMaxWidth().height(metrics.dp(66)).padding(horizontal = metrics.horizontalPadding),
@@ -521,19 +558,7 @@ private fun ProfileHeader(onBack: () -> Unit, onSkip: () -> Unit) {
         Spacer(Modifier.weight(1f))
         Text("Goalio", color = Color.White, fontSize = metrics.sp(23), fontWeight = FontWeight.ExtraBold, letterSpacing = 3.sp)
         Spacer(Modifier.weight(1f))
-        Surface(
-            onClick = onSkip,
-            color = GoalioColors.Accent,
-            contentColor = Color.White,
-            shape = RoundedCornerShape(50)
-        ) {
-            Text(
-                "Skip",
-                fontSize = metrics.sp(13),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = metrics.dp(18), vertical = metrics.dp(9))
-            )
-        }
+        Spacer(Modifier.size(metrics.dp(38)))
     }
 }
 
@@ -658,6 +683,7 @@ private fun SelectionChip(label: String, onRemove: () -> Unit) {
 @Composable
 private fun TeamCard(team: FavoriteTeam, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val metrics = rememberGoalioMetrics()
+    var imageFailed by remember(team.imageUrl) { mutableStateOf(false) }
     Surface(
         onClick = onClick,
         color = GoalioColors.Neutral,
@@ -668,19 +694,22 @@ private fun TeamCard(team: FavoriteTeam, selected: Boolean, modifier: Modifier =
         Box(Modifier.padding(metrics.dp(10))) {
             Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
-                    Modifier.size(width = metrics.dp(54), height = metrics.dp(36)).clip(RoundedCornerShape(5.dp))
-                        .background(GoalioColors.Surface3),
+                    Modifier.size(metrics.dp(52)).clip(CircleShape)
+                        .background(team.primaryColor.copy(alpha = .16f))
+                        .border(1.dp, team.primaryColor.copy(alpha = .38f), CircleShape)
+                        .padding(metrics.dp(5)),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (team.imageUrl != null) {
+                    if (team.imageUrl != null && !imageFailed) {
                         AsyncImage(
                             model = team.imageUrl,
                             contentDescription = "${team.name} badge",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
+                            contentScale = ContentScale.Fit,
+                            onError = { imageFailed = true },
+                            modifier = Modifier.fillMaxSize().padding(metrics.dp(2))
                         )
                     } else {
-                        Text(team.shortName.take(1), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
+                        Text(team.shortName.take(3).uppercase(), color = Color.White, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
                     }
                 }
                 Spacer(Modifier.height(metrics.dp(8)))
@@ -698,6 +727,7 @@ private fun TeamCard(team: FavoriteTeam, selected: Boolean, modifier: Modifier =
 @Composable
 private fun PlayerCard(player: FavoritePlayer, selected: Boolean, onClick: () -> Unit) {
     val metrics = rememberGoalioMetrics()
+    var imageFailed by remember(player.imageUrl) { mutableStateOf(false) }
     Surface(
         color = GoalioColors.Neutral,
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) GoalioColors.Accent else GoalioColors.Border),
@@ -707,17 +737,17 @@ private fun PlayerCard(player: FavoritePlayer, selected: Boolean, onClick: () ->
         Column {
             Box(
                 Modifier.fillMaxWidth().height(metrics.dp(144))
-                    .background(GoalioColors.Black700)
+                    .background(GoalioColors.Surface3)
             ) {
-                if (player.imageUrl != null) {
+                PlayerSilhouette(Modifier.align(Alignment.BottomCenter).size(metrics.dp(120)), GoalioColors.Gray200)
+                if (player.imageUrl != null && !imageFailed) {
                     AsyncImage(
                         model = player.imageUrl,
                         contentDescription = player.name,
                         contentScale = ContentScale.Crop,
+                        onError = { imageFailed = true },
                         modifier = Modifier.fillMaxSize()
                     )
-                } else {
-                    PlayerSilhouette(Modifier.align(Alignment.BottomCenter).size(metrics.dp(120)), GoalioColors.TextSecondary)
                 }
                 Surface(
                     color = GoalioColors.Surface1.copy(alpha = .86f), shape = CircleShape,
@@ -771,17 +801,17 @@ private fun CheckGlyph(modifier: Modifier, color: Color) = Canvas(modifier) {
 
 @Composable
 private fun PlayerSilhouette(modifier: Modifier, accent: Color) = Canvas(modifier) {
-    drawCircle(Color(0xFFE8C7AF), size.minDimension * .13f, Offset(size.width * .5f, size.height * .25f))
-    drawCircle(Color(0xFF17130F), size.minDimension * .135f, Offset(size.width * .5f, size.height * .2f))
+    val cx = size.width * .5f
+    drawCircle(accent.copy(alpha = .9f), size.minDimension * .045f, Offset(size.width * .33f, size.height * .29f))
+    drawCircle(accent.copy(alpha = .9f), size.minDimension * .045f, Offset(size.width * .67f, size.height * .29f))
+    drawCircle(accent, size.minDimension * .17f, Offset(cx, size.height * .28f))
+    drawRect(accent, Offset(size.width * .43f, size.height * .39f), androidx.compose.ui.geometry.Size(size.width * .14f, size.height * .16f))
     val body = Path().apply {
-        moveTo(size.width * .27f, size.height)
-        lineTo(size.width * .32f, size.height * .48f)
-        lineTo(size.width * .44f, size.height * .38f)
-        lineTo(size.width * .56f, size.height * .38f)
-        lineTo(size.width * .68f, size.height * .48f)
-        lineTo(size.width * .73f, size.height)
+        moveTo(size.width * .08f, size.height)
+        cubicTo(size.width * .09f, size.height * .69f, size.width * .27f, size.height * .61f, size.width * .4f, size.height * .55f)
+        cubicTo(size.width * .44f, size.height * .63f, size.width * .56f, size.height * .63f, size.width * .6f, size.height * .55f)
+        cubicTo(size.width * .73f, size.height * .61f, size.width * .91f, size.height * .69f, size.width * .92f, size.height)
         close()
     }
     drawPath(body, accent)
-    drawLine(Color.White.copy(alpha = .65f), Offset(size.width * .5f, size.height * .44f), Offset(size.width * .5f, size.height), size.width * .025f)
 }
