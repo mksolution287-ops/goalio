@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.LocaleList
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
@@ -24,6 +25,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -43,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -60,6 +63,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.unit.dp
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.goalio.scores.ui.theme.GoalioTheme
 import com.goalio.scores.ui.theme.GoalioColors
 import com.onesignal.OneSignal
@@ -102,7 +106,7 @@ class MainActivity : ComponentActivity() {
                 val pendingLanguageReturn = remember { settings.getString(PREF_LANGUAGE_RETURN_SCREEN, null) }
                 val suppressNextSplash = remember { settings.getBoolean(PREF_SUPPRESS_NEXT_SPLASH, false) }
                 var currentLanguage by remember { mutableStateOf(settings.getString("language", "en-GB") ?: "en-GB") }
-                var showSplash by remember { mutableStateOf(savedInstanceState == null && !suppressNextSplash) }
+                var showSplash by remember { mutableStateOf(!suppressNextSplash) }
                 var languageSelected by remember { mutableStateOf(settings.contains("language")) }
                 var onboardingComplete by remember {
                     mutableStateOf(settings.getBoolean("onboarding_complete", false))
@@ -112,13 +116,39 @@ class MainActivity : ComponentActivity() {
                 }
                 var profileUsername by remember { mutableStateOf(settings.getString("profile_username", null)) }
                 var appScreen by remember { mutableStateOf(pendingLanguageReturn ?: "home") }
+                var screenHistory by remember { mutableStateOf(emptyList<String>()) }
                 var languageReturnScreen by remember { mutableStateOf<String?>(null) }
                 var selectedMatch by remember { mutableStateOf<ScheduleMatch?>(null) }
                 var selectedDetailTab by remember { mutableStateOf("Overview") }
+                var competitionHubMode by remember { mutableStateOf(GoalioRemoteConfig.competitionHubMode()) }
+                val navigateTo: (String) -> Unit = { target ->
+                    if (target != appScreen) {
+                        screenHistory = screenHistory + appScreen
+                        appScreen = target
+                    }
+                }
+                val navigateBack: () -> Unit = {
+                    val previous = screenHistory.lastOrNull()
+                    if (previous != null) {
+                        screenHistory = screenHistory.dropLast(1)
+                        appScreen = previous
+                    } else if (appScreen != "home") {
+                        appScreen = "home"
+                    }
+                }
+                val openCompetitionHub: () -> Unit = {
+                    navigateTo(competitionHubMode.screen ?: "matches")
+                }
                 val effectiveLanguage = if (currentLanguage == "system") Locale.getDefault().toLanguageTag() else currentLanguage
                 val notificationLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission()
                 ) { }
+
+                BackHandler(
+                    enabled = !showSplash && languageSelected && onboardingComplete && profileComplete &&
+                        (appScreen != "home" || screenHistory.isNotEmpty()),
+                    onBack = navigateBack
+                )
 
                 LaunchedEffect(currentLanguage) {
                     applyLanguage(currentLanguage)
@@ -135,8 +165,19 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(Unit) {
+                    FirebaseRemoteConfig.getInstance().fetchAndActivate().addOnCompleteListener {
+                        competitionHubMode = GoalioRemoteConfig.competitionHubMode()
+                    }
                     delay(2800)
                     showSplash = false
+                }
+                LaunchedEffect(competitionHubMode, appScreen) {
+                    if (appScreen == "worldcup" && competitionHubMode.screen != "worldcup") {
+                        appScreen = competitionHubMode.screen ?: "home"
+                    }
+                    if (appScreen == "league" && competitionHubMode.screen != "league") {
+                        appScreen = competitionHubMode.screen ?: "home"
+                    }
                 }
                 LaunchedEffect(showSplash) {
                     if (!showSplash && !settings.getBoolean("notification_prompt_requested", false)) {
@@ -178,18 +219,16 @@ class MainActivity : ComponentActivity() {
                     when {
                         showSplash -> SplashScreen()
                         !languageSelected -> LanguageScreen(
-                            onBack = {
-                                val returnScreen = languageReturnScreen
-                                if (returnScreen != null) {
-                                    languageReturnScreen = null
-                                    appScreen = returnScreen
+                            onBack = if (languageReturnScreen != null || onboardingComplete) {
+                                {
+                                    val returnScreen = languageReturnScreen
+                                    if (returnScreen != null) {
+                                        languageReturnScreen = null
+                                        appScreen = returnScreen
+                                    }
                                     languageSelected = true
-                                } else if (onboardingComplete) {
-                                    languageSelected = true
-                                } else {
-                                    showSplash = true
                                 }
-                            },
+                            } else null,
                             onDone = { languageTag ->
                                 val returnScreen = languageReturnScreen
                                 val editor = settings.edit()
@@ -259,15 +298,15 @@ class MainActivity : ComponentActivity() {
                     )
                     else -> when (appScreen) {
                         "matches" -> MatchScreen(
-                            onBack = { appScreen = "home" },
-                            onOpenHome = { appScreen = "home" },
-                            onOpenWorldCup = { appScreen = "worldcup" },
-                            onOpenGames = { appScreen = "games" },
-                            onOpenSettings = { appScreen = "settings" },
+                            onBack = navigateBack,
+                            onOpenHome = { navigateTo("home") },
+                            onOpenWorldCup = openCompetitionHub,
+                            onOpenGames = { navigateTo("games") },
+                            onOpenSettings = { navigateTo("settings") },
                             onOpenMatch = { match ->
                                 selectedMatch = match
                                 selectedDetailTab = "Overview"
-                                appScreen = "detail"
+                                navigateTo("detail")
                             }
                         )
                         "detail" -> selectedMatch?.let { match ->
@@ -276,41 +315,48 @@ class MainActivity : ComponentActivity() {
                                 matchId = match.matchId,
                                 initialMatch = match,
                                 initialTab = selectedDetailTab,
-                                onBack = { appScreen = "matches" },
-                                onOpenHome = { appScreen = "home" },
-                                onOpenMatches = { appScreen = "matches" },
-                                onOpenWorldCup = { appScreen = "worldcup" },
-                                onOpenGames = { appScreen = "games" },
-                                onOpenSettings = { appScreen = "settings" }
+                                onBack = navigateBack,
+                                onOpenHome = { navigateTo("home") },
+                                onOpenMatches = { navigateTo("matches") },
+                                onOpenWorldCup = openCompetitionHub,
+                                onOpenGames = { navigateTo("games") },
+                                onOpenSettings = { navigateTo("settings") }
                             )
                         } ?: run {
                             appScreen = "matches"
                             MatchScreen(
-                                onBack = { appScreen = "home" },
-                                onOpenHome = { appScreen = "home" },
-                                onOpenWorldCup = { appScreen = "worldcup" },
-                                onOpenGames = { appScreen = "games" },
-                                onOpenSettings = { appScreen = "settings" },
+                                onBack = navigateBack,
+                                onOpenHome = { navigateTo("home") },
+                                onOpenWorldCup = openCompetitionHub,
+                                onOpenGames = { navigateTo("games") },
+                                onOpenSettings = { navigateTo("settings") },
                                 onOpenMatch = { match ->
                                     selectedMatch = match
                                     selectedDetailTab = "Overview"
-                                    appScreen = "detail"
+                                    navigateTo("detail")
                                 }
                             )
                         }
                         "worldcup" -> WorldCupScreen(
-                            onBack = { appScreen = "home" },
-                            onOpenHome = { appScreen = "home" },
-                            onOpenMatches = { appScreen = "matches" },
-                            onOpenGames = { appScreen = "games" },
-                            onOpenSettings = { appScreen = "settings" }
+                            onBack = navigateBack,
+                            onOpenHome = { navigateTo("home") },
+                            onOpenMatches = { navigateTo("matches") },
+                            onOpenGames = { navigateTo("games") },
+                            onOpenSettings = { navigateTo("settings") }
+                        )
+                        "league" -> LeagueScreen(
+                            onBack = navigateBack,
+                            onOpenHome = { navigateTo("home") },
+                            onOpenMatches = { navigateTo("matches") },
+                            onOpenGames = { navigateTo("games") },
+                            onOpenSettings = { navigateTo("settings") }
                         )
                         "games" -> GameScreen(
-                            onBack = { appScreen = "home" },
-                            onOpenHome = { appScreen = "home" },
-                            onOpenMatches = { appScreen = "matches" },
-                            onOpenWorldCup = { appScreen = "worldcup" },
-                            onOpenSettings = { appScreen = "settings" },
+                            onBack = navigateBack,
+                            onOpenHome = { navigateTo("home") },
+                            onOpenMatches = { navigateTo("matches") },
+                            onOpenWorldCup = openCompetitionHub,
+                            onOpenSettings = { navigateTo("settings") },
                             currentUsername = profileUsername,
                             onSaveUsername = { username ->
                                 try {
@@ -339,9 +385,9 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                         "settings" -> SettingsScreen(
-                            onBack = { appScreen = "home" }, onHome = { appScreen = "home" },
-                            onMatches = { appScreen = "matches" }, onWorldCup = { appScreen = "worldcup" },
-                            onGames = { appScreen = "games" },
+                            onBack = navigateBack, onHome = { navigateTo("home") },
+                            onMatches = { navigateTo("matches") }, onWorldCup = openCompetitionHub,
+                            onGames = { navigateTo("games") },
                             onEditProfile = { profileComplete = false },
                             onLanguage = {
                                 languageReturnScreen = "settings"
@@ -353,14 +399,14 @@ class MainActivity : ComponentActivity() {
                             fallbackName = settings.getString("profile_full_name", null),
                             fallbackTeams = settings.getStringSet("profile_team_names", emptySet()).orEmpty(),
                             fallbackPlayers = settings.getStringSet("profile_player_names", emptySet()).orEmpty(),
-                            onOpenMatches = { appScreen = "matches" },
-                            onOpenWorldCup = { appScreen = "worldcup" },
-                            onOpenGames = { appScreen = "games" },
-                            onOpenSettings = { appScreen = "settings" },
+                            onOpenMatches = { navigateTo("matches") },
+                            onOpenWorldCup = openCompetitionHub,
+                            onOpenGames = { navigateTo("games") },
+                            onOpenSettings = { navigateTo("settings") },
                             onOpenMatch = { match, tab ->
                                 selectedMatch = match
                                 selectedDetailTab = tab
-                                appScreen = "detail"
+                                navigateTo("detail")
                             }
                         )
                     }
@@ -394,23 +440,97 @@ fun GoalioBackground(backgroundAlpha: Float = 1f, content: @Composable BoxScope.
 @Composable
 fun SplashScreen() {
     val metrics = rememberGoalioMetrics()
+    val transition = rememberInfiniteTransition(label = "splash motion")
+    val rotation = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(tween(1800, easing = LinearEasing), RepeatMode.Restart),
+        label = "splash ball angle"
+    ).value
+    val sweep = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(2200, easing = LinearEasing), RepeatMode.Restart),
+        label = "pitch sweep"
+    ).value
     GoalioBackground {
-        Box(Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(R.drawable.goalio_logo),
-                contentDescription = APP_DISPLAY_NAME,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(metrics.dp(180))
+        Canvas(Modifier.fillMaxSize()) {
+            drawRect(
+                brush = Brush.radialGradient(
+                    colors = listOf(Color(0xFF1C1005), GoalioColors.Background),
+                    center = center,
+                    radius = size.minDimension * .72f
+                )
             )
-            LoadingGoal(
-                modifier = Modifier
+            val lineColor = GoalioColors.Tertiary.copy(alpha = .09f)
+            val fieldWidth = size.width * .88f
+            val fieldHeight = size.height * .62f
+            val left = (size.width - fieldWidth) / 2f
+            val top = (size.height - fieldHeight) / 2f
+            val stroke = (size.minDimension * .004f).coerceAtLeast(1.5f)
+            drawRoundRect(
+                color = lineColor,
+                topLeft = Offset(left, top),
+                size = Size(fieldWidth, fieldHeight),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(stroke * 4f),
+                style = Stroke(width = stroke)
+            )
+            drawLine(lineColor, Offset(left, center.y), Offset(left + fieldWidth, center.y), stroke)
+            drawCircle(lineColor, radius = fieldWidth * .14f, center = center, style = Stroke(width = stroke))
+            drawCircle(lineColor, radius = stroke * 1.35f, center = center)
+            val boxWidth = fieldWidth * .34f
+            val boxHeight = fieldHeight * .13f
+            drawRect(lineColor, Offset(center.x - boxWidth / 2f, top), Size(boxWidth, boxHeight), style = Stroke(stroke))
+            drawRect(lineColor, Offset(center.x - boxWidth / 2f, top + fieldHeight - boxHeight), Size(boxWidth, boxHeight), style = Stroke(stroke))
+        }
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                Modifier
+                    .size(metrics.dp(if (metrics.compact) 230 else 270)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.goalio_ball),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .offset(
+                            x = metrics.dp(if (metrics.compact) 6 else 7),
+                            y = metrics.dp(if (metrics.compact) -25 else -30)
+                        )
+                        .size(metrics.dp(if (metrics.compact) 80 else 94))
+                        .graphicsLayer {
+                            rotationZ = rotation
+                            alpha = .98f
+                        }
+                )
+                Image(
+                    painter = painterResource(R.drawable.goalio_logo_noball),
+                    contentDescription = APP_DISPLAY_NAME,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            Box(
+                Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(bottom = metrics.dp(if (metrics.compact) 46 else 66))
-                    .padding(horizontal = metrics.horizontalPadding)
-            )
+                    .padding(bottom = metrics.dp(64))
+                    .size(
+                        width = metrics.dp(if (metrics.compact) 180 else 220),
+                        height = metrics.dp(6)
+                    )
+                    .clip(RoundedCornerShape(50))
+                    .background(Color.White.copy(alpha = .14f))
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxWidth(sweep.coerceIn(.08f, 1f))
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(50))
+                        .background(GoalioColors.Tertiary)
+                )
+            }
         }
     }
 }

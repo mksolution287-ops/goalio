@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.Goalio" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowSplashScreenBackground">@color/black</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/goalio_logo</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/goalio_logo_noball</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/black</item>
         <item name="android:navigationBarColor">@color/black</item>
         <item name="android:statusBarColor">@color/black</item>

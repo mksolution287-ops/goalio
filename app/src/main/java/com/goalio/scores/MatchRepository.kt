@@ -25,6 +25,8 @@ data class MatchFeedResult(
 )
 
 object MatchRepository {
+    const val LIVE_REFRESH_DELAY_MILLIS = 40_000L
+
     val leagues = listOf(
         "fifa.world",
         "eng.1",
@@ -123,7 +125,7 @@ object MatchRepository {
     }
 
     fun nextRefreshDelayMillis(matches: List<ScheduleMatch>): Long =
-        if (matches.any { it.state == "in" }) 2 * 60 * 1000L else 15 * 60 * 1000L
+        if (matches.any { it.state == "in" || it.needsLiveWatch() }) LIVE_REFRESH_DELAY_MILLIS else 15 * 60 * 1000L
 
     fun canonical(match: ScheduleMatch): ScheduleMatch =
         canonicalMatches.value[matchKey(match.league, match.matchId)] ?: match
@@ -289,6 +291,14 @@ private fun ScheduleMatch.localCacheDate(): java.time.LocalDate? = runCatching {
         .atZoneSameInstant(java.time.ZoneId.systemDefault())
         .toLocalDate()
 }.getOrNull()
+
+private fun ScheduleMatch.needsLiveWatch(): Boolean {
+    val kickoffInstant = runCatching { java.time.OffsetDateTime.parse(kickoff).toInstant() }.getOrNull() ?: return false
+    val now = java.time.Instant.now()
+    return state != "post" &&
+        now >= kickoffInstant.minus(java.time.Duration.ofMinutes(10)) &&
+        now <= kickoffInstant.plus(java.time.Duration.ofHours(4))
+}
 
 internal fun ScheduleMatch.compactNotificationName(): String {
     val home = homeTeam?.abbreviation ?: homeTeam?.shortName ?: homeTeam?.name ?: "Home"

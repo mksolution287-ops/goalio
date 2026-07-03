@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.animation.core.RepeatMode
@@ -37,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -105,6 +107,8 @@ fun PersonalizedHomeScreen(
     val today = remember { LocalDate.now() }
     val fromDate = remember(today) { today.minusDays(30).toString() }
     val toDate = remember(today) { today.plusDays(120).toString() }
+    val listState = rememberLazyListState()
+    val isScrolling by remember { derivedStateOf { listState.isScrollInProgress } }
 
     LaunchedEffect(fromDate, toDate) {
         MatchRepository.matchUpdates.collect { canonical ->
@@ -179,6 +183,7 @@ fun PersonalizedHomeScreen(
 
     GoalioBackground {
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
             contentPadding = PaddingValues(start = metrics.horizontalPadding, end = metrics.horizontalPadding, top = metrics.dp(20), bottom = metrics.bottomBarPadding),
             verticalArrangement = Arrangement.spacedBy(metrics.dp(20))
@@ -188,7 +193,7 @@ fun PersonalizedHomeScreen(
                 when {
                     loading -> HomeSkeleton()
                     errorMessage != null -> HomeStateCard(errorMessage.orEmpty())
-                    buckets.featured != null -> FeaturedMatchCard(buckets.featured) { match -> onOpenMatch(match, "Overview") }
+                    buckets.featured != null -> FeaturedMatchCard(buckets.featured, !isScrolling) { match -> onOpenMatch(match, "Overview") }
                     else -> HomeStateCard("Looking for the latest fixtures...")
                 }
             }
@@ -201,7 +206,7 @@ fun PersonalizedHomeScreen(
                     } else {
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                             items(buckets.liveMatches.take(3), key = { "${it.league}:${it.matchId}" }) {
-                                MatchMiniCard(it) { match -> onOpenMatch(match, "Overview") }
+                                MatchMiniCard(it, !isScrolling) { match -> onOpenMatch(match, "Overview") }
                             }
                         }
                     }
@@ -278,7 +283,7 @@ private fun HeaderIcon(kind: String) {
 }
 
 @Composable
-private fun FeaturedMatchCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Unit) {
+private fun FeaturedMatchCard(match: ScheduleMatch, updateClock: Boolean, onOpenMatch: (ScheduleMatch) -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(
         color = Color.Transparent,
@@ -303,7 +308,7 @@ private fun FeaturedMatchCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch)
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    MatchStatusPill(match)
+                    MatchStatusPill(match, updateClock)
                     Spacer(Modifier.weight(1f))
                     Text(match.leagueLabel(), color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
@@ -432,7 +437,7 @@ private fun SectionHeader(title: String, action: String, onAction: () -> Unit, c
 }
 
 @Composable
-private fun MatchMiniCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> Unit) {
+private fun MatchMiniCard(match: ScheduleMatch, updateClock: Boolean, onOpenMatch: (ScheduleMatch) -> Unit) {
     val metrics = rememberGoalioMetrics()
     Surface(
         color = GoalioColors.Surface1,
@@ -449,7 +454,7 @@ private fun MatchMiniCard(match: ScheduleMatch, onOpenMatch: (ScheduleMatch) -> 
             )
             Column(Modifier.padding(metrics.dp(15)).weight(1f), verticalArrangement = Arrangement.SpaceBetween) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    MatchStatusPill(match)
+                    MatchStatusPill(match, updateClock)
                     Spacer(Modifier.weight(1f))
                     Text(match.leagueLabel(short = true), color = GoalioColors.TextTertiary, fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
                 }
@@ -504,10 +509,22 @@ private fun WinProbabilityBar(homeProbability: Float, homeName: String, awayName
 
 @Composable
 private fun WinProbabilityCard(match: ScheduleMatch?, onViewAnalysis: () -> Unit) {
+    val context = LocalContext.current
     val metrics = rememberGoalioMetrics()
+    var detail by remember(match?.league, match?.matchId) { mutableStateOf(match?.let { MatchRepository.cachedDetail(context, it.league, it.matchId) }) }
+    LaunchedEffect(match?.league, match?.matchId, match?.state) {
+        val current = match ?: return@LaunchedEffect
+        detail = MatchRepository.cachedDetail(context, current.league, current.matchId)
+        while (true) {
+            runCatching { MatchRepository.refreshDetail(context, current.league, current.matchId) }
+                .onSuccess { detail = it }
+            if (current.state == "post") break
+            delay(MatchRepository.nextRefreshDelayMillis(listOf(current)))
+        }
+    }
     val homeName = match?.homeTeam?.abbreviation ?: match?.homeTeam?.shortName ?: match?.homeTeam?.name ?: "HOME"
     val awayName = match?.awayTeam?.abbreviation ?: match?.awayTeam?.shortName ?: match?.awayTeam?.name ?: "AWAY"
-    val homeProbability = match?.sharedHomeWinProbability() ?: 50f
+    val homeProbability = detail?.sharedHomeWinProbability() ?: match?.sharedHomeWinProbability() ?: 50f
     Surface(
         color = GoalioColors.Surface1,
         shape = RoundedCornerShape(metrics.dp(10)),
@@ -735,11 +752,12 @@ private fun TeamScoreLine(team: MatchTeamInfo?) {
 }
 
 @Composable
-private fun MatchStatusPill(match: ScheduleMatch) {
+private fun MatchStatusPill(match: ScheduleMatch, updateClock: Boolean = true) {
     val metrics = rememberGoalioMetrics()
     var now by remember(match.matchId, match.kickoff) { mutableStateOf(Instant.now()) }
     val liveAnchor = remember(match.status, match.statusDescription) { Instant.now() }
-    LaunchedEffect(match.matchId, match.kickoff, match.state) {
+    LaunchedEffect(match.matchId, match.kickoff, match.state, updateClock) {
+        if (!updateClock) return@LaunchedEffect
         if (match.state !in setOf("pre", "in")) return@LaunchedEffect
         if (match.state == "pre") {
             val kickoffInstant = runCatching { OffsetDateTime.parse(match.kickoff).toInstant() }.getOrNull()

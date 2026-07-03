@@ -17,4 +17,19 @@ object GoalioRemoteConfig {
         .trim()
         .takeIf { it.matches(Regex("[0-9a-fA-F-]{36}")) }
         ?: DEFAULT_ONESIGNAL_APP_ID
+
+    fun worldCupEnabled(): Boolean {
+        val value = FirebaseRemoteConfig.getInstance().getValue("world_cup_enabled")
+        return if (value.source == FirebaseRemoteConfig.VALUE_SOURCE_STATIC) true else value.asBoolean()
+    }
+
+    fun leagueScreenEnabled(): Boolean = FirebaseRemoteConfig.getInstance().getBoolean("league_screen_enabled")
+
+    fun competitionHubMode(): CompetitionHubMode = when {
+        worldCupEnabled() -> CompetitionHubMode(label = "World Cup", screen = "worldcup")
+        leagueScreenEnabled() -> CompetitionHubMode(label = "League", screen = "league")
+        else -> CompetitionHubMode(label = null, screen = null)
+    }
 }
+
+data class CompetitionHubMode(val label: String?, val screen: String?)

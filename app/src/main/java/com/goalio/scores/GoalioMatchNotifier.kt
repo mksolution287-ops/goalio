@@ -20,7 +20,6 @@ import java.util.Date
 object GoalioMatchNotifier {
     private const val CHANNEL_ID = "goalio_live_match_alerts"
     private const val UPCOMING_NOTIFICATION_ID = 90210
-    private const val NOTIFICATION_GROUP = "goalio_match_updates"
 
     fun scheduleUpcoming(context: Context, matches: List<ScheduleMatch>) {
         val now = System.currentTimeMillis()
@@ -85,7 +84,6 @@ object GoalioMatchNotifier {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setGroup(NOTIFICATION_GROUP)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
             val notification = builder.build()
@@ -127,7 +125,6 @@ object GoalioMatchNotifier {
             .setCategory(NotificationCompat.CATEGORY_EVENT)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setGroup(NOTIFICATION_GROUP)
             .setWhen(System.currentTimeMillis())
             .setShowWhen(true)
             .setTimeoutAfter((kickoff - now).coerceAtLeast(0L) + DateUtils.HOUR_IN_MILLIS)
@@ -146,7 +143,7 @@ object GoalioMatchNotifier {
             .setColor(ContextCompat.getColor(context, R.color.goalio_tertiary))
             .setContentTitle(title).setContentText(text).setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_HIGH).setCategory(NotificationCompat.CATEGORY_EVENT)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setGroup(NOTIFICATION_GROUP)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(launch)
     }
 

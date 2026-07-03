@@ -73,7 +73,7 @@ private val languages = listOf(
 
 @Composable
 fun LanguageScreen(
-    onBack: () -> Unit,
+    onBack: (() -> Unit)?,
     onDone: (String) -> Unit,
     initialLanguage: String = "en-GB"
 ) {
@@ -86,7 +86,7 @@ fun LanguageScreen(
         languages.filter { it.name.contains(query, true) || it.subtitle.contains(query, true) || it.tag.contains(query, true) }
     }
 
-    BackHandler(onBack = onBack)
+    BackHandler(enabled = onBack != null) { onBack?.invoke() }
     GoalioBackground {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
             Row(
@@ -96,17 +96,21 @@ fun LanguageScreen(
                     .padding(horizontal = metrics.horizontalPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    onClick = onBack,
-                    color = GoalioColors.Neutral,
-                    contentColor = Color.White,
-                    border = BorderStroke(1.dp, GoalioColors.Border),
-                    shape = CircleShape,
-                    modifier = Modifier.size(metrics.dp(44))
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        BackIcon(Modifier.size(metrics.dp(21)), GoalioColors.Secondary)
+                if (onBack != null) {
+                    Surface(
+                        onClick = onBack,
+                        color = GoalioColors.Neutral,
+                        contentColor = Color.White,
+                        border = BorderStroke(1.dp, GoalioColors.Border),
+                        shape = CircleShape,
+                        modifier = Modifier.size(metrics.dp(44))
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            BackIcon(Modifier.size(metrics.dp(21)), GoalioColors.Secondary)
+                        }
                     }
+                } else {
+                    Spacer(Modifier.size(metrics.dp(44)))
                 }
                 Text(
                     APP_DISPLAY_NAME,

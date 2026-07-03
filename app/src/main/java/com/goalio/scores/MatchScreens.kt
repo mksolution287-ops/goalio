@@ -387,9 +387,10 @@ fun MatchDetailScreen(
                     }
                 }
             loading = false
-            val isLive = detail?.statusState() == "in" || initialMatch?.state == "in"
+            val isLive = detail?.statusState() == "in" ||
+                initialMatch?.let { MatchRepository.nextRefreshDelayMillis(listOf(it)) == MatchRepository.LIVE_REFRESH_DELAY_MILLIS } == true
             delay(
-                if (isLive) 2 * 60 * 1000L else 15 * 60 * 1000L
+                if (isLive) MatchRepository.LIVE_REFRESH_DELAY_MILLIS else 15 * 60 * 1000L
             )
         }
     }
@@ -1387,8 +1388,11 @@ private fun HtmlSummaryText(html: String) {
 @Composable
 private fun StreamHighlights(media: MatchMediaInfo?, watch: MatchWatchInfo?, loading: Boolean, error: String?) {
     val metrics = rememberGoalioMetrics()
-    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(12))) {
-        Text(trans("Watch & Highlights"), color = Color.White, fontSize = metrics.sp(24), fontWeight = FontWeight.Black)
+    Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
+        Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(4))) {
+            Text(trans("Watch & Highlights"), color = Color.White, fontSize = metrics.sp(24), fontWeight = FontWeight.Black)
+            Text("Official broadcast links and verified match video.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(13), fontWeight = FontWeight.SemiBold)
+        }
         when {
             loading -> MatchStateCard("Finding official ways to watch...")
             error != null && media == null && watch == null -> MatchStateCard(error)
@@ -1404,24 +1408,30 @@ private fun StreamHighlights(media: MatchMediaInfo?, watch: MatchWatchInfo?, loa
 private fun WatchProvidersCard(watch: MatchWatchInfo?) {
     val metrics = rememberGoalioMetrics()
     val providers = watch?.providers.orEmpty()
-    Surface(color = GoalioColors.Neutral, shape = RoundedCornerShape(metrics.dp(18)), border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(metrics.dp(18)), verticalArrangement = Arrangement.spacedBy(metrics.dp(13))) {
+    Surface(color = GoalioColors.Surface1, shape = RoundedCornerShape(metrics.dp(18)), border = BorderStroke(1.dp, GoalioColors.CardBorder), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(metrics.dp(16)), verticalArrangement = Arrangement.spacedBy(metrics.dp(12))) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                MediaGlyph(Icons.Default.PlayArrow, "Live stream")
+                MediaGlyph(Icons.Default.PlayArrow, "Live stream", compact = true)
                 Spacer(Modifier.width(metrics.dp(12)))
                 Column(Modifier.weight(1f)) {
                     Text(trans("STREAM"), color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
-                    Text(if (providers.isNotEmpty()) "Official ways to watch" else "Official match centre", color = GoalioColors.Secondary, fontSize = metrics.sp(19), fontWeight = FontWeight.Black)
+                    Text(if (providers.isNotEmpty()) "Official broadcasters" else "Official match centre", color = GoalioColors.Secondary, fontSize = metrics.sp(19), fontWeight = FontWeight.Black)
                 }
                 watch?.country?.let { MediaBadge(it) }
             }
             if (providers.isNotEmpty()) {
-                providers.forEach { ProviderRow(it) }
+                Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(9))) {
+                    providers.forEach { ProviderRow(it) }
+                }
             } else {
-                Text(watch?.message ?: "Broadcaster information is not available for your region yet.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(14))
-                watch?.fallback?.let { MediaActionButton("OPEN ${it.name.uppercase()}", it.url) }
+                Surface(color = GoalioColors.Surface2, shape = RoundedCornerShape(metrics.dp(12)), border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(metrics.dp(14)), verticalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
+                        Text(watch?.message ?: "Broadcaster information is not available for your region yet.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
+                        watch?.fallback?.let { MediaActionButton("OPEN ${it.name.uppercase()}", it.url) }
+                    }
+                }
             }
-            Text(watch?.disclaimer ?: "Streaming availability depends on your region and broadcaster rights.", color = GoalioColors.TextTertiary, fontSize = metrics.sp(10))
+            Text(watch?.disclaimer ?: "Streaming availability depends on your region and broadcaster rights.", color = GoalioColors.TextTertiary, fontSize = metrics.sp(10), lineHeight = metrics.sp(14))
         }
     }
 }
@@ -1429,14 +1439,16 @@ private fun WatchProvidersCard(watch: MatchWatchInfo?) {
 @Composable
 private fun ProviderRow(provider: WatchProviderInfo) {
     val metrics = rememberGoalioMetrics()
-    Surface(color = Color(0xFF241000), shape = RoundedCornerShape(metrics.dp(14)), border = BorderStroke(1.dp, GoalioColors.Tertiary), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(metrics.dp(14)), verticalArrangement = Arrangement.spacedBy(metrics.dp(8))) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(provider.name, color = GoalioColors.Secondary, fontSize = metrics.sp(16), fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
-                MediaBadge(when (provider.isFree) { true -> "FREE"; false -> "PAID"; null -> "OFFICIAL" })
+    Surface(color = GoalioColors.Surface2, shape = RoundedCornerShape(metrics.dp(12)), border = BorderStroke(1.dp, GoalioColors.Border), modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(metrics.dp(12)), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(metrics.dp(12))) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(metrics.dp(4))) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(metrics.dp(8))) {
+                    Text(provider.name, color = GoalioColors.TextPrimary, fontSize = metrics.sp(15), fontWeight = FontWeight.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    MediaBadge(when (provider.isFree) { true -> "FREE"; false -> "PAID"; null -> "OFFICIAL" })
+                }
+                Text(provider.note ?: "Official regional broadcast destination.", color = GoalioColors.TextSecondary, fontSize = metrics.sp(12), lineHeight = metrics.sp(16), maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
-            provider.note?.let { Text(it, color = GoalioColors.TextSecondary, fontSize = metrics.sp(12)) }
-            MediaActionButton("WATCH ON ${provider.name.uppercase()}", provider.url)
+            MediaActionButton("OPEN", provider.url, compact = true)
         }
     }
 }
@@ -1475,15 +1487,25 @@ private fun HighlightCard(media: MatchMediaInfo?) {
     }
 }
 
-@Composable private fun MediaBadge(label: String) = Surface(color = GoalioColors.Surface3, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, GoalioColors.Border)) { Text(label, color = GoalioColors.TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) }
+@Composable private fun MediaBadge(label: String) = Surface(color = Color(0xFF241000), shape = RoundedCornerShape(50), border = BorderStroke(1.dp, GoalioColors.Tertiary.copy(alpha = .55f))) { Text(label, color = GoalioColors.Tertiary, fontSize = 10.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) }
 
-@Composable private fun MediaActionButton(label: String, url: String) {
+@Composable private fun MediaActionButton(label: String, url: String, compact: Boolean = false) {
+    val metrics = rememberGoalioMetrics()
     val context = LocalContext.current
-    Surface(color = Color(0xFF241000), shape = RoundedCornerShape(50), border = BorderStroke(2.dp, GoalioColors.Tertiary), modifier = Modifier.fillMaxWidth().clickable { context.openOfficialUrl(url) }) { Text(label, color = GoalioColors.Secondary, fontWeight = FontWeight.Black, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 14.dp, horizontal = 16.dp)) }
+    Surface(
+        color = if (compact) GoalioColors.Tertiary else Color(0xFF241000),
+        shape = RoundedCornerShape(50),
+        border = BorderStroke(if (compact) 0.dp else 2.dp, GoalioColors.Tertiary),
+        modifier = (if (compact) Modifier.width(metrics.dp(78)).height(metrics.dp(38)) else Modifier.fillMaxWidth()).clickable { context.openOfficialUrl(url) }
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(label, color = if (compact) GoalioColors.Primary else GoalioColors.Secondary, fontWeight = FontWeight.Black, fontSize = metrics.sp(if (compact) 11 else 12), textAlign = TextAlign.Center, maxLines = 1, modifier = Modifier.padding(horizontal = metrics.dp(if (compact) 10 else 16)))
+        }
+    }
 }
 
-@Composable private fun MediaGlyph(icon: ImageVector, description: String) = Box(Modifier.size(42.dp).background(GoalioColors.Surface3, CircleShape), contentAlignment = Alignment.Center) {
-    Icon(icon, contentDescription = description, tint = GoalioColors.Tertiary, modifier = Modifier.size(24.dp))
+@Composable private fun MediaGlyph(icon: ImageVector, description: String, compact: Boolean = false) = Box(Modifier.size(if (compact) 36.dp else 42.dp).background(Color(0xFF241000), CircleShape), contentAlignment = Alignment.Center) {
+    Icon(icon, contentDescription = description, tint = GoalioColors.Tertiary, modifier = Modifier.size(if (compact) 20.dp else 24.dp))
 }
 
 private fun android.content.Context.openOfficialUrl(url: String) {

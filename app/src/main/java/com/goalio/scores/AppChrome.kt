@@ -74,7 +74,13 @@ private fun ChromeIcon(icon: ImageVector, description: String, onClick: () -> Un
 
 @Composable
 fun GoalioBottomBar(modifier: Modifier = Modifier, selected: String, onHome: () -> Unit, onMatches: () -> Unit, onWorldCup: () -> Unit, onGames: () -> Unit) {
-    val items = listOf("Home" to onHome, "Matches" to onMatches, "World Cup" to onWorldCup, "Games" to onGames)
+    val competitionLabel = GoalioRemoteConfig.competitionHubMode().label
+    val items = buildList {
+        add("Home" to onHome)
+        add("Matches" to onMatches)
+        competitionLabel?.let { add(it to onWorldCup) }
+        add("Games" to onGames)
+    }
     Surface(
         color = GoalioColors.Neutral,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
@@ -105,6 +111,7 @@ private fun bottomBarIcon(label: String): ImageVector = when (label) {
     "Home" -> Icons.Default.Home
     "Matches" -> Icons.Default.SportsSoccer
     "World Cup" -> Icons.Default.EmojiEvents
+    "League" -> Icons.Default.SportsSoccer
     else -> Icons.Default.SportsEsports
 }
 

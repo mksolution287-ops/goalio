@@ -31,4 +31,14 @@
         <key>profile_players_limit</key>
         <value>6</value>
     </entry>
+
+    <!-- Competition hub switches. World Cup wins when both are enabled. -->
+    <entry>
+        <key>world_cup_enabled</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>league_screen_enabled</key>
+        <value>false</value>
+    </entry>
 </defaultsMap>

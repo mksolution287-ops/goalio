@@ -93,7 +93,8 @@ fun WorldCupScreen(
                 .onFailure {
                     if (data == null) error = it.message ?: "Could not load World Cup hub."
                 }
-            delay(if (data?.liveMatches?.isNotEmpty() == true) 2 * 60 * 1000L else 15 * 60 * 1000L)
+            val hubMatches = data?.let { it.liveMatches + it.todayMatches + it.upcomingMatches + it.recentResults }.orEmpty()
+            delay(MatchRepository.nextRefreshDelayMillis(hubMatches))
         }
     }
 

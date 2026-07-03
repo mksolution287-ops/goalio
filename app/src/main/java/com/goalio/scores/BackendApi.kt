@@ -149,6 +149,14 @@ data class WorldCupBootstrapInfo(
     val randomFact: WorldCupFactInfo
 )
 
+data class LeagueHubInfo(
+    val league: String,
+    val label: String,
+    val standings: LeagueStandings,
+    val bracket: WorldCupBracketInfo,
+    val library: List<WorldCupLibraryItemInfo>
+)
+
 data class MatchStat(val name: String?, val label: String?, val value: String?)
 
 data class TeamStatsBlock(val teamId: String?, val stats: List<MatchStat>)
@@ -394,6 +402,19 @@ object GoalioBackendApi {
         }
     ) { json -> json.toLeagueStandings() }
 
+    suspend fun getLeagueHub(league: String, season: Int? = null): LeagueHubInfo = request(
+        "GET",
+        buildString {
+            append("/api/v1/matches/")
+            append(encodePath(league))
+            append("/hub")
+            if (season != null) {
+                append("?season=")
+                append(season)
+            }
+        }
+    ) { json -> json.toLeagueHub() }
+
     suspend fun getWorldCupBootstrap(): WorldCupBootstrapInfo = request(
         "GET", "/api/v1/worldcup/bootstrap"
     ) { json -> json.toWorldCupBootstrap() }
@@ -545,6 +566,14 @@ object GoalioBackendApi {
         randomFact = getJSONObject("randomFact").run { WorldCupFactInfo(getString("title"), getString("body")) }
     )
 
+    private fun JSONObject.toLeagueHub() = LeagueHubInfo(
+        league = getString("league"),
+        label = getString("label"),
+        standings = getJSONObject("standings").toLeagueStandings(),
+        bracket = getJSONObject("bracket").toWorldCupBracket(),
+        library = optJSONArray("library").toWorldCupLibrary()
+    )
+
     private fun JSONArray?.toStandingTeams(): List<StandingTeamInfo> = buildList {
         if (this@toStandingTeams != null) for (index in 0 until length()) getJSONObject(index).run {
             add(StandingTeamInfo(
@@ -612,7 +641,9 @@ object GoalioBackendApi {
                 title = getString("title"),
                 category = getString("category"),
                 body = getString("body"),
-                readMinutes = optInt("readMinutes", 4)
+                readMinutes = optInt("readMinutes", 4),
+                url = nullableString("url"),
+                imageUrl = nullableString("imageUrl")
             ))
         }
     }
