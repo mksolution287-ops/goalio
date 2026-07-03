@@ -407,6 +407,11 @@ private fun UsernameGateCard(
     }
     val success = usernameAvailable == true && error == null
     val canSave = fullNameValid && usernameValid && usernameAvailable != false && !checking && !saving
+    val messageColor = when {
+        success -> GoalioColors.Success
+        checking -> GoalioColors.TextSecondary
+        else -> GoalioColors.Error
+    }
 
     Surface(
         color = Color(0xFF0D0D0D),
@@ -465,7 +470,7 @@ private fun UsernameGateCard(
             message?.let {
                 Text(
                     trans(it),
-                    color = if (success) GoalioColors.Success else GoalioColors.TextSecondary,
+                    color = messageColor,
                     fontSize = metrics.sp(12)
                 )
             }
