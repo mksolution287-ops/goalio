@@ -58,6 +58,13 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.crashlytics)
     implementation(libs.onesignal)
+    //ads setup
+    implementation("com.google.android.gms:play-services-ads:24.7.0")
+    // Meta Audience Network SDK
+    implementation("com.facebook.android:audience-network-sdk:6.21.0")
+    // AdMob Mediation Adapter for Meta
+    implementation("com.google.ads.mediation:facebook:6.21.0.3")
+    implementation ("com.facebook.infer.annotation:infer-annotation:0.18.0")
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.lottie.compose)

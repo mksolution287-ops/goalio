@@ -1,6 +1,7 @@
 package zero.ramjikvarosai.hirebazzar
 
 import android.app.Application
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -9,9 +10,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import zero.ramjikvarosai.hirebazzar.utils.AdManager
+import zero.ramjikvarosai.hirebazzar.utils.AppOpenAdManager
 
 class GoalioApplication : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    // ── App Open Ad Manager ───────────────────────────────────────────────
+    lateinit var appOpenAdManager: AppOpenAdManager
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -46,6 +52,14 @@ class GoalioApplication : Application() {
                     }
                 }
         }
+        // Initialize AdMob
+        MobileAds.initialize(this) {
+            AdManager.init(this)
+            appOpenAdManager = AppOpenAdManager(this)
+            appOpenAdManager.loadAd(this)
+        }
+        //initializing metaads
+        MobileAds.initialize(this)
     }
 
     companion object {
