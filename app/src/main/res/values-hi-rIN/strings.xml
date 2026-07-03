@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">1 घंटे में मैच</string>
     <string name="notification_kickoff_now">अभी किकऑफ</string>
 
+    <string name="identity_add_name_later">अभी अपना नाम जोड़ें। उपयोगकर्ता नाम बाद में गेम्स में चुनें।</string>
+    <string name="teams_selected_count">%1$d/%2$d टीमें चुनी गईं</string>
+    <string name="players_selected_count">%1$d/%2$d खिलाड़ी चुने गए</string>
+    <string name="pin_to_dashboard">+ डैशबोर्ड पर पिन करें</string>
+    <string name="pinned">पिन किया गया</string>
+    <string name="all_filter">सभी</string>
+    <string name="full_name_validation">पहला और अंतिम नाम दर्ज करें; हर नाम में कम से कम 2 अक्षर होने चाहिए।</string>
+    <string name="select_up_to_teams">आप अधिकतम %1$d टीमें चुन सकते हैं।</string>
+    <string name="select_up_to_players">आप अधिकतम %1$d खिलाड़ी चुन सकते हैं।</string>
 </resources>

@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">Partida em 1 hora</string>
     <string name="notification_kickoff_now">A partida começa agora</string>
 
+    <string name="identity_add_name_later">Adicione seu nome agora. Escolha um nome de usuário depois em Jogos.</string>
+    <string name="teams_selected_count">%1$d/%2$d times selecionados</string>
+    <string name="players_selected_count">%1$d/%2$d jogadores selecionados</string>
+    <string name="pin_to_dashboard">+ FIXAR NO PAINEL</string>
+    <string name="pinned">FIXADO</string>
+    <string name="all_filter">Todos</string>
+    <string name="full_name_validation">Digite nome e sobrenome; cada um deve ter pelo menos 2 letras.</string>
+    <string name="select_up_to_teams">Você pode selecionar até %1$d times.</string>
+    <string name="select_up_to_players">Você pode selecionar até %1$d jogadores.</string>
 </resources>

@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">試合開始まで1時間</string>
     <string name="notification_kickoff_now">まもなくキックオフ</string>
 
+    <string name="identity_add_name_later">今は名前を追加してください。ユーザー名は後でゲームから設定できます。</string>
+    <string name="teams_selected_count">%1$d/%2$d チームを選択済み</string>
+    <string name="players_selected_count">%1$d/%2$d 選手を選択済み</string>
+    <string name="pin_to_dashboard">+ ダッシュボードに固定</string>
+    <string name="pinned">固定済み</string>
+    <string name="all_filter">すべて</string>
+    <string name="full_name_validation">姓と名を入力してください。各名前は2文字以上必要です。</string>
+    <string name="select_up_to_teams">最大%1$dチームまで選択できます。</string>
+    <string name="select_up_to_players">最大%1$d選手まで選択できます。</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.goalio.scores
 
+import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import java.util.Locale
 
 val LocalAppLanguage = staticCompositionLocalOf { "en-GB" }
 
@@ -109,7 +111,11 @@ private val staticStrings = mapOf(
     "WIN PROBABILITY" to R.string.win_probability, "Formation" to R.string.formation,
     "selected" to R.string.selected, "Loading..." to R.string.loading,
     "LOADING..." to R.string.loading, "LOAD 6 MORE" to R.string.load_six_more,
-    "Maximum 6 selections." to R.string.maximum_six_selections
+    "Maximum 6 selections." to R.string.maximum_six_selections,
+    "Add your name now. Pick a username later in Games." to R.string.identity_add_name_later,
+    "+ PIN TO DASHBOARD" to R.string.pin_to_dashboard, "PINNED" to R.string.pinned,
+    "All" to R.string.all_filter,
+    "Enter first and last name; every name must have at least 2 letters." to R.string.full_name_validation
 )
 
 @StringRes
@@ -118,7 +124,27 @@ fun staticStringResource(text: String): Int? = staticStrings[text.trim()]
 @Composable
 fun trans(text: String): String {
     val resource = staticStringResource(text) ?: return text
-    return LocalContext.current.resources.getString(resource)
+    val context = LocalContext.current
+    val language = LocalAppLanguage.current
+    val localizedContext = remember(context, language) {
+        val locale = Locale.forLanguageTag(language)
+        context.createConfigurationContext(
+            Configuration(context.resources.configuration).apply { setLocale(locale) }
+        )
+    }
+    return localizedContext.resources.getString(resource)
+}
+
+@Composable
+fun localizedStringResource(@StringRes resource: Int, vararg formatArgs: Any): String {
+    val context = LocalContext.current
+    val language = LocalAppLanguage.current
+    val localizedContext = remember(context, language) {
+        context.createConfigurationContext(
+            Configuration(context.resources.configuration).apply { setLocale(Locale.forLanguageTag(language)) }
+        )
+    }
+    return localizedContext.resources.getString(resource, *formatArgs)
 }
 
 @Composable

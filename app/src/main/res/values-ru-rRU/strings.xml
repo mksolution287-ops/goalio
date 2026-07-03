@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">Матч через 1 час</string>
     <string name="notification_kickoff_now">Матч начинается</string>
 
+    <string name="identity_add_name_later">Добавьте имя сейчас. Имя пользователя можно выбрать позже в разделе «Игры».</string>
+    <string name="teams_selected_count">Выбрано команд: %1$d/%2$d</string>
+    <string name="players_selected_count">Выбрано игроков: %1$d/%2$d</string>
+    <string name="pin_to_dashboard">+ ЗАКРЕПИТЬ НА ПАНЕЛИ</string>
+    <string name="pinned">ЗАКРЕПЛЕНО</string>
+    <string name="all_filter">Все</string>
+    <string name="full_name_validation">Введите имя и фамилию; каждое должно содержать не менее 2 букв.</string>
+    <string name="select_up_to_teams">Можно выбрать до %1$d команд.</string>
+    <string name="select_up_to_players">Можно выбрать до %1$d игроков.</string>
 </resources>

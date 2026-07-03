@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">1시간 후 경기</string>
     <string name="notification_kickoff_now">지금 킥오프</string>
 
+    <string name="identity_add_name_later">지금 이름을 추가하세요. 사용자 이름은 나중에 게임에서 설정할 수 있습니다.</string>
+    <string name="teams_selected_count">%1$d/%2$d개 팀 선택됨</string>
+    <string name="players_selected_count">%1$d/%2$d명 선수 선택됨</string>
+    <string name="pin_to_dashboard">+ 대시보드에 고정</string>
+    <string name="pinned">고정됨</string>
+    <string name="all_filter">전체</string>
+    <string name="full_name_validation">성과 이름을 입력하세요. 각 이름은 2글자 이상이어야 합니다.</string>
+    <string name="select_up_to_teams">최대 %1$d개 팀을 선택할 수 있습니다.</string>
+    <string name="select_up_to_players">최대 %1$d명의 선수를 선택할 수 있습니다.</string>
 </resources>

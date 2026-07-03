@@ -61,7 +61,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -152,6 +151,8 @@ fun ProfileSetupScreen(
         .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
     val playerLimit = remoteConfig.getLong("profile_players_limit").toInt()
         .takeIf { it > 0 }?.coerceAtMost(6) ?: 6
+    val teamLimitMessage = localizedStringResource(R.string.select_up_to_teams, teamLimit)
+    val playerLimitMessage = localizedStringResource(R.string.select_up_to_players, playerLimit)
     val scope = rememberCoroutineScope()
     val actionInteraction = remember { MutableInteractionSource() }
     val actionPressed by actionInteraction.collectIsPressedAsState()
@@ -246,7 +247,7 @@ fun ProfileSetupScreen(
             ) {
                 item {
                     Text(trans("BUILD YOUR PROFILE"), color = GoalioColors.Tertiary, fontSize = metrics.sp(11), fontWeight = FontWeight.Black, letterSpacing = 2.sp)
-                    Text(stringResource(R.string.profile_title, APP_DISPLAY_NAME), color = Color.White, fontSize = metrics.sp(25), fontWeight = FontWeight.Black, maxLines = 2)
+                    Text(localizedStringResource(R.string.profile_title, APP_DISPLAY_NAME), color = Color.White, fontSize = metrics.sp(25), fontWeight = FontWeight.Black, maxLines = 2)
                     Text(trans("Choose your identity, teams and players. You can update these anytime."), color = GoalioColors.TextSecondary, fontSize = metrics.sp(14), lineHeight = metrics.sp(20))
                 }
                 item {
@@ -261,7 +262,7 @@ fun ProfileSetupScreen(
                             Spacer(Modifier.height(20.dp))
                             LabeledInput("FULL NAME", "e.g., Alex Morgan", fullName, { fullName = it }, true)
                             if (fullName.isNotBlank() && !fullNameValid) {
-                                FieldMessage("Enter first and last name; every name must have at least 2 letters.", false)
+                                FieldMessage(localizedStringResource(R.string.full_name_validation), false)
                             }
                             Spacer(Modifier.height(28.dp))
                             ProfileStepHeader("02", "Favorite teams", "Build a feed around the clubs and nations you follow.")
@@ -287,7 +288,7 @@ fun ProfileSetupScreen(
                             CompetitionFilterRow(teamCompetitionId) { teamCompetitionId = it }
                             if (teamFilterLoading) FieldMessage("Loading teams…", true)
                             Text(
-                                "${selectedTeams.size}/$teamLimit teams selected",
+                                localizedStringResource(R.string.teams_selected_count, selectedTeams.size, teamLimit),
                                 color = Muted,
                                 fontSize = 11.sp,
                                 modifier = Modifier.padding(start = 4.dp, top = 6.dp)
@@ -327,7 +328,7 @@ fun ProfileSetupScreen(
                                                     teamSelectionError = null
                                                 }
                                                 selectedTeams.size >= teamLimit -> {
-                                                    teamSelectionError = "You can select up to $teamLimit teams."
+                                                    teamSelectionError = teamLimitMessage
                                                 }
                                                 else -> {
                                                     selectedTeams = selectedTeams + team.id
@@ -376,7 +377,7 @@ fun ProfileSetupScreen(
                             CompetitionFilterRow(playerCompetitionId) { playerCompetitionId = it }
                             if (playerFilterLoading) FieldMessage("Loading players…", true)
                             Text(
-                                "${selectedPlayers.size}/$playerLimit players selected",
+                                localizedStringResource(R.string.players_selected_count, selectedPlayers.size, playerLimit),
                                 color = Muted,
                                 fontSize = 11.sp,
                                 modifier = Modifier.padding(start = 4.dp, top = 6.dp)
@@ -394,7 +395,7 @@ fun ProfileSetupScreen(
                                                 playerSelectionError = null
                                             }
                                             selectedPlayers.size >= playerLimit -> {
-                                                playerSelectionError = "You can select up to $playerLimit players."
+                                                playerSelectionError = playerLimitMessage
                                             }
                                             else -> {
                                                 selectedPlayers = selectedPlayers + player.id
@@ -612,7 +613,7 @@ private fun CompetitionFilterRow(selectedId: Int?, onSelected: (Int?) -> Unit) {
                 shape = RoundedCornerShape(50)
             ) {
                 Text(
-                    competition.label,
+                    trans(competition.label),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
@@ -718,7 +719,7 @@ private fun PlayerCard(player: FavoritePlayer, selected: Boolean, onClick: () ->
                     modifier = Modifier.fillMaxWidth().height(39.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(if (selected) "PINNED" else "+ PIN TO DASHBOARD", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text(trans(if (selected) "PINNED" else "+ PIN TO DASHBOARD"), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

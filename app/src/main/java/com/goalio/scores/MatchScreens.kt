@@ -1353,7 +1353,7 @@ private fun AiSummaryCard(summary: String?, detail: MatchDetail) {
                 }
             }
             HtmlSummaryText(
-                html = dynamicTrans(summary ?: "${detail.homeTeam?.shortName ?: "Home"} and ${detail.awayTeam?.shortName ?: "away"} are being tracked from the live ESPN feed. Detailed AI insight will expand as more match events and stats become available.")
+                html = summary?.let { dynamicTrans(it) } ?: trans("Auto-generated match context")
             )
         }
     }
@@ -1570,34 +1570,32 @@ private fun ScheduleMatch.statusLabel(): String = when (state) {
 @Composable
 private fun DynamicMatchStatus(match: ScheduleMatch, metrics: GoalioMetrics) {
     var now by remember(match.matchId, match.kickoff) { mutableStateOf(Instant.now()) }
-    val anchor = remember(match.status, match.statusDescription) { Instant.now() }
     LaunchedEffect(match.matchId, match.state, match.status, match.statusDescription) {
         if (match.state !in setOf("pre", "in")) return@LaunchedEffect
         while (true) { now = Instant.now(); delay(1_000) }
     }
-    Text(match.dynamicStatusText(now, anchor), color = statusColor(match.state), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+    Text(match.dynamicStatusText(now), color = statusColor(match.state), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
 }
 
 @Composable
 private fun DynamicDetailStatus(detail: MatchDetail, metrics: GoalioMetrics) {
     var now by remember(detail.matchId, detail.kickoff) { mutableStateOf(Instant.now()) }
-    val anchor = remember(detail.status, detail.statusDescription) { Instant.now() }
     LaunchedEffect(detail.matchId, detail.status, detail.statusDescription) {
         if (detail.statusState() !in setOf("pre", "in")) return@LaunchedEffect
         while (true) { now = Instant.now(); delay(1_000) }
     }
-    Text(detail.dynamicStatusText(now, anchor), color = statusColor(detail.statusState()), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
+    Text(detail.dynamicStatusText(now), color = statusColor(detail.statusState()), fontSize = metrics.sp(12), fontWeight = FontWeight.Black)
 }
 
-private fun ScheduleMatch.dynamicStatusText(now: Instant, anchor: Instant): String = when (state) {
+private fun ScheduleMatch.dynamicStatusText(now: Instant): String = when (state) {
     "pre" -> countdownLabel(now) ?: statusLabel().uppercase()
-    "in" -> liveClock(status, statusDescription, anchor, now)
+    "in" -> LiveMatchClockStore.label("$league:$matchId", state, status, statusDescription, now) ?: "LIVE"
     else -> statusLabel().uppercase()
 }
 
-private fun MatchDetail.dynamicStatusText(now: Instant, anchor: Instant): String = when (statusState()) {
+private fun MatchDetail.dynamicStatusText(now: Instant): String = when (statusState()) {
     "pre" -> countdownLabel(kickoff, now) ?: (statusDescription ?: status ?: "UPCOMING").uppercase()
-    "in" -> liveClock(status, statusDescription, anchor, now)
+    "in" -> LiveMatchClockStore.label("$league:$matchId", "in", status, statusDescription, now) ?: "LIVE"
     else -> (statusDescription ?: status ?: "MATCH").uppercase()
 }
 
@@ -1779,10 +1777,12 @@ private fun MatchDetail.statusPillText(): String =
     if (statusState() == "in") "LIVE ${status ?: ""}".trim() else (statusDescription ?: status ?: "Match").uppercase()
 
 private fun MatchDetail.statusState(): String? = when {
+    listOf(status, statusDescription).any { it?.trim()?.lowercase() in setOf("ft", "final", "full time", "aet", "pens") } -> "post"
+    statusDescription?.contains("full time", true) == true || statusDescription?.contains("final", true) == true -> "post"
+    status?.equals("HT", true) == true || statusDescription?.contains("half", true) == true -> "in"
     Regex("\\b\\d{1,3}(?:\\+\\d+)?['’]").containsMatchIn("${status.orEmpty()} ${statusDescription.orEmpty()}") -> "in"
     status?.contains("live", true) == true -> "in"
     statusDescription?.contains("live", true) == true -> "in"
-    listOf(status, statusDescription).any { it?.trim()?.lowercase() in setOf("ft", "final", "full time", "aet", "pens") } -> "post"
     statusDescription?.contains("scheduled", true) == true -> "pre"
     else -> null
 }

@@ -190,7 +190,7 @@
     <string name="never_miss_kick">Verpasse nie einen Anstoß</string>
     <string name="never_miss_kick_subtitle">Erlebe das Spiel live mit Echtzeit-Ergebnissen, Statistiken und sofortigen Spielbenachrichtigungen.</string>
 
-    <string name="live_match_center">Live Match Center</string>
+    <string name="live_match_center">Live-Spielzentrum</string>
     <string name="deep_stats">Detaillierte Statistiken</string>
     <string name="custom_alerts">Individuelle Benachrichtigungen</string>
 
@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">Spiel in 1 Stunde</string>
     <string name="notification_kickoff_now">Anstoß jetzt</string>
 
+    <string name="identity_add_name_later">Füge jetzt deinen Namen hinzu. Wähle später in Spiele einen Benutzernamen.</string>
+    <string name="teams_selected_count">%1$d/%2$d Teams ausgewählt</string>
+    <string name="players_selected_count">%1$d/%2$d Spieler ausgewählt</string>
+    <string name="pin_to_dashboard">+ AN DASHBOARD ANHEFTEN</string>
+    <string name="pinned">ANGEHEFTET</string>
+    <string name="all_filter">Alle</string>
+    <string name="full_name_validation">Gib Vor- und Nachnamen ein; jeder Name muss mindestens 2 Buchstaben haben.</string>
+    <string name="select_up_to_teams">Du kannst bis zu %1$d Teams auswählen.</string>
+    <string name="select_up_to_players">Du kannst bis zu %1$d Spieler auswählen.</string>
 </resources>

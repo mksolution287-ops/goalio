@@ -248,4 +248,13 @@
     <string name="notification_match_in_1_hour">比赛将在1小时后开始</string>
     <string name="notification_kickoff_now">比赛现在开始</string>
 
+    <string name="identity_add_name_later">现在添加姓名，稍后可在“游戏”中设置用户名。</string>
+    <string name="teams_selected_count">已选择 %1$d/%2$d 支球队</string>
+    <string name="players_selected_count">已选择 %1$d/%2$d 名球员</string>
+    <string name="pin_to_dashboard">+ 固定到主页</string>
+    <string name="pinned">已固定</string>
+    <string name="all_filter">全部</string>
+    <string name="full_name_validation">请输入名字和姓氏；每部分至少需要2个字符。</string>
+    <string name="select_up_to_teams">最多可选择 %1$d 支球队。</string>
+    <string name="select_up_to_players">最多可选择 %1$d 名球员。</string>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/black" />
-    <item android:width="180dp" android:height="180dp" android:gravity="center">
-        <bitmap android:src="@drawable/goalio_logo_noball" android:gravity="fill" />
+    <item android:width="220dp" android:height="220dp" android:gravity="center">
+        <bitmap android:src="@drawable/goalio_icon_only" android:gravity="fill" />
     </item>
 </layer-list>

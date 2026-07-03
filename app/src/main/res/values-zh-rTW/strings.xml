@@ -2,7 +2,7 @@
 <resources>
 
     <!-- General -->
-    <string name="app_name">Goalio：足球即時比分</string>
+    <string name="app_name">Goalio: 足球即時比分</string>
     <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
 
     <string name="done">完成</string>
@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">比賽將在1小時後開始</string>
     <string name="notification_kickoff_now">比賽現在開始</string>
 
+    <string name="identity_add_name_later">現在新增姓名，稍後可在「遊戲」中設定使用者名稱。</string>
+    <string name="teams_selected_count">已選擇 %1$d/%2$d 支球隊</string>
+    <string name="players_selected_count">已選擇 %1$d/%2$d 名球員</string>
+    <string name="pin_to_dashboard">+ 釘選到首頁</string>
+    <string name="pinned">已釘選</string>
+    <string name="all_filter">全部</string>
+    <string name="full_name_validation">請輸入名字和姓氏；每部分至少需要2個字元。</string>
+    <string name="select_up_to_teams">最多可選擇 %1$d 支球隊。</string>
+    <string name="select_up_to_players">最多可選擇 %1$d 名球員。</string>
 </resources>

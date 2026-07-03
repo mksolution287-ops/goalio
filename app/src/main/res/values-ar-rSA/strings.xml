@@ -181,4 +181,13 @@
   <string name="notification_match_in_24_hours">المباراة بعد 24 ساعة</string>
   <string name="notification_match_in_1_hour">المباراة بعد ساعة</string>
   <string name="notification_kickoff_now">انطلاق المباراة الآن</string>
+  <string name="identity_add_name_later">أضف اسمك الآن. اختر اسم مستخدم لاحقًا في الألعاب.</string>
+  <string name="teams_selected_count">تم اختيار %1$d/%2$d من الفرق</string>
+  <string name="players_selected_count">تم اختيار %1$d/%2$d من اللاعبين</string>
+  <string name="pin_to_dashboard">+ تثبيت في لوحة المعلومات</string>
+  <string name="pinned">مثبّت</string>
+  <string name="all_filter">الكل</string>
+  <string name="full_name_validation">أدخل الاسم الأول واسم العائلة؛ يجب أن يحتوي كل اسم على حرفين على الأقل.</string>
+  <string name="select_up_to_teams">يمكنك اختيار ما يصل إلى %1$d فرق.</string>
+  <string name="select_up_to_players">يمكنك اختيار ما يصل إلى %1$d لاعبين.</string>
 </resources>

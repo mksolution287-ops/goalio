@@ -247,4 +247,13 @@
     <string name="notification_match_in_1_hour">Match in 1 hour</string>
     <string name="notification_kickoff_now">Kickoff now</string>
 
+    <string name="identity_add_name_later">Add your name now. Pick a username later in Games.</string>
+    <string name="teams_selected_count">%1$d/%2$d teams selected</string>
+    <string name="players_selected_count">%1$d/%2$d players selected</string>
+    <string name="pin_to_dashboard">+ PIN TO DASHBOARD</string>
+    <string name="pinned">PINNED</string>
+    <string name="all_filter">All</string>
+    <string name="full_name_validation">Enter first and last name; every name must have at least 2 letters.</string>
+    <string name="select_up_to_teams">You can select up to %1$d teams.</string>
+    <string name="select_up_to_players">You can select up to %1$d players.</string>
 </resources>

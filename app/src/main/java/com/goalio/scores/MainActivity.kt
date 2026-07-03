@@ -24,6 +24,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Column
@@ -73,7 +76,13 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     private companion object {
         const val PREF_LANGUAGE_RETURN_SCREEN = "language_return_screen"
-        const val PREF_SUPPRESS_NEXT_SPLASH = "suppress_next_splash"
+    }
+
+    private var foregroundSession by mutableStateOf(0)
+
+    override fun onStart() {
+        super.onStart()
+        foregroundSession += 1
     }
 
     override fun onResume() {
@@ -104,9 +113,8 @@ class MainActivity : ComponentActivity() {
             GoalioTheme(dynamicColor = false) {
                 val settings = remember { getSharedPreferences("goalio_settings", MODE_PRIVATE) }
                 val pendingLanguageReturn = remember { settings.getString(PREF_LANGUAGE_RETURN_SCREEN, null) }
-                val suppressNextSplash = remember { settings.getBoolean(PREF_SUPPRESS_NEXT_SPLASH, false) }
                 var currentLanguage by remember { mutableStateOf(settings.getString("language", "en-GB") ?: "en-GB") }
-                var showSplash by remember { mutableStateOf(!suppressNextSplash) }
+                var showSplash by remember { mutableStateOf(true) }
                 var languageSelected by remember { mutableStateOf(settings.contains("language")) }
                 var onboardingComplete by remember {
                     mutableStateOf(settings.getBoolean("onboarding_complete", false))
@@ -156,10 +164,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(pendingLanguageReturn) {
-                    if (pendingLanguageReturn != null || suppressNextSplash) {
+                    if (pendingLanguageReturn != null) {
                         settings.edit()
                             .remove(PREF_LANGUAGE_RETURN_SCREEN)
-                            .remove(PREF_SUPPRESS_NEXT_SPLASH)
                             .apply()
                     }
                 }
@@ -168,6 +175,9 @@ class MainActivity : ComponentActivity() {
                     FirebaseRemoteConfig.getInstance().fetchAndActivate().addOnCompleteListener {
                         competitionHubMode = GoalioRemoteConfig.competitionHubMode()
                     }
+                }
+                LaunchedEffect(foregroundSession) {
+                    showSplash = true
                     delay(2800)
                     showSplash = false
                 }
@@ -233,7 +243,6 @@ class MainActivity : ComponentActivity() {
                                 val returnScreen = languageReturnScreen
                                 val editor = settings.edit()
                                     .putString("language", languageTag)
-                                    .putBoolean(PREF_SUPPRESS_NEXT_SPLASH, true)
                                 if (returnScreen != null) {
                                     editor.putString(PREF_LANGUAGE_RETURN_SCREEN, returnScreen)
                                 }
@@ -484,32 +493,40 @@ fun SplashScreen() {
             drawRect(lineColor, Offset(center.x - boxWidth / 2f, top + fieldHeight - boxHeight), Size(boxWidth, boxHeight), style = Stroke(stroke))
         }
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Box(
-                Modifier
-                    .size(metrics.dp(if (metrics.compact) 230 else 270)),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.goalio_ball),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .offset(
-                            x = metrics.dp(if (metrics.compact) 6 else 7),
-                            y = metrics.dp(if (metrics.compact) -25 else -30)
-                        )
-                        .size(metrics.dp(if (metrics.compact) 80 else 94))
-                        .graphicsLayer {
-                            rotationZ = rotation
-                            alpha = .98f
-                        }
-                )
-                Image(
-                    painter = painterResource(R.drawable.goalio_logo_noball),
-                    contentDescription = APP_DISPLAY_NAME,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    Modifier.size(metrics.dp(if (metrics.compact) 210 else 244)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.goalio_ball),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .offset(x = metrics.dp(5), y = metrics.dp(6))
+                            .size(metrics.dp(if (metrics.compact) 76 else 88))
+                            .graphicsLayer {
+                                rotationZ = rotation
+                                alpha = .98f
+                            }
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.goalio_mark_noball),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("GOAL", color = Color.White, fontSize = metrics.sp(if (metrics.compact) 38 else 44), fontWeight = FontWeight.Black, fontStyle = FontStyle.Italic)
+                    Text("IO", color = GoalioColors.Tertiary, fontSize = metrics.sp(if (metrics.compact) 38 else 44), fontWeight = FontWeight.Black, fontStyle = FontStyle.Italic)
+                }
+                Spacer(Modifier.height(metrics.dp(5)))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
+                    Box(Modifier.size(width = metrics.dp(28), height = metrics.dp(2)).background(GoalioColors.Tertiary))
+                    Text("LIVE FOOTBALL SCORES", color = Color(0xFFD8D8D8), fontSize = metrics.sp(10), fontWeight = FontWeight.SemiBold, letterSpacing = 2.sp)
+                    Box(Modifier.size(width = metrics.dp(28), height = metrics.dp(2)).background(GoalioColors.Tertiary))
+                }
             }
             Box(
                 Modifier
