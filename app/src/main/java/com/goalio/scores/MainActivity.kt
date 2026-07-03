@@ -78,13 +78,6 @@ class MainActivity : ComponentActivity() {
         const val PREF_LANGUAGE_RETURN_SCREEN = "language_return_screen"
     }
 
-    private var foregroundSession by mutableStateOf(0)
-
-    override fun onStart() {
-        super.onStart()
-        foregroundSession += 1
-    }
-
     override fun onResume() {
         super.onResume()
         GoalioAppVisibility.markForeground()
@@ -176,8 +169,7 @@ class MainActivity : ComponentActivity() {
                         competitionHubMode = GoalioRemoteConfig.competitionHubMode()
                     }
                 }
-                LaunchedEffect(foregroundSession) {
-                    showSplash = true
+                LaunchedEffect(Unit) {
                     delay(2800)
                     showSplash = false
                 }
