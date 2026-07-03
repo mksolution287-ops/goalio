@@ -358,7 +358,7 @@ fun MatchDetailScreen(
             mediaResult.onSuccess { media = it }
             watchResult.onSuccess { watch = it }
             mediaError = if (mediaResult.isFailure && watchResult.isFailure) {
-                mediaResult.exceptionOrNull()?.message ?: "Media information is unavailable."
+                "Unable to connect. Please check your internet connection and try again."
             } else null
             mediaLoading = false
             delay(15 * 60 * 1000L)
