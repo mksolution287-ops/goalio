@@ -1,259 +1,260 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Goalio: 실시간 축구 점수</string>
-    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+    <string name="app_name">Goalio: ì‹¤ì‹œê°„ ì¶•êµ¬ ì ìˆ˜</string>
+    <string name="onesignal_app_id" translatable="false">014b1cc7-22ca-494b-a8f0-b130b68cf140</string>
 
     <!-- General -->
-    <string name="done">완료</string>
-    <string name="save">저장</string>
-    <string name="cancel">취소</string>
-    <string name="back">뒤로</string>
-    <string name="next">다음</string>
-    <string name="skip">건너뛰기</string>
-    <string name="open">열기</string>
-    <string name="edit">편집</string>
-    <string name="search">검색</string>
-    <string name="loading">로딩 중…</string>
-    <string name="saving">저장 중…</string>
-    <string name="checking">확인 중…</string>
+    <string name="done">ì™„ë£Œ</string>
+    <string name="save">ì €ìž¥</string>
+    <string name="cancel">ì·¨ì†Œ</string>
+    <string name="back">ë’¤ë¡œ</string>
+    <string name="next">ë‹¤ìŒ</string>
+    <string name="skip">ê±´ë„ˆë›°ê¸°</string>
+    <string name="open">ì—´ê¸°</string>
+    <string name="edit">íŽ¸ì§‘</string>
+    <string name="search">ê²€ìƒ‰</string>
+    <string name="loading">ë¡œë”© ì¤‘â€¦</string>
+    <string name="saving">ì €ìž¥ ì¤‘â€¦</string>
+    <string name="checking">í™•ì¸ ì¤‘â€¦</string>
 
     <!-- Language -->
-    <string name="language">언어</string>
-    <string name="choose_your_language">언어 선택</string>
-    <string name="language_description">스코어, 경기 업데이트 및 탐색 메뉴는 설정하신 언어로 표시됩니다.</string>
-    <string name="device">기기</string>
-    <string name="system_default">시스템 기본값</string>
-    <string name="use_device_language">기기 언어 사용</string>
-    <string name="all_languages">모든 언어</string>
-    <string name="search_languages">언어 검색</string>
+    <string name="language">ì–¸ì–´</string>
+    <string name="choose_your_language">ì–¸ì–´ ì„ íƒ</string>
+    <string name="language_description">ìŠ¤ì½”ì–´, ê²½ê¸° ì—…ë°ì´íŠ¸ ë° íƒìƒ‰ ë©”ë‰´ëŠ” ì„¤ì •í•˜ì‹  ì–¸ì–´ë¡œ í‘œì‹œë©ë‹ˆë‹¤.</string>
+    <string name="device">ê¸°ê¸°</string>
+    <string name="system_default">ì‹œìŠ¤í…œ ê¸°ë³¸ê°’</string>
+    <string name="use_device_language">ê¸°ê¸° ì–¸ì–´ ì‚¬ìš©</string>
+    <string name="all_languages">ëª¨ë“  ì–¸ì–´</string>
+    <string name="search_languages">ì–¸ì–´ ê²€ìƒ‰</string>
 
     <!-- Navigation -->
-    <string name="home">홈</string>
-    <string name="matches">경기</string>
-    <string name="games">게임</string>
-    <string name="play">플레이</string>
+    <string name="home">í™ˆ</string>
+    <string name="matches">ê²½ê¸°</string>
+    <string name="games">ê²Œìž„</string>
+    <string name="play">í”Œë ˆì´</string>
 
     <!-- Match -->
-    <string name="overview">개요</string>
-    <string name="timeline">타임라인</string>
-    <string name="stats">통계</string>
-    <string name="ai_insight">AI 분석</string>
-    <string name="lineups">라인업</string>
-    <string name="watch">시청</string>
-    <string name="match_details">경기 상세</string>
-    <string name="match_center">매치 센터</string>
-    <string name="tap_full_match_details">탭하여 전체 경기 상세 보기</string>
-    <string name="match_stats">경기 통계</string>
-    <string name="win_probability">승리 확률</string>
-    <string name="view_analysis">분석 보기</string>
+    <string name="overview">ê°œìš”</string>
+    <string name="timeline">íƒ€ìž„ë¼ì¸</string>
+    <string name="stats">í†µê³„</string>
+    <string name="ai_insight">AI ë¶„ì„</string>
+    <string name="lineups">ë¼ì¸ì—…</string>
+    <string name="watch">ì‹œì²­</string>
+    <string name="match_details">ê²½ê¸° ìƒì„¸</string>
+    <string name="match_center">ë§¤ì¹˜ ì„¼í„°</string>
+    <string name="tap_full_match_details">íƒ­í•˜ì—¬ ì „ì²´ ê²½ê¸° ìƒì„¸ ë³´ê¸°</string>
+    <string name="match_stats">ê²½ê¸° í†µê³„</string>
+    <string name="win_probability">ìŠ¹ë¦¬ í™•ë¥ </string>
+    <string name="view_analysis">ë¶„ì„ ë³´ê¸°</string>
 
-    <string name="referee">심판</string>
-    <string name="stadium">경기장</string>
-    <string name="not_listed">목록에 없음</string>
+    <string name="referee">ì‹¬íŒ</string>
+    <string name="stadium">ê²½ê¸°ìž¥</string>
+    <string name="not_listed">ëª©ë¡ì— ì—†ìŒ</string>
 
-    <string name="key_moments">주요 순간</string>
-    <string name="performance_matrix">퍼포먼스 매트릭스</string>
+    <string name="key_moments">ì£¼ìš” ìˆœê°„</string>
+    <string name="performance_matrix">í¼í¬ë¨¼ìŠ¤ ë§¤íŠ¸ë¦­ìŠ¤</string>
 
-    <string name="possession">점유율</string>
-    <string name="shots">슈팅</string>
-    <string name="on_goal">골문 향한 슈팅</string>
-    <string name="corners">코너킥</string>
-    <string name="fouls">파울</string>
-    <string name="yellow_cards">옐로카드</string>
-    <string name="saves">선방</string>
-    <string name="passes">패스</string>
-    <string name="accurate_passes">정확한 패스</string>
-    <string name="total_shots">전체 슈팅</string>
-    <string name="shots_on_target">유효 슈팅</string>
+    <string name="possession">ì ìœ ìœ¨</string>
+    <string name="shots">ìŠˆíŒ…</string>
+    <string name="on_goal">ê³¨ë¬¸ í–¥í•œ ìŠˆíŒ…</string>
+    <string name="corners">ì½”ë„ˆí‚¥</string>
+    <string name="fouls">íŒŒìš¸</string>
+    <string name="yellow_cards">ì˜ë¡œì¹´ë“œ</string>
+    <string name="saves">ì„ ë°©</string>
+    <string name="passes">íŒ¨ìŠ¤</string>
+    <string name="accurate_passes">ì •í™•í•œ íŒ¨ìŠ¤</string>
+    <string name="total_shots">ì „ì²´ ìŠˆíŒ…</string>
+    <string name="shots_on_target">ìœ íš¨ ìŠˆíŒ…</string>
 
-    <string name="goalio_ai_summary">Goalio AI 요약</string>
-    <string name="auto_generated_match_context">자동 생성된 경기 컨텍스트</string>
+    <string name="goalio_ai_summary">Goalio AI ìš”ì•½</string>
+    <string name="auto_generated_match_context">ìžë™ ìƒì„±ëœ ê²½ê¸° ì»¨í…ìŠ¤íŠ¸</string>
 
     <!-- Settings -->
-    <string name="settings">설정</string>
-    <string name="settings_subtitle">프로필, 알림 및 앱 제어</string>
+    <string name="settings">ì„¤ì •</string>
+    <string name="settings_subtitle">í”„ë¡œí•„, ì•Œë¦¼ ë° ì•± ì œì–´</string>
 
-    <string name="preferences">환경설정</string>
-    <string name="match_notifications">경기 알림</string>
-    <string name="on">켜짐</string>
-    <string name="off">꺼짐</string>
+    <string name="preferences">í™˜ê²½ì„¤ì •</string>
+    <string name="match_notifications">ê²½ê¸° ì•Œë¦¼</string>
+    <string name="on">ì¼œì§</string>
+    <string name="off">êº¼ì§</string>
 
-    <string name="favorite_teams">좋아하는 팀</string>
-    <string name="favorite_players">좋아하는 선수</string>
-    <string name="add_teams">팀 추가</string>
-    <string name="add_players">선수 추가</string>
+    <string name="favorite_teams">ì¢‹ì•„í•˜ëŠ” íŒ€</string>
+    <string name="favorite_players">ì¢‹ì•„í•˜ëŠ” ì„ ìˆ˜</string>
+    <string name="add_teams">íŒ€ ì¶”ê°€</string>
+    <string name="add_players">ì„ ìˆ˜ ì¶”ê°€</string>
 
-    <string name="app">앱</string>
-    <string name="privacy_policy">개인정보 처리방침</string>
-    <string name="version">버전</string>
+    <string name="app">ì•±</string>
+    <string name="privacy_policy">ê°œì¸ì •ë³´ ì²˜ë¦¬ë°©ì¹¨</string>
+    <string name="version">ë²„ì „</string>
 
     <!-- Profile -->
-    <string name="edit_profile">프로필 편집</string>
-    <string name="member_since">가입일:</string>
-    <string name="recently">최근</string>
-    <string name="level">레벨</string>
-    <string name="mastery">숙련도</string>
-    <string name="teams">팀</string>
-    <string name="players">선수</string>
-    <string name="alerts">알림</string>
-    <string name="sign_out">로그아웃</string>
+    <string name="edit_profile">í”„ë¡œí•„ íŽ¸ì§‘</string>
+    <string name="member_since">ê°€ìž…ì¼:</string>
+    <string name="recently">ìµœê·¼</string>
+    <string name="level">ë ˆë²¨</string>
+    <string name="mastery">ìˆ™ë ¨ë„</string>
+    <string name="teams">íŒ€</string>
+    <string name="players">ì„ ìˆ˜</string>
+    <string name="alerts">ì•Œë¦¼</string>
+    <string name="sign_out">ë¡œê·¸ì•„ì›ƒ</string>
 
-    <string name="full_name">전체 이름</string>
-    <string name="full_name_hint">예: 알렉스 모건</string>
+    <string name="full_name">ì „ì²´ ì´ë¦„</string>
+    <string name="full_name_hint">ì˜ˆ: ì•Œë ‰ìŠ¤ ëª¨ê±´</string>
 
-    <string name="pick_username">사용자 이름 선택</string>
-    <string name="username_hint">예: GoalGetter99</string>
+    <string name="pick_username">ì‚¬ìš©ìž ì´ë¦„ ì„ íƒ</string>
+    <string name="username_hint">ì˜ˆ: GoalGetter99</string>
 
-    <string name="search_teams">팀 검색</string>
-    <string name="search_players">선수 검색</string>
+    <string name="search_teams">íŒ€ ê²€ìƒ‰</string>
+    <string name="search_players">ì„ ìˆ˜ ê²€ìƒ‰</string>
 
-    <string name="leave_account">이 기기에서 %1$s 계정 로그아웃</string>
-    <string name="update_display_name">%1$s의 표시 이름을 업데이트하세요.</string>
+    <string name="leave_account">ì´ ê¸°ê¸°ì—ì„œ %1$s ê³„ì • ë¡œê·¸ì•„ì›ƒ</string>
+    <string name="update_display_name">%1$sì˜ í‘œì‹œ ì´ë¦„ì„ ì—…ë°ì´íŠ¸í•˜ì„¸ìš”.</string>
 
     <!-- World Cup -->
-    <string name="world_cup">월드컵</string>
-    <string name="north_america_2026">북미 2026</string>
+    <string name="world_cup">ì›”ë“œì»µ</string>
+    <string name="north_america_2026">ë¶ë¯¸ 2026</string>
 
-    <string name="group">조</string>
-    <string name="group_a">A조</string>
-    <string name="groups">조 목록</string>
+    <string name="group">ì¡°</string>
+    <string name="group_a">Aì¡°</string>
+    <string name="groups">ì¡° ëª©ë¡</string>
 
-    <string name="group_a_standings_pending">FIFA가 현재 순위를 발표하면 A조 순위표가 표시됩니다.</string>
+    <string name="group_a_standings_pending">FIFAê°€ í˜„ìž¬ ìˆœìœ„ë¥¼ ë°œí‘œí•˜ë©´ Aì¡° ìˆœìœ„í‘œê°€ í‘œì‹œë©ë‹ˆë‹¤.</string>
 
-    <string name="group_tables">조별 순위표</string>
-    <string name="knockout_path">토너먼트 대진표</string>
-    <string name="world_cup_matches">월드컵 경기</string>
-    <string name="world_cup_library">월드컵 라이브러리</string>
+    <string name="group_tables">ì¡°ë³„ ìˆœìœ„í‘œ</string>
+    <string name="knockout_path">í† ë„ˆë¨¼íŠ¸ ëŒ€ì§„í‘œ</string>
+    <string name="world_cup_matches">ì›”ë“œì»µ ê²½ê¸°</string>
+    <string name="world_cup_library">ì›”ë“œì»µ ë¼ì´ë¸ŒëŸ¬ë¦¬</string>
 
-    <string name="collapse">접기</string>
-    <string name="expand">펼치기</string>
-    <string name="view_all">모두 보기</string>
-    <string name="choose_date">날짜 선택</string>
-    <string name="min_read">분 분량</string>
-    <string name="read_on_fifa">FIFA.com에서 읽기</string>
+    <string name="collapse">ì ‘ê¸°</string>
+    <string name="expand">íŽ¼ì¹˜ê¸°</string>
+    <string name="view_all">ëª¨ë‘ ë³´ê¸°</string>
+    <string name="choose_date">ë‚ ì§œ ì„ íƒ</string>
+    <string name="min_read">ë¶„ ë¶„ëŸ‰</string>
+    <string name="read_on_fifa">FIFA.comì—ì„œ ì½ê¸°</string>
 
     <!-- Standings -->
-    <string name="rank">순위</string>
-    <string name="team">팀</string>
-    <string name="stage">단계</string>
+    <string name="rank">ìˆœìœ„</string>
+    <string name="team">íŒ€</string>
+    <string name="stage">ë‹¨ê³„</string>
 
-    <string name="played_short">경</string>
-    <string name="won_short">승</string>
-    <string name="drawn_short">무</string>
-    <string name="lost_short">패</string>
-    <string name="goal_difference_short">득실</string>
-    <string name="points_short">승점</string>
+    <string name="played_short">ê²½</string>
+    <string name="won_short">ìŠ¹</string>
+    <string name="drawn_short">ë¬´</string>
+    <string name="lost_short">íŒ¨</string>
+    <string name="goal_difference_short">ë“ì‹¤</string>
+    <string name="points_short">ìŠ¹ì </string>
 
     <!-- Home -->
-    <string name="live_action">실시간 경기</string>
-    <string name="next_seven_days">향후 7일</string>
-    <string name="upcoming_today">오늘 예정된 경기</string>
+    <string name="live_action">ì‹¤ì‹œê°„ ê²½ê¸°</string>
+    <string name="next_seven_days">í–¥í›„ 7ì¼</string>
+    <string name="upcoming_today">ì˜¤ëŠ˜ ì˜ˆì •ëœ ê²½ê¸°</string>
 
     <!-- Lineups -->
-    <string name="player_lineups">선수 라인업</string>
-    <string name="lineup_subtitle">선발 명단, 포메이션 및 교체 명단</string>
-    <string name="starting_xi">선발 명단</string>
-    <string name="bench">교체 명단</string>
-    <string name="formation">포메이션</string>
-    <string name="home_side">홈</string>
-    <string name="away_side">원정</string>
+    <string name="player_lineups">ì„ ìˆ˜ ë¼ì¸ì—…</string>
+    <string name="lineup_subtitle">ì„ ë°œ ëª…ë‹¨, í¬ë©”ì´ì…˜ ë° êµì²´ ëª…ë‹¨</string>
+    <string name="starting_xi">ì„ ë°œ ëª…ë‹¨</string>
+    <string name="bench">êµì²´ ëª…ë‹¨</string>
+    <string name="formation">í¬ë©”ì´ì…˜</string>
+    <string name="home_side">í™ˆ</string>
+    <string name="away_side">ì›ì •</string>
 
-    <string name="no_bench_listed">등록된 교체 명단 없음</string>
-    <string name="unavailable">출전 불가</string>
+    <string name="no_bench_listed">ë“±ë¡ëœ êµì²´ ëª…ë‹¨ ì—†ìŒ</string>
+    <string name="unavailable">ì¶œì „ ë¶ˆê°€</string>
 
     <!-- Watch -->
-    <string name="watch_highlights">시청 및 하이라이트</string>
-    <string name="stream">스트리밍</string>
-    <string name="highlights">하이라이트</string>
+    <string name="watch_highlights">ì‹œì²­ ë° í•˜ì´ë¼ì´íŠ¸</string>
+    <string name="stream">ìŠ¤íŠ¸ë¦¬ë°</string>
+    <string name="highlights">í•˜ì´ë¼ì´íŠ¸</string>
 
     <!-- Football Five -->
-    <string name="football_five">더 풋볼 파이브</string>
-    <string name="football_five_subtitle">5개의 질문. 1번의 스트리크. 순위표를 올리세요.</string>
+    <string name="football_five">ë” í’‹ë³¼ íŒŒì´ë¸Œ</string>
+    <string name="football_five_subtitle">5ê°œì˜ ì§ˆë¬¸. 1ë²ˆì˜ ìŠ¤íŠ¸ë¦¬í¬. ìˆœìœ„í‘œë¥¼ ì˜¬ë¦¬ì„¸ìš”.</string>
 
-    <string name="test_football_knowledge">축구 지식 테스트하기</string>
-    <string name="quiz_rules">5개 질문 · 각 15초 제한\n정답 시 +10 XP · 오답 시 −5 XP</string>
+    <string name="test_football_knowledge">ì¶•êµ¬ ì§€ì‹ í…ŒìŠ¤íŠ¸í•˜ê¸°</string>
+    <string name="quiz_rules">5ê°œ ì§ˆë¬¸ Â· ê° 15ì´ˆ ì œí•œ\nì •ë‹µ ì‹œ +10 XP Â· ì˜¤ë‹µ ì‹œ âˆ’5 XP</string>
 
-    <string name="play_now">지금 플레이</string>
-    <string name="leaderboard">리더보드</string>
-    <string name="top_ten">탑 10</string>
-    <string name="no_leaderboard">아직 리더보드 데이터가 없습니다. 플레이하고 순위에 진입하세요!</string>
-    <string name="you">나</string>
+    <string name="play_now">ì§€ê¸ˆ í”Œë ˆì´</string>
+    <string name="leaderboard">ë¦¬ë”ë³´ë“œ</string>
+    <string name="top_ten">íƒ‘ 10</string>
+    <string name="no_leaderboard">ì•„ì§ ë¦¬ë”ë³´ë“œ ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤. í”Œë ˆì´í•˜ê³  ìˆœìœ„ì— ì§„ìž…í•˜ì„¸ìš”!</string>
+    <string name="you">ë‚˜</string>
 
     <!-- Onboarding -->
-    <string name="your_football_your_way">나만의 방식으로 즐기는 축구.</string>
-    <string name="swipe_to_explore">밀어서 둘러보기</string>
+    <string name="your_football_your_way">ë‚˜ë§Œì˜ ë°©ì‹ìœ¼ë¡œ ì¦ê¸°ëŠ” ì¶•êµ¬.</string>
+    <string name="swipe_to_explore">ë°€ì–´ì„œ ë‘˜ëŸ¬ë³´ê¸°</string>
 
-    <string name="built_for_matchday">경기 당일을 위한 설계</string>
-    <string name="feature">기능</string>
+    <string name="built_for_matchday">ê²½ê¸° ë‹¹ì¼ì„ ìœ„í•œ ì„¤ê³„</string>
+    <string name="feature">ê¸°ëŠ¥</string>
 
-    <string name="never_miss_kick">단 하나의 킥도 놓치지 마세요</string>
-    <string name="never_miss_kick_subtitle">실시간 스코어, 실시간 통계, 즉각적인 경기 알림으로 실시간 경기 흐름을 경험해 보세요.</string>
+    <string name="never_miss_kick">ë‹¨ í•˜ë‚˜ì˜ í‚¥ë„ ë†“ì¹˜ì§€ ë§ˆì„¸ìš”</string>
+    <string name="never_miss_kick_subtitle">ì‹¤ì‹œê°„ ìŠ¤ì½”ì–´, ì‹¤ì‹œê°„ í†µê³„, ì¦‰ê°ì ì¸ ê²½ê¸° ì•Œë¦¼ìœ¼ë¡œ ì‹¤ì‹œê°„ ê²½ê¸° íë¦„ì„ ê²½í—˜í•´ ë³´ì„¸ìš”.</string>
 
-    <string name="live_match_center">라이브 매치 센터</string>
-    <string name="deep_stats">상세 통계</string>
-    <string name="custom_alerts">맞춤 알림</string>
+    <string name="live_match_center">ë¼ì´ë¸Œ ë§¤ì¹˜ ì„¼í„°</string>
+    <string name="deep_stats">ìƒì„¸ í†µê³„</string>
+    <string name="custom_alerts">ë§žì¶¤ ì•Œë¦¼</string>
 
-    <string name="track_tournaments">모든 토너먼트 추적</string>
-    <string name="track_tournaments_subtitle">월드컵과 세계 최대 리그의 일정, 순위, 경기 상세 정보를 확인하세요.</string>
+    <string name="track_tournaments">ëª¨ë“  í† ë„ˆë¨¼íŠ¸ ì¶”ì </string>
+    <string name="track_tournaments_subtitle">ì›”ë“œì»µê³¼ ì„¸ê³„ ìµœëŒ€ ë¦¬ê·¸ì˜ ì¼ì •, ìˆœìœ„, ê²½ê¸° ìƒì„¸ ì •ë³´ë¥¼ í™•ì¸í•˜ì„¸ìš”.</string>
 
-    <string name="fixtures">경기 일정</string>
+    <string name="fixtures">ê²½ê¸° ì¼ì •</string>
 
-    <string name="build_dashboard">나만의 대시보드 만들기</string>
-    <string name="build_dashboard_subtitle">좋아하는 팀과 선수를 고정하여 홈 피드에서 관심 있는 축구 소식을 바로 확인하세요.</string>
+    <string name="build_dashboard">ë‚˜ë§Œì˜ ëŒ€ì‹œë³´ë“œ ë§Œë“¤ê¸°</string>
+    <string name="build_dashboard_subtitle">ì¢‹ì•„í•˜ëŠ” íŒ€ê³¼ ì„ ìˆ˜ë¥¼ ê³ ì •í•˜ì—¬ í™ˆ í”¼ë“œì—ì„œ ê´€ì‹¬ ìžˆëŠ” ì¶•êµ¬ ì†Œì‹ì„ ë°”ë¡œ í™•ì¸í•˜ì„¸ìš”.</string>
 
-    <string name="favorites">즐겨찾기</string>
-    <string name="player_heroes">스타 선수</string>
-    <string name="smart_feed">스마트 피드</string>
+    <string name="favorites">ì¦ê²¨ì°¾ê¸°</string>
+    <string name="player_heroes">ìŠ¤íƒ€ ì„ ìˆ˜</string>
+    <string name="smart_feed">ìŠ¤ë§ˆíŠ¸ í”¼ë“œ</string>
 
     <!-- Profile Setup -->
-    <string name="build_your_profile">프로필 만들기</string>
-    <string name="profile_title">%1$s을 나만의 앱으로</string>
-    <string name="profile_intro">회원님의 프로필, 팀, 선수를 선택하세요. 언제든지 변경할 수 있습니다.</string>
+    <string name="build_your_profile">í”„ë¡œí•„ ë§Œë“¤ê¸°</string>
+    <string name="profile_title">%1$sì„ ë‚˜ë§Œì˜ ì•±ìœ¼ë¡œ</string>
+    <string name="profile_intro">íšŒì›ë‹˜ì˜ í”„ë¡œí•„, íŒ€, ì„ ìˆ˜ë¥¼ ì„ íƒí•˜ì„¸ìš”. ì–¸ì œë“ ì§€ ë³€ê²½í•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.</string>
 
-    <string name="your_identity">회원님의 프로필</string>
-    <string name="identity_subtitle">새 프로필을 생성하거나 기존 프로필을 안전하게 복구하세요.</string>
+    <string name="your_identity">íšŒì›ë‹˜ì˜ í”„ë¡œí•„</string>
+    <string name="identity_subtitle">ìƒˆ í”„ë¡œí•„ì„ ìƒì„±í•˜ê±°ë‚˜ ê¸°ì¡´ í”„ë¡œí•„ì„ ì•ˆì „í•˜ê²Œ ë³µêµ¬í•˜ì„¸ìš”.</string>
 
-    <string name="favorite_teams_subtitle">팔로우하는 클럽과 국가대표팀을 중심으로 피드를 구성하세요.</string>
-    <string name="favorite_players_subtitle">놓치고 싶지 않은 선수를 고정하세요.</string>
+    <string name="favorite_teams_subtitle">íŒ”ë¡œìš°í•˜ëŠ” í´ëŸ½ê³¼ êµ­ê°€ëŒ€í‘œíŒ€ì„ ì¤‘ì‹¬ìœ¼ë¡œ í”¼ë“œë¥¼ êµ¬ì„±í•˜ì„¸ìš”.</string>
+    <string name="favorite_players_subtitle">ë†“ì¹˜ê³  ì‹¶ì§€ ì•Šì€ ì„ ìˆ˜ë¥¼ ê³ ì •í•˜ì„¸ìš”.</string>
 
-    <string name="loading_teams_players">팀 및 선수 로딩 중…</string>
-    <string name="retry_favorites">즐겨찾기 로딩 재시도</string>
+    <string name="loading_teams_players">íŒ€ ë° ì„ ìˆ˜ ë¡œë”© ì¤‘â€¦</string>
+    <string name="retry_favorites">ì¦ê²¨ì°¾ê¸° ë¡œë”© ìž¬ì‹œë„</string>
 
-    <string name="loading_teams">팀 로딩 중…</string>
-    <string name="load_more_teams">팀 6개 더 로드</string>
+    <string name="loading_teams">íŒ€ ë¡œë”© ì¤‘â€¦</string>
+    <string name="load_more_teams">íŒ€ 6ê°œ ë” ë¡œë“œ</string>
 
-    <string name="loading_players">선수 로딩 중…</string>
-    <string name="load_more_players">선수 6개 더 로드</string>
+    <string name="loading_players">ì„ ìˆ˜ ë¡œë”© ì¤‘â€¦</string>
+    <string name="load_more_players">ì„ ìˆ˜ 6ê°œ ë” ë¡œë“œ</string>
 
-    <string name="selected">선택됨</string>
-    <string name="load_six_more">6개 더 로드</string>
-    <string name="maximum_six_selections">최대 6개 선택 가능.</string>
+    <string name="selected">ì„ íƒë¨</string>
+    <string name="load_six_more">6ê°œ ë” ë¡œë“œ</string>
+    <string name="maximum_six_selections">ìµœëŒ€ 6ê°œ ì„ íƒ ê°€ëŠ¥.</string>
 
     <!-- Authentication -->
-    <string name="signing_in">로그인 중…</string>
-    <string name="sign_in">로그인</string>
-    <string name="continue_label">계속하기</string>
+    <string name="signing_in">ë¡œê·¸ì¸ ì¤‘â€¦</string>
+    <string name="sign_in">ë¡œê·¸ì¸</string>
+    <string name="continue_label">ê³„ì†í•˜ê¸°</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_name">경기 업데이트</string>
-    <string name="notification_channel_description">킥오프 알림, 실시간 스코어 및 골 알림입니다.</string>
-    <string name="notification_next_match">다음 경기</string>
-    <string name="notification_kickoff">킥오프</string>
-    <string name="notification_view_match">경기 보기</string>
-    <string name="notification_match_reminder">경기 알림</string>
-    <string name="notification_upcoming_match">예정된 경기</string>
-    <string name="notification_match_in_24_hours">24시간 후 경기</string>
-    <string name="notification_match_in_1_hour">1시간 후 경기</string>
-    <string name="notification_kickoff_now">지금 킥오프</string>
+    <string name="notification_channel_name">ê²½ê¸° ì—…ë°ì´íŠ¸</string>
+    <string name="notification_channel_description">í‚¥ì˜¤í”„ ì•Œë¦¼, ì‹¤ì‹œê°„ ìŠ¤ì½”ì–´ ë° ê³¨ ì•Œë¦¼ìž…ë‹ˆë‹¤.</string>
+    <string name="notification_next_match">ë‹¤ìŒ ê²½ê¸°</string>
+    <string name="notification_kickoff">í‚¥ì˜¤í”„</string>
+    <string name="notification_view_match">ê²½ê¸° ë³´ê¸°</string>
+    <string name="notification_match_reminder">ê²½ê¸° ì•Œë¦¼</string>
+    <string name="notification_upcoming_match">ì˜ˆì •ëœ ê²½ê¸°</string>
+    <string name="notification_match_in_24_hours">24ì‹œê°„ í›„ ê²½ê¸°</string>
+    <string name="notification_match_in_1_hour">1ì‹œê°„ í›„ ê²½ê¸°</string>
+    <string name="notification_kickoff_now">ì§€ê¸ˆ í‚¥ì˜¤í”„</string>
 
-    <string name="identity_add_name_later">지금 이름을 추가하세요. 사용자 이름은 나중에 게임에서 설정할 수 있습니다.</string>
-    <string name="teams_selected_count">%1$d/%2$d개 팀 선택됨</string>
-    <string name="players_selected_count">%1$d/%2$d명 선수 선택됨</string>
-    <string name="pin_to_dashboard">+ 대시보드에 고정</string>
-    <string name="pinned">고정됨</string>
-    <string name="all_filter">전체</string>
-    <string name="full_name_validation">성과 이름을 입력하세요. 각 이름은 2글자 이상이어야 합니다.</string>
-    <string name="select_up_to_teams">최대 %1$d개 팀을 선택할 수 있습니다.</string>
-    <string name="select_up_to_players">최대 %1$d명의 선수를 선택할 수 있습니다.</string>
+    <string name="identity_add_name_later">ì§€ê¸ˆ ì´ë¦„ì„ ì¶”ê°€í•˜ì„¸ìš”. ì‚¬ìš©ìž ì´ë¦„ì€ ë‚˜ì¤‘ì— ê²Œìž„ì—ì„œ ì„¤ì •í•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.</string>
+    <string name="teams_selected_count">%1$d/%2$dê°œ íŒ€ ì„ íƒë¨</string>
+    <string name="players_selected_count">%1$d/%2$dëª… ì„ ìˆ˜ ì„ íƒë¨</string>
+    <string name="pin_to_dashboard">+ ëŒ€ì‹œë³´ë“œì— ê³ ì •</string>
+    <string name="pinned">ê³ ì •ë¨</string>
+    <string name="all_filter">ì „ì²´</string>
+    <string name="full_name_validation">ì„±ê³¼ ì´ë¦„ì„ ìž…ë ¥í•˜ì„¸ìš”. ê° ì´ë¦„ì€ 2ê¸€ìž ì´ìƒì´ì–´ì•¼ í•©ë‹ˆë‹¤.</string>
+    <string name="select_up_to_teams">ìµœëŒ€ %1$dê°œ íŒ€ì„ ì„ íƒí•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.</string>
+    <string name="select_up_to_players">ìµœëŒ€ %1$dëª…ì˜ ì„ ìˆ˜ë¥¼ ì„ íƒí•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.</string>
 </resources>
+

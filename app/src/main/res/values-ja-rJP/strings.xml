@@ -1,259 +1,260 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Goalio：サッカー速報</string>
-    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+    <string name="app_name">Goalioï¼šã‚µãƒƒã‚«ãƒ¼é€Ÿå ±</string>
+    <string name="onesignal_app_id" translatable="false">014b1cc7-22ca-494b-a8f0-b130b68cf140</string>
 
     <!-- General -->
-    <string name="done">完了</string>
-    <string name="save">保存</string>
-    <string name="cancel">キャンセル</string>
-    <string name="back">戻る</string>
-    <string name="next">次へ</string>
-    <string name="skip">スキップ</string>
-    <string name="open">開く</string>
-    <string name="edit">編集</string>
-    <string name="search">検索</string>
-    <string name="loading">読み込み中…</string>
-    <string name="saving">保存中…</string>
-    <string name="checking">確認中…</string>
+    <string name="done">å®Œäº†</string>
+    <string name="save">ä¿å­˜</string>
+    <string name="cancel">ã‚­ãƒ£ãƒ³ã‚»ãƒ«</string>
+    <string name="back">æˆ»ã‚‹</string>
+    <string name="next">æ¬¡ã¸</string>
+    <string name="skip">ã‚¹ã‚­ãƒƒãƒ—</string>
+    <string name="open">é–‹ã</string>
+    <string name="edit">ç·¨é›†</string>
+    <string name="search">æ¤œç´¢</string>
+    <string name="loading">èª­ã¿è¾¼ã¿ä¸­â€¦</string>
+    <string name="saving">ä¿å­˜ä¸­â€¦</string>
+    <string name="checking">ç¢ºèªä¸­â€¦</string>
 
     <!-- Language -->
-    <string name="language">言語</string>
-    <string name="choose_your_language">言語を選択</string>
-    <string name="language_description">スコア、試合のアップデート、ナビゲーションは、設定した言語で表示されます。</string>
-    <string name="device">端末</string>
-    <string name="system_default">システム設定</string>
-    <string name="use_device_language">端末の言語を使用</string>
-    <string name="all_languages">すべての言語</string>
-    <string name="search_languages">言語を検索</string>
+    <string name="language">è¨€èªž</string>
+    <string name="choose_your_language">è¨€èªžã‚’é¸æŠž</string>
+    <string name="language_description">ã‚¹ã‚³ã‚¢ã€è©¦åˆã®ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã€ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³ã¯ã€è¨­å®šã—ãŸè¨€èªžã§è¡¨ç¤ºã•ã‚Œã¾ã™ã€‚</string>
+    <string name="device">ç«¯æœ«</string>
+    <string name="system_default">ã‚·ã‚¹ãƒ†ãƒ è¨­å®š</string>
+    <string name="use_device_language">ç«¯æœ«ã®è¨€èªžã‚’ä½¿ç”¨</string>
+    <string name="all_languages">ã™ã¹ã¦ã®è¨€èªž</string>
+    <string name="search_languages">è¨€èªžã‚’æ¤œç´¢</string>
 
     <!-- Navigation -->
-    <string name="home">ホーム</string>
-    <string name="matches">試合</string>
-    <string name="games">ゲーム</string>
-    <string name="play">プレイ</string>
+    <string name="home">ãƒ›ãƒ¼ãƒ </string>
+    <string name="matches">è©¦åˆ</string>
+    <string name="games">ã‚²ãƒ¼ãƒ </string>
+    <string name="play">ãƒ—ãƒ¬ã‚¤</string>
 
     <!-- Match -->
-    <string name="overview">概要</string>
-    <string name="timeline">タイムライン</string>
-    <string name="stats">統計</string>
-    <string name="ai_insight">AI分析</string>
-    <string name="lineups">スタメン</string>
-    <string name="watch">視聴</string>
-    <string name="match_details">試合詳細</string>
-    <string name="match_center">マッチセンター</string>
-    <string name="tap_full_match_details">タップして試合の詳細をすべて表示</string>
-    <string name="match_stats">試合統計</string>
-    <string name="win_probability">勝利確率</string>
-    <string name="view_analysis">分析を見る</string>
+    <string name="overview">æ¦‚è¦</string>
+    <string name="timeline">ã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³</string>
+    <string name="stats">çµ±è¨ˆ</string>
+    <string name="ai_insight">AIåˆ†æž</string>
+    <string name="lineups">ã‚¹ã‚¿ãƒ¡ãƒ³</string>
+    <string name="watch">è¦–è´</string>
+    <string name="match_details">è©¦åˆè©³ç´°</string>
+    <string name="match_center">ãƒžãƒƒãƒã‚»ãƒ³ã‚¿ãƒ¼</string>
+    <string name="tap_full_match_details">ã‚¿ãƒƒãƒ—ã—ã¦è©¦åˆã®è©³ç´°ã‚’ã™ã¹ã¦è¡¨ç¤º</string>
+    <string name="match_stats">è©¦åˆçµ±è¨ˆ</string>
+    <string name="win_probability">å‹åˆ©ç¢ºçŽ‡</string>
+    <string name="view_analysis">åˆ†æžã‚’è¦‹ã‚‹</string>
 
-    <string name="referee">主審</string>
-    <string name="stadium">スタジアム</string>
-    <string name="not_listed">リストにありません</string>
+    <string name="referee">ä¸»å¯©</string>
+    <string name="stadium">ã‚¹ã‚¿ã‚¸ã‚¢ãƒ </string>
+    <string name="not_listed">ãƒªã‚¹ãƒˆã«ã‚ã‚Šã¾ã›ã‚“</string>
 
-    <string name="key_moments">重要シーン</string>
-    <string name="performance_matrix">パフォーマンスマトリクス</string>
+    <string name="key_moments">é‡è¦ã‚·ãƒ¼ãƒ³</string>
+    <string name="performance_matrix">ãƒ‘ãƒ•ã‚©ãƒ¼ãƒžãƒ³ã‚¹ãƒžãƒˆãƒªã‚¯ã‚¹</string>
 
-    <string name="possession">ボール支配率</string>
-    <string name="shots">シュート数</string>
-    <string name="on_goal">ゴール枠内</string>
-    <string name="corners">コーナーキック</string>
-    <string name="fouls">ファウル</string>
-    <string name="yellow_cards">イエローカード</string>
-    <string name="saves">セーブ数</string>
-    <string name="passes">パス数</string>
-    <string name="accurate_passes">パス成功数</string>
-    <string name="total_shots">総シュート数</string>
-    <string name="shots_on_target">枠内シュート数</string>
+    <string name="possession">ãƒœãƒ¼ãƒ«æ”¯é…çŽ‡</string>
+    <string name="shots">ã‚·ãƒ¥ãƒ¼ãƒˆæ•°</string>
+    <string name="on_goal">ã‚´ãƒ¼ãƒ«æž å†…</string>
+    <string name="corners">ã‚³ãƒ¼ãƒŠãƒ¼ã‚­ãƒƒã‚¯</string>
+    <string name="fouls">ãƒ•ã‚¡ã‚¦ãƒ«</string>
+    <string name="yellow_cards">ã‚¤ã‚¨ãƒ­ãƒ¼ã‚«ãƒ¼ãƒ‰</string>
+    <string name="saves">ã‚»ãƒ¼ãƒ–æ•°</string>
+    <string name="passes">ãƒ‘ã‚¹æ•°</string>
+    <string name="accurate_passes">ãƒ‘ã‚¹æˆåŠŸæ•°</string>
+    <string name="total_shots">ç·ã‚·ãƒ¥ãƒ¼ãƒˆæ•°</string>
+    <string name="shots_on_target">æž å†…ã‚·ãƒ¥ãƒ¼ãƒˆæ•°</string>
 
-    <string name="goalio_ai_summary">Goalio AIサマリー</string>
-    <string name="auto_generated_match_context">自動生成された試合状況</string>
+    <string name="goalio_ai_summary">Goalio AIã‚µãƒžãƒªãƒ¼</string>
+    <string name="auto_generated_match_context">è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸè©¦åˆçŠ¶æ³</string>
 
     <!-- Settings -->
-    <string name="settings">設定</string>
-    <string name="settings_subtitle">プロフィール、アラート、アプリの管理</string>
+    <string name="settings">è¨­å®š</string>
+    <string name="settings_subtitle">ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ã€ã‚¢ãƒ©ãƒ¼ãƒˆã€ã‚¢ãƒ—ãƒªã®ç®¡ç†</string>
 
-    <string name="preferences">設定</string>
-    <string name="match_notifications">試合通知</string>
-    <string name="on">オン</string>
-    <string name="off">オフ</string>
+    <string name="preferences">è¨­å®š</string>
+    <string name="match_notifications">è©¦åˆé€šçŸ¥</string>
+    <string name="on">ã‚ªãƒ³</string>
+    <string name="off">ã‚ªãƒ•</string>
 
-    <string name="favorite_teams">お気に入りチーム</string>
-    <string name="favorite_players">お気に入り選手</string>
-    <string name="add_teams">チームを追加</string>
-    <string name="add_players">選手を追加</string>
+    <string name="favorite_teams">ãŠæ°—ã«å…¥ã‚Šãƒãƒ¼ãƒ </string>
+    <string name="favorite_players">ãŠæ°—ã«å…¥ã‚Šé¸æ‰‹</string>
+    <string name="add_teams">ãƒãƒ¼ãƒ ã‚’è¿½åŠ </string>
+    <string name="add_players">é¸æ‰‹ã‚’è¿½åŠ </string>
 
-    <string name="app">アプリ</string>
-    <string name="privacy_policy">プライバシーポリシー</string>
-    <string name="version">バージョン</string>
+    <string name="app">ã‚¢ãƒ—ãƒª</string>
+    <string name="privacy_policy">ãƒ—ãƒ©ã‚¤ãƒã‚·ãƒ¼ãƒãƒªã‚·ãƒ¼</string>
+    <string name="version">ãƒãƒ¼ã‚¸ãƒ§ãƒ³</string>
 
     <!-- Profile -->
-    <string name="edit_profile">プロフィールを編集</string>
-    <string name="member_since">登録日：</string>
-    <string name="recently">最近</string>
-    <string name="level">レベル</string>
-    <string name="mastery">マスタリー</string>
-    <string name="teams">チーム</string>
-    <string name="players">選手</string>
-    <string name="alerts">アラート</string>
-    <string name="sign_out">ログアウト</string>
+    <string name="edit_profile">ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ã‚’ç·¨é›†</string>
+    <string name="member_since">ç™»éŒ²æ—¥ï¼š</string>
+    <string name="recently">æœ€è¿‘</string>
+    <string name="level">ãƒ¬ãƒ™ãƒ«</string>
+    <string name="mastery">ãƒžã‚¹ã‚¿ãƒªãƒ¼</string>
+    <string name="teams">ãƒãƒ¼ãƒ </string>
+    <string name="players">é¸æ‰‹</string>
+    <string name="alerts">ã‚¢ãƒ©ãƒ¼ãƒˆ</string>
+    <string name="sign_out">ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ</string>
 
-    <string name="full_name">フルネーム</string>
-    <string name="full_name_hint">例：アレックス・モーガン</string>
+    <string name="full_name">ãƒ•ãƒ«ãƒãƒ¼ãƒ </string>
+    <string name="full_name_hint">ä¾‹ï¼šã‚¢ãƒ¬ãƒƒã‚¯ã‚¹ãƒ»ãƒ¢ãƒ¼ã‚¬ãƒ³</string>
 
-    <string name="pick_username">ユーザー名を選択</string>
-    <string name="username_hint">例：GoalGetter99</string>
+    <string name="pick_username">ãƒ¦ãƒ¼ã‚¶ãƒ¼åã‚’é¸æŠž</string>
+    <string name="username_hint">ä¾‹ï¼šGoalGetter99</string>
 
-    <string name="search_teams">チームを検索</string>
-    <string name="search_players">選手を検索</string>
+    <string name="search_teams">ãƒãƒ¼ãƒ ã‚’æ¤œç´¢</string>
+    <string name="search_players">é¸æ‰‹ã‚’æ¤œç´¢</string>
 
-    <string name="leave_account">この端末で%1$sアカウントからログアウト</string>
-    <string name="update_display_name">%1$sの表示名を更新します。</string>
+    <string name="leave_account">ã“ã®ç«¯æœ«ã§%1$sã‚¢ã‚«ã‚¦ãƒ³ãƒˆã‹ã‚‰ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ</string>
+    <string name="update_display_name">%1$sã®è¡¨ç¤ºåã‚’æ›´æ–°ã—ã¾ã™ã€‚</string>
 
     <!-- World Cup -->
-    <string name="world_cup">ワールドカップ</string>
-    <string name="north_america_2026">北米 2026</string>
+    <string name="world_cup">ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‚«ãƒƒãƒ—</string>
+    <string name="north_america_2026">åŒ—ç±³ 2026</string>
 
-    <string name="group">グループ</string>
-    <string name="group_a">グループA</string>
-    <string name="groups">グループ</string>
+    <string name="group">ã‚°ãƒ«ãƒ¼ãƒ—</string>
+    <string name="group_a">ã‚°ãƒ«ãƒ¼ãƒ—A</string>
+    <string name="groups">ã‚°ãƒ«ãƒ¼ãƒ—</string>
 
-    <string name="group_a_standings_pending">FIFAが現在の順位表を発表すると、グループAの順位表が表示されます。</string>
+    <string name="group_a_standings_pending">FIFAãŒç¾åœ¨ã®é †ä½è¡¨ã‚’ç™ºè¡¨ã™ã‚‹ã¨ã€ã‚°ãƒ«ãƒ¼ãƒ—Aã®é †ä½è¡¨ãŒè¡¨ç¤ºã•ã‚Œã¾ã™ã€‚</string>
 
-    <string name="group_tables">グループ順位表</string>
-    <string name="knockout_path">決勝トーナメント</string>
-    <string name="world_cup_matches">ワールドカップ試合一覧</string>
-    <string name="world_cup_library">ワールドカップライブラリ</string>
+    <string name="group_tables">ã‚°ãƒ«ãƒ¼ãƒ—é †ä½è¡¨</string>
+    <string name="knockout_path">æ±ºå‹ãƒˆãƒ¼ãƒŠãƒ¡ãƒ³ãƒˆ</string>
+    <string name="world_cup_matches">ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‚«ãƒƒãƒ—è©¦åˆä¸€è¦§</string>
+    <string name="world_cup_library">ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‚«ãƒƒãƒ—ãƒ©ã‚¤ãƒ–ãƒ©ãƒª</string>
 
-    <string name="collapse">折りたたむ</string>
-    <string name="expand">展開</string>
-    <string name="view_all">すべて表示</string>
-    <string name="choose_date">日付を選択</string>
-    <string name="min_read">分</string>
-    <string name="read_on_fifa">FIFA.comで読む</string>
+    <string name="collapse">æŠ˜ã‚ŠãŸãŸã‚€</string>
+    <string name="expand">å±•é–‹</string>
+    <string name="view_all">ã™ã¹ã¦è¡¨ç¤º</string>
+    <string name="choose_date">æ—¥ä»˜ã‚’é¸æŠž</string>
+    <string name="min_read">åˆ†</string>
+    <string name="read_on_fifa">FIFA.comã§èª­ã‚€</string>
 
     <!-- Standings -->
-    <string name="rank">順位</string>
-    <string name="team">チーム</string>
-    <string name="stage">ステージ</string>
+    <string name="rank">é †ä½</string>
+    <string name="team">ãƒãƒ¼ãƒ </string>
+    <string name="stage">ã‚¹ãƒ†ãƒ¼ã‚¸</string>
 
-    <string name="played_short">試</string>
-    <string name="won_short">勝</string>
-    <string name="drawn_short">分</string>
-    <string name="lost_short">敗</string>
-    <string name="goal_difference_short">得失</string>
-    <string name="points_short">勝点</string>
+    <string name="played_short">è©¦</string>
+    <string name="won_short">å‹</string>
+    <string name="drawn_short">åˆ†</string>
+    <string name="lost_short">æ•—</string>
+    <string name="goal_difference_short">å¾—å¤±</string>
+    <string name="points_short">å‹ç‚¹</string>
 
     <!-- Home -->
-    <string name="live_action">ライブマッチ</string>
-    <string name="next_seven_days">今後の7日間</string>
-    <string name="upcoming_today">本日の試合予定</string>
+    <string name="live_action">ãƒ©ã‚¤ãƒ–ãƒžãƒƒãƒ</string>
+    <string name="next_seven_days">ä»Šå¾Œã®7æ—¥é–“</string>
+    <string name="upcoming_today">æœ¬æ—¥ã®è©¦åˆäºˆå®š</string>
 
     <!-- Lineups -->
-    <string name="player_lineups">選手ラインアップ</string>
-    <string name="lineup_subtitle">先発メンバー、フォーメーション、ベンチ</string>
-    <string name="starting_xi">先発メンバー</string>
-    <string name="bench">ベンチ</string>
-    <string name="formation">フォーメーション</string>
-    <string name="home_side">ホーム</string>
-    <string name="away_side">アウェイ</string>
+    <string name="player_lineups">é¸æ‰‹ãƒ©ã‚¤ãƒ³ã‚¢ãƒƒãƒ—</string>
+    <string name="lineup_subtitle">å…ˆç™ºãƒ¡ãƒ³ãƒãƒ¼ã€ãƒ•ã‚©ãƒ¼ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã€ãƒ™ãƒ³ãƒ</string>
+    <string name="starting_xi">å…ˆç™ºãƒ¡ãƒ³ãƒãƒ¼</string>
+    <string name="bench">ãƒ™ãƒ³ãƒ</string>
+    <string name="formation">ãƒ•ã‚©ãƒ¼ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³</string>
+    <string name="home_side">ãƒ›ãƒ¼ãƒ </string>
+    <string name="away_side">ã‚¢ã‚¦ã‚§ã‚¤</string>
 
-    <string name="no_bench_listed">ベンチメンバーの登録なし</string>
-    <string name="unavailable">欠場</string>
+    <string name="no_bench_listed">ãƒ™ãƒ³ãƒãƒ¡ãƒ³ãƒãƒ¼ã®ç™»éŒ²ãªã—</string>
+    <string name="unavailable">æ¬ å ´</string>
 
     <!-- Watch -->
-    <string name="watch_highlights">視聴 &amp; ハイライト</string>
-    <string name="stream">配信</string>
-    <string name="highlights">ハイライト</string>
+    <string name="watch_highlights">è¦–è´ &amp; ãƒã‚¤ãƒ©ã‚¤ãƒˆ</string>
+    <string name="stream">é…ä¿¡</string>
+    <string name="highlights">ãƒã‚¤ãƒ©ã‚¤ãƒˆ</string>
 
     <!-- Football Five -->
-    <string name="football_five">ザ・フットボール・ファイブ</string>
-    <string name="football_five_subtitle">5つの質問。1つのストリーク。順位表を駆け上がろう。</string>
+    <string name="football_five">ã‚¶ãƒ»ãƒ•ãƒƒãƒˆãƒœãƒ¼ãƒ«ãƒ»ãƒ•ã‚¡ã‚¤ãƒ–</string>
+    <string name="football_five_subtitle">5ã¤ã®è³ªå•ã€‚1ã¤ã®ã‚¹ãƒˆãƒªãƒ¼ã‚¯ã€‚é †ä½è¡¨ã‚’é§†ã‘ä¸ŠãŒã‚ã†ã€‚</string>
 
-    <string name="test_football_knowledge">フットボールの知識をテスト</string>
-    <string name="quiz_rules">5つの質問 · 各15秒\n正解で +10 XP · 不正解で −5 XP</string>
+    <string name="test_football_knowledge">ãƒ•ãƒƒãƒˆãƒœãƒ¼ãƒ«ã®çŸ¥è­˜ã‚’ãƒ†ã‚¹ãƒˆ</string>
+    <string name="quiz_rules">5ã¤ã®è³ªå• Â· å„15ç§’\næ­£è§£ã§ +10 XP Â· ä¸æ­£è§£ã§ âˆ’5 XP</string>
 
-    <string name="play_now">今すぐプレイ</string>
-    <string name="leaderboard">リーダーボード</string>
-    <string name="top_ten">トップ10</string>
-    <string name="no_leaderboard">リーダーボードのデータがまだありません。プレイしてランクインしよう！</string>
-    <string name="you">あなた</string>
+    <string name="play_now">ä»Šã™ããƒ—ãƒ¬ã‚¤</string>
+    <string name="leaderboard">ãƒªãƒ¼ãƒ€ãƒ¼ãƒœãƒ¼ãƒ‰</string>
+    <string name="top_ten">ãƒˆãƒƒãƒ—10</string>
+    <string name="no_leaderboard">ãƒªãƒ¼ãƒ€ãƒ¼ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ãŒã¾ã ã‚ã‚Šã¾ã›ã‚“ã€‚ãƒ—ãƒ¬ã‚¤ã—ã¦ãƒ©ãƒ³ã‚¯ã‚¤ãƒ³ã—ã‚ˆã†ï¼</string>
+    <string name="you">ã‚ãªãŸ</string>
 
     <!-- Onboarding -->
-    <string name="your_football_your_way">あなたのフットボールを、あなたのスタイルで。</string>
-    <string name="swipe_to_explore">スワイプして探索</string>
+    <string name="your_football_your_way">ã‚ãªãŸã®ãƒ•ãƒƒãƒˆãƒœãƒ¼ãƒ«ã‚’ã€ã‚ãªãŸã®ã‚¹ã‚¿ã‚¤ãƒ«ã§ã€‚</string>
+    <string name="swipe_to_explore">ã‚¹ãƒ¯ã‚¤ãƒ—ã—ã¦æŽ¢ç´¢</string>
 
-    <string name="built_for_matchday">マッチデーのための設計</string>
-    <string name="feature">機能</string>
+    <string name="built_for_matchday">ãƒžãƒƒãƒãƒ‡ãƒ¼ã®ãŸã‚ã®è¨­è¨ˆ</string>
+    <string name="feature">æ©Ÿèƒ½</string>
 
-    <string name="never_miss_kick">一瞬のキックも見逃さない</string>
-    <string name="never_miss_kick_subtitle">ライブスコア、リアルタイム統計、即時マッチアラートで、試合の興奮をそのまま体験。</string>
+    <string name="never_miss_kick">ä¸€çž¬ã®ã‚­ãƒƒã‚¯ã‚‚è¦‹é€ƒã•ãªã„</string>
+    <string name="never_miss_kick_subtitle">ãƒ©ã‚¤ãƒ–ã‚¹ã‚³ã‚¢ã€ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ çµ±è¨ˆã€å³æ™‚ãƒžãƒƒãƒã‚¢ãƒ©ãƒ¼ãƒˆã§ã€è©¦åˆã®èˆˆå¥®ã‚’ãã®ã¾ã¾ä½“é¨“ã€‚</string>
 
-    <string name="live_match_center">ライブマッチセンター</string>
-    <string name="deep_stats">詳細な統計</string>
-    <string name="custom_alerts">カスタムアラート</string>
+    <string name="live_match_center">ãƒ©ã‚¤ãƒ–ãƒžãƒƒãƒã‚»ãƒ³ã‚¿ãƒ¼</string>
+    <string name="deep_stats">è©³ç´°ãªçµ±è¨ˆ</string>
+    <string name="custom_alerts">ã‚«ã‚¹ã‚¿ãƒ ã‚¢ãƒ©ãƒ¼ãƒˆ</string>
 
-    <string name="track_tournaments">すべてのトーナメントを追跡</string>
-    <string name="track_tournaments_subtitle">ワールドカップや主要リーグの日程、順位表、試合詳細をチェック。</string>
+    <string name="track_tournaments">ã™ã¹ã¦ã®ãƒˆãƒ¼ãƒŠãƒ¡ãƒ³ãƒˆã‚’è¿½è·¡</string>
+    <string name="track_tournaments_subtitle">ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‚«ãƒƒãƒ—ã‚„ä¸»è¦ãƒªãƒ¼ã‚°ã®æ—¥ç¨‹ã€é †ä½è¡¨ã€è©¦åˆè©³ç´°ã‚’ãƒã‚§ãƒƒã‚¯ã€‚</string>
 
-    <string name="fixtures">試合日程</string>
+    <string name="fixtures">è©¦åˆæ—¥ç¨‹</string>
 
-    <string name="build_dashboard">ダッシュボードを作成</string>
-    <string name="build_dashboard_subtitle">お気に入りのチームや選手をピン留めして、ホームフィードに関心のあるフットボールを表示。</string>
+    <string name="build_dashboard">ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã‚’ä½œæˆ</string>
+    <string name="build_dashboard_subtitle">ãŠæ°—ã«å…¥ã‚Šã®ãƒãƒ¼ãƒ ã‚„é¸æ‰‹ã‚’ãƒ”ãƒ³ç•™ã‚ã—ã¦ã€ãƒ›ãƒ¼ãƒ ãƒ•ã‚£ãƒ¼ãƒ‰ã«é–¢å¿ƒã®ã‚ã‚‹ãƒ•ãƒƒãƒˆãƒœãƒ¼ãƒ«ã‚’è¡¨ç¤ºã€‚</string>
 
-    <string name="favorites">お気に入り</string>
-    <string name="player_heroes">スター選手</string>
-    <string name="smart_feed">スマートフィード</string>
+    <string name="favorites">ãŠæ°—ã«å…¥ã‚Š</string>
+    <string name="player_heroes">ã‚¹ã‚¿ãƒ¼é¸æ‰‹</string>
+    <string name="smart_feed">ã‚¹ãƒžãƒ¼ãƒˆãƒ•ã‚£ãƒ¼ãƒ‰</string>
 
     <!-- Profile Setup -->
-    <string name="build_your_profile">プロフィールを作成</string>
-    <string name="profile_title">%1$sを自分好みに</string>
-    <string name="profile_intro">ユーザー情報、チーム、選手を選択してください。これらはいつでも更新できます。</string>
+    <string name="build_your_profile">ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ã‚’ä½œæˆ</string>
+    <string name="profile_title">%1$sã‚’è‡ªåˆ†å¥½ã¿ã«</string>
+    <string name="profile_intro">ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ã€ãƒãƒ¼ãƒ ã€é¸æ‰‹ã‚’é¸æŠžã—ã¦ãã ã•ã„ã€‚ã“ã‚Œã‚‰ã¯ã„ã¤ã§ã‚‚æ›´æ–°ã§ãã¾ã™ã€‚</string>
 
-    <string name="your_identity">ユーザー情報</string>
-    <string name="identity_subtitle">新しいプロフィールを作成するか、安全に復元します。</string>
+    <string name="your_identity">ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±</string>
+    <string name="identity_subtitle">æ–°ã—ã„ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ã‚’ä½œæˆã™ã‚‹ã‹ã€å®‰å…¨ã«å¾©å…ƒã—ã¾ã™ã€‚</string>
 
-    <string name="favorite_teams_subtitle">フォローしているクラブや国を中心としたフィードを作成します。</string>
-    <string name="favorite_players_subtitle">見逃したくない選手をピン留めします。</string>
+    <string name="favorite_teams_subtitle">ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã„ã‚‹ã‚¯ãƒ©ãƒ–ã‚„å›½ã‚’ä¸­å¿ƒã¨ã—ãŸãƒ•ã‚£ãƒ¼ãƒ‰ã‚’ä½œæˆã—ã¾ã™ã€‚</string>
+    <string name="favorite_players_subtitle">è¦‹é€ƒã—ãŸããªã„é¸æ‰‹ã‚’ãƒ”ãƒ³ç•™ã‚ã—ã¾ã™ã€‚</string>
 
-    <string name="loading_teams_players">チームと選手を読み込み中…</string>
-    <string name="retry_favorites">お気に入りの読み込みを再試行</string>
+    <string name="loading_teams_players">ãƒãƒ¼ãƒ ã¨é¸æ‰‹ã‚’èª­ã¿è¾¼ã¿ä¸­â€¦</string>
+    <string name="retry_favorites">ãŠæ°—ã«å…¥ã‚Šã®èª­ã¿è¾¼ã¿ã‚’å†è©¦è¡Œ</string>
 
-    <string name="loading_teams">チームを読み込み中…</string>
-    <string name="load_more_teams">さらに6チームを読み込む</string>
+    <string name="loading_teams">ãƒãƒ¼ãƒ ã‚’èª­ã¿è¾¼ã¿ä¸­â€¦</string>
+    <string name="load_more_teams">ã•ã‚‰ã«6ãƒãƒ¼ãƒ ã‚’èª­ã¿è¾¼ã‚€</string>
 
-    <string name="loading_players">選手を読み込み中…</string>
-    <string name="load_more_players">さらに6選手を読み込む</string>
+    <string name="loading_players">é¸æ‰‹ã‚’èª­ã¿è¾¼ã¿ä¸­â€¦</string>
+    <string name="load_more_players">ã•ã‚‰ã«6é¸æ‰‹ã‚’èª­ã¿è¾¼ã‚€</string>
 
-    <string name="selected">選択済み</string>
-    <string name="load_six_more">さらに6つ読み込む</string>
-    <string name="maximum_six_selections">最大6つまで選択可能。</string>
+    <string name="selected">é¸æŠžæ¸ˆã¿</string>
+    <string name="load_six_more">ã•ã‚‰ã«6ã¤èª­ã¿è¾¼ã‚€</string>
+    <string name="maximum_six_selections">æœ€å¤§6ã¤ã¾ã§é¸æŠžå¯èƒ½ã€‚</string>
 
     <!-- Authentication -->
-    <string name="signing_in">サインイン中…</string>
-    <string name="sign_in">サインイン</string>
-    <string name="continue_label">続ける</string>
+    <string name="signing_in">ã‚µã‚¤ãƒ³ã‚¤ãƒ³ä¸­â€¦</string>
+    <string name="sign_in">ã‚µã‚¤ãƒ³ã‚¤ãƒ³</string>
+    <string name="continue_label">ç¶šã‘ã‚‹</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_name">試合速報</string>
-    <string name="notification_channel_description">キックオフのリマインダー、ライブスコア、ゴール通知。</string>
-    <string name="notification_next_match">次の試合</string>
-    <string name="notification_kickoff">キックオフ</string>
-    <string name="notification_view_match">試合を見る</string>
-    <string name="notification_match_reminder">試合リマインダー</string>
-    <string name="notification_upcoming_match">今後の試合</string>
-    <string name="notification_match_in_24_hours">試合開始まで24時間</string>
-    <string name="notification_match_in_1_hour">試合開始まで1時間</string>
-    <string name="notification_kickoff_now">まもなくキックオフ</string>
+    <string name="notification_channel_name">è©¦åˆé€Ÿå ±</string>
+    <string name="notification_channel_description">ã‚­ãƒƒã‚¯ã‚ªãƒ•ã®ãƒªãƒžã‚¤ãƒ³ãƒ€ãƒ¼ã€ãƒ©ã‚¤ãƒ–ã‚¹ã‚³ã‚¢ã€ã‚´ãƒ¼ãƒ«é€šçŸ¥ã€‚</string>
+    <string name="notification_next_match">æ¬¡ã®è©¦åˆ</string>
+    <string name="notification_kickoff">ã‚­ãƒƒã‚¯ã‚ªãƒ•</string>
+    <string name="notification_view_match">è©¦åˆã‚’è¦‹ã‚‹</string>
+    <string name="notification_match_reminder">è©¦åˆãƒªãƒžã‚¤ãƒ³ãƒ€ãƒ¼</string>
+    <string name="notification_upcoming_match">ä»Šå¾Œã®è©¦åˆ</string>
+    <string name="notification_match_in_24_hours">è©¦åˆé–‹å§‹ã¾ã§24æ™‚é–“</string>
+    <string name="notification_match_in_1_hour">è©¦åˆé–‹å§‹ã¾ã§1æ™‚é–“</string>
+    <string name="notification_kickoff_now">ã¾ã‚‚ãªãã‚­ãƒƒã‚¯ã‚ªãƒ•</string>
 
-    <string name="identity_add_name_later">今は名前を追加してください。ユーザー名は後でゲームから設定できます。</string>
-    <string name="teams_selected_count">%1$d/%2$d チームを選択済み</string>
-    <string name="players_selected_count">%1$d/%2$d 選手を選択済み</string>
-    <string name="pin_to_dashboard">+ ダッシュボードに固定</string>
-    <string name="pinned">固定済み</string>
-    <string name="all_filter">すべて</string>
-    <string name="full_name_validation">姓と名を入力してください。各名前は2文字以上必要です。</string>
-    <string name="select_up_to_teams">最大%1$dチームまで選択できます。</string>
-    <string name="select_up_to_players">最大%1$d選手まで選択できます。</string>
+    <string name="identity_add_name_later">ä»Šã¯åå‰ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚ãƒ¦ãƒ¼ã‚¶ãƒ¼åã¯å¾Œã§ã‚²ãƒ¼ãƒ ã‹ã‚‰è¨­å®šã§ãã¾ã™ã€‚</string>
+    <string name="teams_selected_count">%1$d/%2$d ãƒãƒ¼ãƒ ã‚’é¸æŠžæ¸ˆã¿</string>
+    <string name="players_selected_count">%1$d/%2$d é¸æ‰‹ã‚’é¸æŠžæ¸ˆã¿</string>
+    <string name="pin_to_dashboard">+ ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã«å›ºå®š</string>
+    <string name="pinned">å›ºå®šæ¸ˆã¿</string>
+    <string name="all_filter">ã™ã¹ã¦</string>
+    <string name="full_name_validation">å§“ã¨åã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚å„åå‰ã¯2æ–‡å­—ä»¥ä¸Šå¿…è¦ã§ã™ã€‚</string>
+    <string name="select_up_to_teams">æœ€å¤§%1$dãƒãƒ¼ãƒ ã¾ã§é¸æŠžã§ãã¾ã™ã€‚</string>
+    <string name="select_up_to_players">æœ€å¤§%1$dé¸æ‰‹ã¾ã§é¸æŠžã§ãã¾ã™ã€‚</string>
 </resources>
+

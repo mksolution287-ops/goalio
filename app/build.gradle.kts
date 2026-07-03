@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.goalio.scores"
+    namespace = "zero.ramjikvarosai.hirebazzar"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.goalio.scores"
+        applicationId = "zero.ramjikvarosai.hirebazzar"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

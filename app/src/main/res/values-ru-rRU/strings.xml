@@ -1,259 +1,260 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- General -->
-    <string name="app_name">Goalio: Футбол онлайн</string>
-    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+    <string name="app_name">Goalio: Ð¤ÑƒÑ‚Ð±Ð¾Ð» Ð¾Ð½Ð»Ð°Ð¹Ð½</string>
+    <string name="onesignal_app_id" translatable="false">014b1cc7-22ca-494b-a8f0-b130b68cf140</string>
 
-    <string name="done">Готово</string>
-    <string name="save">Сохранить</string>
-    <string name="cancel">Отмена</string>
-    <string name="back">Назад</string>
-    <string name="next">Далее</string>
-    <string name="skip">Пропустить</string>
-    <string name="open">Открыть</string>
-    <string name="edit">Изменить</string>
-    <string name="search">Поиск</string>
-    <string name="loading">Загрузка…</string>
-    <string name="saving">Сохранение…</string>
-    <string name="checking">Проверка…</string>
+    <string name="done">Ð“Ð¾Ñ‚Ð¾Ð²Ð¾</string>
+    <string name="save">Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ</string>
+    <string name="cancel">ÐžÑ‚Ð¼ÐµÐ½Ð°</string>
+    <string name="back">ÐÐ°Ð·Ð°Ð´</string>
+    <string name="next">Ð”Ð°Ð»ÐµÐµ</string>
+    <string name="skip">ÐŸÑ€Ð¾Ð¿ÑƒÑÑ‚Ð¸Ñ‚ÑŒ</string>
+    <string name="open">ÐžÑ‚ÐºÑ€Ñ‹Ñ‚ÑŒ</string>
+    <string name="edit">Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ</string>
+    <string name="search">ÐŸÐ¾Ð¸ÑÐº</string>
+    <string name="loading">Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ°â€¦</string>
+    <string name="saving">Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµâ€¦</string>
+    <string name="checking">ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ°â€¦</string>
 
     <!-- Language -->
-    <string name="language">Язык</string>
-    <string name="choose_your_language">Выберите язык</string>
-    <string name="language_description">Счёт, обновления матчей и навигация будут отображаться на выбранном вами языке.</string>
-    <string name="device">Устройство</string>
-    <string name="system_default">Системный язык</string>
-    <string name="use_device_language">Использовать язык устройства</string>
-    <string name="all_languages">Все языки</string>
-    <string name="search_languages">Поиск языка</string>
+    <string name="language">Ð¯Ð·Ñ‹Ðº</string>
+    <string name="choose_your_language">Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÑÐ·Ñ‹Ðº</string>
+    <string name="language_description">Ð¡Ñ‡Ñ‘Ñ‚, Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¼Ð°Ñ‚Ñ‡ÐµÐ¹ Ð¸ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ñ Ð±ÑƒÐ´ÑƒÑ‚ Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶Ð°Ñ‚ÑŒÑÑ Ð½Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¼ Ð²Ð°Ð¼Ð¸ ÑÐ·Ñ‹ÐºÐµ.</string>
+    <string name="device">Ð£ÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ð¾</string>
+    <string name="system_default">Ð¡Ð¸ÑÑ‚ÐµÐ¼Ð½Ñ‹Ð¹ ÑÐ·Ñ‹Ðº</string>
+    <string name="use_device_language">Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ ÑÐ·Ñ‹Ðº ÑƒÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ð°</string>
+    <string name="all_languages">Ð’ÑÐµ ÑÐ·Ñ‹ÐºÐ¸</string>
+    <string name="search_languages">ÐŸÐ¾Ð¸ÑÐº ÑÐ·Ñ‹ÐºÐ°</string>
 
     <!-- Navigation -->
-    <string name="home">Главная</string>
-    <string name="matches">Матчи</string>
-    <string name="games">Игры</string>
-    <string name="play">Играть</string>
+    <string name="home">Ð“Ð»Ð°Ð²Ð½Ð°Ñ</string>
+    <string name="matches">ÐœÐ°Ñ‚Ñ‡Ð¸</string>
+    <string name="games">Ð˜Ð³Ñ€Ñ‹</string>
+    <string name="play">Ð˜Ð³Ñ€Ð°Ñ‚ÑŒ</string>
 
     <!-- Match -->
-    <string name="overview">Обзор</string>
-    <string name="timeline">Хронология</string>
-    <string name="stats">Статистика</string>
-    <string name="ai_insight">Анализ ИИ</string>
-    <string name="lineups">Составы</string>
-    <string name="watch">Смотреть</string>
-    <string name="match_details">Детали матча</string>
+    <string name="overview">ÐžÐ±Ð·Ð¾Ñ€</string>
+    <string name="timeline">Ð¥Ñ€Ð¾Ð½Ð¾Ð»Ð¾Ð³Ð¸Ñ</string>
+    <string name="stats">Ð¡Ñ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°</string>
+    <string name="ai_insight">ÐÐ½Ð°Ð»Ð¸Ð· Ð˜Ð˜</string>
+    <string name="lineups">Ð¡Ð¾ÑÑ‚Ð°Ð²Ñ‹</string>
+    <string name="watch">Ð¡Ð¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ</string>
+    <string name="match_details">Ð”ÐµÑ‚Ð°Ð»Ð¸ Ð¼Ð°Ñ‚Ñ‡Ð°</string>
     <string name="match_center">Match Center</string>
-    <string name="tap_full_match_details">Нажмите, чтобы открыть все детали матча</string>
-    <string name="match_stats">Статистика матча</string>
-    <string name="win_probability">Вероятность победы</string>
-    <string name="view_analysis">Смотреть анализ</string>
+    <string name="tap_full_match_details">ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚ÑŒ Ð²ÑÐµ Ð´ÐµÑ‚Ð°Ð»Ð¸ Ð¼Ð°Ñ‚Ñ‡Ð°</string>
+    <string name="match_stats">Ð¡Ñ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ° Ð¼Ð°Ñ‚Ñ‡Ð°</string>
+    <string name="win_probability">Ð’ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð¿Ð¾Ð±ÐµÐ´Ñ‹</string>
+    <string name="view_analysis">Ð¡Ð¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ Ð°Ð½Ð°Ð»Ð¸Ð·</string>
 
-    <string name="referee">Судья</string>
-    <string name="stadium">Стадион</string>
-    <string name="not_listed">Нет данных</string>
+    <string name="referee">Ð¡ÑƒÐ´ÑŒÑ</string>
+    <string name="stadium">Ð¡Ñ‚Ð°Ð´Ð¸Ð¾Ð½</string>
+    <string name="not_listed">ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…</string>
 
-    <string name="key_moments">Ключевые моменты</string>
-    <string name="performance_matrix">Матрица показателей</string>
+    <string name="key_moments">ÐšÐ»ÑŽÑ‡ÐµÐ²Ñ‹Ðµ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚Ñ‹</string>
+    <string name="performance_matrix">ÐœÐ°Ñ‚Ñ€Ð¸Ñ†Ð° Ð¿Ð¾ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÐµÐ¹</string>
 
-    <string name="possession">Владение</string>
-    <string name="shots">Удары</string>
-    <string name="on_goal">В створ</string>
-    <string name="corners">Угловые</string>
-    <string name="fouls">Фолы</string>
-    <string name="yellow_cards">Жёлтые карточки</string>
-    <string name="saves">Сейвы</string>
-    <string name="passes">Передачи</string>
-    <string name="accurate_passes">Точные передачи</string>
-    <string name="total_shots">Всего ударов</string>
-    <string name="shots_on_target">Удары в створ</string>
+    <string name="possession">Ð’Ð»Ð°Ð´ÐµÐ½Ð¸Ðµ</string>
+    <string name="shots">Ð£Ð´Ð°Ñ€Ñ‹</string>
+    <string name="on_goal">Ð’ ÑÑ‚Ð²Ð¾Ñ€</string>
+    <string name="corners">Ð£Ð³Ð»Ð¾Ð²Ñ‹Ðµ</string>
+    <string name="fouls">Ð¤Ð¾Ð»Ñ‹</string>
+    <string name="yellow_cards">Ð–Ñ‘Ð»Ñ‚Ñ‹Ðµ ÐºÐ°Ñ€Ñ‚Ð¾Ñ‡ÐºÐ¸</string>
+    <string name="saves">Ð¡ÐµÐ¹Ð²Ñ‹</string>
+    <string name="passes">ÐŸÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸</string>
+    <string name="accurate_passes">Ð¢Ð¾Ñ‡Ð½Ñ‹Ðµ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸</string>
+    <string name="total_shots">Ð’ÑÐµÐ³Ð¾ ÑƒÐ´Ð°Ñ€Ð¾Ð²</string>
+    <string name="shots_on_target">Ð£Ð´Ð°Ñ€Ñ‹ Ð² ÑÑ‚Ð²Ð¾Ñ€</string>
 
-    <string name="goalio_ai_summary">ИИ-сводка Goalio</string>
-    <string name="auto_generated_match_context">Автоматически сформированный обзор матча</string>
+    <string name="goalio_ai_summary">Ð˜Ð˜-ÑÐ²Ð¾Ð´ÐºÐ° Goalio</string>
+    <string name="auto_generated_match_context">ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸ ÑÑ„Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ð¾Ð±Ð·Ð¾Ñ€ Ð¼Ð°Ñ‚Ñ‡Ð°</string>
 
     <!-- Settings -->
-    <string name="settings">Настройки</string>
-    <string name="settings_subtitle">Профиль, уведомления и настройки приложения</string>
+    <string name="settings">ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸</string>
+    <string name="settings_subtitle">ÐŸÑ€Ð¾Ñ„Ð¸Ð»ÑŒ, ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ Ð¸ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ</string>
 
-    <string name="preferences">Предпочтения</string>
-    <string name="match_notifications">Уведомления о матчах</string>
-    <string name="on">Вкл</string>
-    <string name="off">Выкл</string>
+    <string name="preferences">ÐŸÑ€ÐµÐ´Ð¿Ð¾Ñ‡Ñ‚ÐµÐ½Ð¸Ñ</string>
+    <string name="match_notifications">Ð£Ð²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ Ð¾ Ð¼Ð°Ñ‚Ñ‡Ð°Ñ…</string>
+    <string name="on">Ð’ÐºÐ»</string>
+    <string name="off">Ð’Ñ‹ÐºÐ»</string>
 
-    <string name="favorite_teams">Любимые команды</string>
-    <string name="favorite_players">Любимые игроки</string>
-    <string name="add_teams">Добавить команды</string>
-    <string name="add_players">Добавить игроков</string>
+    <string name="favorite_teams">Ð›ÑŽÐ±Ð¸Ð¼Ñ‹Ðµ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹</string>
+    <string name="favorite_players">Ð›ÑŽÐ±Ð¸Ð¼Ñ‹Ðµ Ð¸Ð³Ñ€Ð¾ÐºÐ¸</string>
+    <string name="add_teams">Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹</string>
+    <string name="add_players">Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð²</string>
 
-    <string name="app">Приложение</string>
-    <string name="privacy_policy">Политика конфиденциальности</string>
-    <string name="version">Версия</string>
+    <string name="app">ÐŸÑ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ</string>
+    <string name="privacy_policy">ÐŸÐ¾Ð»Ð¸Ñ‚Ð¸ÐºÐ° ÐºÐ¾Ð½Ñ„Ð¸Ð´ÐµÐ½Ñ†Ð¸Ð°Ð»ÑŒÐ½Ð¾ÑÑ‚Ð¸</string>
+    <string name="version">Ð’ÐµÑ€ÑÐ¸Ñ</string>
 
     <!-- Profile -->
-    <string name="edit_profile">Редактировать профиль</string>
-    <string name="member_since">Участник с</string>
-    <string name="recently">недавно</string>
-    <string name="level">Уровень</string>
-    <string name="mastery">Мастерство</string>
-    <string name="teams">Команды</string>
-    <string name="players">Игроки</string>
-    <string name="alerts">Уведомления</string>
-    <string name="sign_out">Выйти</string>
+    <string name="edit_profile">Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ</string>
+    <string name="member_since">Ð£Ñ‡Ð°ÑÑ‚Ð½Ð¸Ðº Ñ</string>
+    <string name="recently">Ð½ÐµÐ´Ð°Ð²Ð½Ð¾</string>
+    <string name="level">Ð£Ñ€Ð¾Ð²ÐµÐ½ÑŒ</string>
+    <string name="mastery">ÐœÐ°ÑÑ‚ÐµÑ€ÑÑ‚Ð²Ð¾</string>
+    <string name="teams">ÐšÐ¾Ð¼Ð°Ð½Ð´Ñ‹</string>
+    <string name="players">Ð˜Ð³Ñ€Ð¾ÐºÐ¸</string>
+    <string name="alerts">Ð£Ð²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ</string>
+    <string name="sign_out">Ð’Ñ‹Ð¹Ñ‚Ð¸</string>
 
-    <string name="full_name">Полное имя</string>
-    <string name="full_name_hint">например, Alex Morgan</string>
+    <string name="full_name">ÐŸÐ¾Ð»Ð½Ð¾Ðµ Ð¸Ð¼Ñ</string>
+    <string name="full_name_hint">Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, Alex Morgan</string>
 
-    <string name="pick_username">Придумайте имя пользователя</string>
-    <string name="username_hint">например, GoalGetter99</string>
+    <string name="pick_username">ÐŸÑ€Ð¸Ð´ÑƒÐ¼Ð°Ð¹Ñ‚Ðµ Ð¸Ð¼Ñ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ</string>
+    <string name="username_hint">Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, GoalGetter99</string>
 
-    <string name="search_teams">Поиск команд</string>
-    <string name="search_players">Поиск игроков</string>
+    <string name="search_teams">ÐŸÐ¾Ð¸ÑÐº ÐºÐ¾Ð¼Ð°Ð½Ð´</string>
+    <string name="search_players">ÐŸÐ¾Ð¸ÑÐº Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð²</string>
 
-    <string name="leave_account">Выйти из аккаунта %1$s на этом устройстве</string>
-    <string name="update_display_name">Обновите отображаемое имя в %1$s.</string>
+    <string name="leave_account">Ð’Ñ‹Ð¹Ñ‚Ð¸ Ð¸Ð· Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚Ð° %1$s Ð½Ð° ÑÑ‚Ð¾Ð¼ ÑƒÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ðµ</string>
+    <string name="update_display_name">ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚Ðµ Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶Ð°ÐµÐ¼Ð¾Ðµ Ð¸Ð¼Ñ Ð² %1$s.</string>
 
     <!-- World Cup -->
-    <string name="world_cup">Чемпионат мира</string>
-    <string name="north_america_2026">Северная Америка 2026</string>
+    <string name="world_cup">Ð§ÐµÐ¼Ð¿Ð¸Ð¾Ð½Ð°Ñ‚ Ð¼Ð¸Ñ€Ð°</string>
+    <string name="north_america_2026">Ð¡ÐµÐ²ÐµÑ€Ð½Ð°Ñ ÐÐ¼ÐµÑ€Ð¸ÐºÐ° 2026</string>
 
-    <string name="group">Группа</string>
-    <string name="group_a">Группа A</string>
-    <string name="groups">Группы</string>
+    <string name="group">Ð“Ñ€ÑƒÐ¿Ð¿Ð°</string>
+    <string name="group_a">Ð“Ñ€ÑƒÐ¿Ð¿Ð° A</string>
+    <string name="groups">Ð“Ñ€ÑƒÐ¿Ð¿Ñ‹</string>
 
-    <string name="group_a_standings_pending">Таблица группы A появится, когда ФИФА опубликует актуальное положение команд.</string>
+    <string name="group_a_standings_pending">Ð¢Ð°Ð±Ð»Ð¸Ñ†Ð° Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ A Ð¿Ð¾ÑÐ²Ð¸Ñ‚ÑÑ, ÐºÐ¾Ð³Ð´Ð° Ð¤Ð˜Ð¤Ð Ð¾Ð¿ÑƒÐ±Ð»Ð¸ÐºÑƒÐµÑ‚ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ð¾Ðµ Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð¼Ð°Ð½Ð´.</string>
 
-    <string name="group_tables">Турнирные таблицы групп</string>
-    <string name="knockout_path">Путь на выбывание</string>
-    <string name="world_cup_matches">Матчи чемпионата мира</string>
-    <string name="world_cup_library">Медиатека ЧМ</string>
+    <string name="group_tables">Ð¢ÑƒÑ€Ð½Ð¸Ñ€Ð½Ñ‹Ðµ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð³Ñ€ÑƒÐ¿Ð¿</string>
+    <string name="knockout_path">ÐŸÑƒÑ‚ÑŒ Ð½Ð° Ð²Ñ‹Ð±Ñ‹Ð²Ð°Ð½Ð¸Ðµ</string>
+    <string name="world_cup_matches">ÐœÐ°Ñ‚Ñ‡Ð¸ Ñ‡ÐµÐ¼Ð¿Ð¸Ð¾Ð½Ð°Ñ‚Ð° Ð¼Ð¸Ñ€Ð°</string>
+    <string name="world_cup_library">ÐœÐµÐ´Ð¸Ð°Ñ‚ÐµÐºÐ° Ð§Ðœ</string>
 
-    <string name="collapse">Свернуть</string>
-    <string name="expand">Развернуть</string>
-    <string name="view_all">Показать все</string>
-    <string name="choose_date">Выбрать дату</string>
-    <string name="min_read">мин. чтения</string>
-    <string name="read_on_fifa">Читать на FIFA.com</string>
+    <string name="collapse">Ð¡Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ</string>
+    <string name="expand">Ð Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ</string>
+    <string name="view_all">ÐŸÐ¾ÐºÐ°Ð·Ð°Ñ‚ÑŒ Ð²ÑÐµ</string>
+    <string name="choose_date">Ð’Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð´Ð°Ñ‚Ñƒ</string>
+    <string name="min_read">Ð¼Ð¸Ð½. Ñ‡Ñ‚ÐµÐ½Ð¸Ñ</string>
+    <string name="read_on_fifa">Ð§Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð½Ð° FIFA.com</string>
 
     <!-- Standings -->
-    <string name="rank">Место</string>
-    <string name="team">Команда</string>
-    <string name="stage">Стадия</string>
+    <string name="rank">ÐœÐµÑÑ‚Ð¾</string>
+    <string name="team">ÐšÐ¾Ð¼Ð°Ð½Ð´Ð°</string>
+    <string name="stage">Ð¡Ñ‚Ð°Ð´Ð¸Ñ</string>
 
-    <string name="played_short">И</string>
-    <string name="won_short">В</string>
-    <string name="drawn_short">Н</string>
-    <string name="lost_short">П</string>
-    <string name="goal_difference_short">РМ</string>
-    <string name="points_short">О</string>
+    <string name="played_short">Ð˜</string>
+    <string name="won_short">Ð’</string>
+    <string name="drawn_short">Ð</string>
+    <string name="lost_short">ÐŸ</string>
+    <string name="goal_difference_short">Ð Ðœ</string>
+    <string name="points_short">Ðž</string>
 
     <!-- Home -->
-    <string name="live_action">В прямом эфире</string>
-    <string name="next_seven_days">Ближайшие 7 дней</string>
-    <string name="upcoming_today">Сегодня</string>
+    <string name="live_action">Ð’ Ð¿Ñ€ÑÐ¼Ð¾Ð¼ ÑÑ„Ð¸Ñ€Ðµ</string>
+    <string name="next_seven_days">Ð‘Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐ¸Ðµ 7 Ð´Ð½ÐµÐ¹</string>
+    <string name="upcoming_today">Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ</string>
 
     <!-- Lineups -->
-    <string name="player_lineups">Составы команд</string>
-    <string name="lineup_subtitle">Стартовый состав, схема и запасные</string>
-    <string name="starting_xi">Стартовый состав</string>
-    <string name="bench">Запасные</string>
-    <string name="formation">Схема игры</string>
-    <string name="home_side">Хозяева</string>
-    <string name="away_side">Гости</string>
+    <string name="player_lineups">Ð¡Ð¾ÑÑ‚Ð°Ð²Ñ‹ ÐºÐ¾Ð¼Ð°Ð½Ð´</string>
+    <string name="lineup_subtitle">Ð¡Ñ‚Ð°Ñ€Ñ‚Ð¾Ð²Ñ‹Ð¹ ÑÐ¾ÑÑ‚Ð°Ð², ÑÑ…ÐµÐ¼Ð° Ð¸ Ð·Ð°Ð¿Ð°ÑÐ½Ñ‹Ðµ</string>
+    <string name="starting_xi">Ð¡Ñ‚Ð°Ñ€Ñ‚Ð¾Ð²Ñ‹Ð¹ ÑÐ¾ÑÑ‚Ð°Ð²</string>
+    <string name="bench">Ð—Ð°Ð¿Ð°ÑÐ½Ñ‹Ðµ</string>
+    <string name="formation">Ð¡Ñ…ÐµÐ¼Ð° Ð¸Ð³Ñ€Ñ‹</string>
+    <string name="home_side">Ð¥Ð¾Ð·ÑÐµÐ²Ð°</string>
+    <string name="away_side">Ð“Ð¾ÑÑ‚Ð¸</string>
 
-    <string name="no_bench_listed">Список запасных недоступен</string>
-    <string name="unavailable">Недоступно</string>
+    <string name="no_bench_listed">Ð¡Ð¿Ð¸ÑÐ¾Ðº Ð·Ð°Ð¿Ð°ÑÐ½Ñ‹Ñ… Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½</string>
+    <string name="unavailable">ÐÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾</string>
 
     <!-- Watch -->
-    <string name="watch_highlights">Видео и обзоры</string>
-    <string name="stream">Трансляция</string>
-    <string name="highlights">Обзоры</string>
+    <string name="watch_highlights">Ð’Ð¸Ð´ÐµÐ¾ Ð¸ Ð¾Ð±Ð·Ð¾Ñ€Ñ‹</string>
+    <string name="stream">Ð¢Ñ€Ð°Ð½ÑÐ»ÑÑ†Ð¸Ñ</string>
+    <string name="highlights">ÐžÐ±Ð·Ð¾Ñ€Ñ‹</string>
 
     <!-- Football Five -->
     <string name="football_five">The Football Five</string>
-    <string name="football_five_subtitle">5 вопросов. 1 серия правильных ответов. Поднимайтесь в таблице.</string>
+    <string name="football_five_subtitle">5 Ð²Ð¾Ð¿Ñ€Ð¾ÑÐ¾Ð². 1 ÑÐµÑ€Ð¸Ñ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ñ‹Ñ… Ð¾Ñ‚Ð²ÐµÑ‚Ð¾Ð². ÐŸÐ¾Ð´Ð½Ð¸Ð¼Ð°Ð¹Ñ‚ÐµÑÑŒ Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ðµ.</string>
 
-    <string name="test_football_knowledge">Проверьте свои знания о футболе</string>
-    <string name="quiz_rules">5 вопросов · по 15 секунд каждый\n+10 XP за верный ответ · −5 XP за неверный</string>
+    <string name="test_football_knowledge">ÐŸÑ€Ð¾Ð²ÐµÑ€ÑŒÑ‚Ðµ ÑÐ²Ð¾Ð¸ Ð·Ð½Ð°Ð½Ð¸Ñ Ð¾ Ñ„ÑƒÑ‚Ð±Ð¾Ð»Ðµ</string>
+    <string name="quiz_rules">5 Ð²Ð¾Ð¿Ñ€Ð¾ÑÐ¾Ð² Â· Ð¿Ð¾ 15 ÑÐµÐºÑƒÐ½Ð´ ÐºÐ°Ð¶Ð´Ñ‹Ð¹\n+10 XP Ð·Ð° Ð²ÐµÑ€Ð½Ñ‹Ð¹ Ð¾Ñ‚Ð²ÐµÑ‚ Â· âˆ’5 XP Ð·Ð° Ð½ÐµÐ²ÐµÑ€Ð½Ñ‹Ð¹</string>
 
-    <string name="play_now">Играть сейчас</string>
-    <string name="leaderboard">Таблица лидеров</string>
-    <string name="top_ten">Топ-10</string>
-    <string name="no_leaderboard">Пока нет данных таблицы лидеров. Сыграйте, чтобы попасть в рейтинг!</string>
-    <string name="you">Вы</string>
+    <string name="play_now">Ð˜Ð³Ñ€Ð°Ñ‚ÑŒ ÑÐµÐ¹Ñ‡Ð°Ñ</string>
+    <string name="leaderboard">Ð¢Ð°Ð±Ð»Ð¸Ñ†Ð° Ð»Ð¸Ð´ÐµÑ€Ð¾Ð²</string>
+    <string name="top_ten">Ð¢Ð¾Ð¿-10</string>
+    <string name="no_leaderboard">ÐŸÐ¾ÐºÐ° Ð½ÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð»Ð¸Ð´ÐµÑ€Ð¾Ð². Ð¡Ñ‹Ð³Ñ€Ð°Ð¹Ñ‚Ðµ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¿Ð¾Ð¿Ð°ÑÑ‚ÑŒ Ð² Ñ€ÐµÐ¹Ñ‚Ð¸Ð½Ð³!</string>
+    <string name="you">Ð’Ñ‹</string>
 
     <!-- Onboarding -->
-    <string name="your_football_your_way">Ваш футбол. Как удобно вам.</string>
-    <string name="swipe_to_explore">Проведите пальцем, чтобы узнать больше</string>
+    <string name="your_football_your_way">Ð’Ð°Ñˆ Ñ„ÑƒÑ‚Ð±Ð¾Ð». ÐšÐ°Ðº ÑƒÐ´Ð¾Ð±Ð½Ð¾ Ð²Ð°Ð¼.</string>
+    <string name="swipe_to_explore">ÐŸÑ€Ð¾Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¿Ð°Ð»ÑŒÑ†ÐµÐ¼, Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ Ð±Ð¾Ð»ÑŒÑˆÐµ</string>
 
-    <string name="built_for_matchday">Создано для дня матча</string>
-    <string name="feature">Функция</string>
+    <string name="built_for_matchday">Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¾ Ð´Ð»Ñ Ð´Ð½Ñ Ð¼Ð°Ñ‚Ñ‡Ð°</string>
+    <string name="feature">Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ</string>
 
-    <string name="never_miss_kick">Не пропустите ни одного матча</string>
-    <string name="never_miss_kick_subtitle">Следите за игрой в реальном времени: живой счёт, статистика и мгновенные уведомления о матчах.</string>
+    <string name="never_miss_kick">ÐÐµ Ð¿Ñ€Ð¾Ð¿ÑƒÑÑ‚Ð¸Ñ‚Ðµ Ð½Ð¸ Ð¾Ð´Ð½Ð¾Ð³Ð¾ Ð¼Ð°Ñ‚Ñ‡Ð°</string>
+    <string name="never_miss_kick_subtitle">Ð¡Ð»ÐµÐ´Ð¸Ñ‚Ðµ Ð·Ð° Ð¸Ð³Ñ€Ð¾Ð¹ Ð² Ñ€ÐµÐ°Ð»ÑŒÐ½Ð¾Ð¼ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸: Ð¶Ð¸Ð²Ð¾Ð¹ ÑÑ‡Ñ‘Ñ‚, ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ° Ð¸ Ð¼Ð³Ð½Ð¾Ð²ÐµÐ½Ð½Ñ‹Ðµ ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ Ð¾ Ð¼Ð°Ñ‚Ñ‡Ð°Ñ….</string>
 
-    <string name="live_match_center">Матч-центр в реальном времени</string>
-    <string name="deep_stats">Подробная статистика</string>
-    <string name="custom_alerts">Персональные уведомления</string>
+    <string name="live_match_center">ÐœÐ°Ñ‚Ñ‡-Ñ†ÐµÐ½Ñ‚Ñ€ Ð² Ñ€ÐµÐ°Ð»ÑŒÐ½Ð¾Ð¼ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸</string>
+    <string name="deep_stats">ÐŸÐ¾Ð´Ñ€Ð¾Ð±Ð½Ð°Ñ ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ°</string>
+    <string name="custom_alerts">ÐŸÐµÑ€ÑÐ¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ</string>
 
-    <string name="track_tournaments">Следите за каждым турниром</string>
-    <string name="track_tournaments_subtitle">Следите за расписанием, турнирными таблицами и деталями матчей чемпионата мира и крупнейших лиг.</string>
+    <string name="track_tournaments">Ð¡Ð»ÐµÐ´Ð¸Ñ‚Ðµ Ð·Ð° ÐºÐ°Ð¶Ð´Ñ‹Ð¼ Ñ‚ÑƒÑ€Ð½Ð¸Ñ€Ð¾Ð¼</string>
+    <string name="track_tournaments_subtitle">Ð¡Ð»ÐµÐ´Ð¸Ñ‚Ðµ Ð·Ð° Ñ€Ð°ÑÐ¿Ð¸ÑÐ°Ð½Ð¸ÐµÐ¼, Ñ‚ÑƒÑ€Ð½Ð¸Ñ€Ð½Ñ‹Ð¼Ð¸ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ð°Ð¼Ð¸ Ð¸ Ð´ÐµÑ‚Ð°Ð»ÑÐ¼Ð¸ Ð¼Ð°Ñ‚Ñ‡ÐµÐ¹ Ñ‡ÐµÐ¼Ð¿Ð¸Ð¾Ð½Ð°Ñ‚Ð° Ð¼Ð¸Ñ€Ð° Ð¸ ÐºÑ€ÑƒÐ¿Ð½ÐµÐ¹ÑˆÐ¸Ñ… Ð»Ð¸Ð³.</string>
 
-    <string name="fixtures">Расписание матчей</string>
+    <string name="fixtures">Ð Ð°ÑÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¼Ð°Ñ‚Ñ‡ÐµÐ¹</string>
 
-    <string name="build_dashboard">Настройте свою ленту</string>
-    <string name="build_dashboard_subtitle">Закрепите любимые команды и игроков, чтобы главная страница открывалась с важного для вас футбола.</string>
+    <string name="build_dashboard">ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹Ñ‚Ðµ ÑÐ²Ð¾ÑŽ Ð»ÐµÐ½Ñ‚Ñƒ</string>
+    <string name="build_dashboard_subtitle">Ð—Ð°ÐºÑ€ÐµÐ¿Ð¸Ñ‚Ðµ Ð»ÑŽÐ±Ð¸Ð¼Ñ‹Ðµ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ Ð¸ Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð², Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð³Ð»Ð°Ð²Ð½Ð°Ñ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ð° Ð¾Ñ‚ÐºÑ€Ñ‹Ð²Ð°Ð»Ð°ÑÑŒ Ñ Ð²Ð°Ð¶Ð½Ð¾Ð³Ð¾ Ð´Ð»Ñ Ð²Ð°Ñ Ñ„ÑƒÑ‚Ð±Ð¾Ð»Ð°.</string>
 
-    <string name="favorites">Избранное</string>
-    <string name="player_heroes">Ваши футбольные кумиры</string>
-    <string name="smart_feed">Умная лента</string>
+    <string name="favorites">Ð˜Ð·Ð±Ñ€Ð°Ð½Ð½Ð¾Ðµ</string>
+    <string name="player_heroes">Ð’Ð°ÑˆÐ¸ Ñ„ÑƒÑ‚Ð±Ð¾Ð»ÑŒÐ½Ñ‹Ðµ ÐºÑƒÐ¼Ð¸Ñ€Ñ‹</string>
+    <string name="smart_feed">Ð£Ð¼Ð½Ð°Ñ Ð»ÐµÐ½Ñ‚Ð°</string>
 
     <!-- Profile Setup -->
-    <string name="build_your_profile">Создайте профиль</string>
-    <string name="profile_title">Настройте %1$s под себя</string>
-    <string name="profile_intro">Выберите свою личность, команды и игроков. Вы сможете изменить их в любое время.</string>
+    <string name="build_your_profile">Ð¡Ð¾Ð·Ð´Ð°Ð¹Ñ‚Ðµ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ</string>
+    <string name="profile_title">ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹Ñ‚Ðµ %1$s Ð¿Ð¾Ð´ ÑÐµÐ±Ñ</string>
+    <string name="profile_intro">Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÑÐ²Ð¾ÑŽ Ð»Ð¸Ñ‡Ð½Ð¾ÑÑ‚ÑŒ, ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ Ð¸ Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð². Ð’Ñ‹ ÑÐ¼Ð¾Ð¶ÐµÑ‚Ðµ Ð¸Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð¸Ñ… Ð² Ð»ÑŽÐ±Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ.</string>
 
-    <string name="your_identity">Ваш профиль</string>
-    <string name="identity_subtitle">Создайте новый профиль или безопасно восстановите существующий.</string>
+    <string name="your_identity">Ð’Ð°Ñˆ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ</string>
+    <string name="identity_subtitle">Ð¡Ð¾Ð·Ð´Ð°Ð¹Ñ‚Ðµ Ð½Ð¾Ð²Ñ‹Ð¹ Ð¿Ñ€Ð¾Ñ„Ð¸Ð»ÑŒ Ð¸Ð»Ð¸ Ð±ÐµÐ·Ð¾Ð¿Ð°ÑÐ½Ð¾ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¹.</string>
 
-    <string name="favorite_teams_subtitle">Сформируйте ленту вокруг клубов и сборных, за которыми вы следите.</string>
-    <string name="favorite_players_subtitle">Закрепите игроков, матчи которых вы не хотите пропускать.</string>
+    <string name="favorite_teams_subtitle">Ð¡Ñ„Ð¾Ñ€Ð¼Ð¸Ñ€ÑƒÐ¹Ñ‚Ðµ Ð»ÐµÐ½Ñ‚Ñƒ Ð²Ð¾ÐºÑ€ÑƒÐ³ ÐºÐ»ÑƒÐ±Ð¾Ð² Ð¸ ÑÐ±Ð¾Ñ€Ð½Ñ‹Ñ…, Ð·Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¼Ð¸ Ð²Ñ‹ ÑÐ»ÐµÐ´Ð¸Ñ‚Ðµ.</string>
+    <string name="favorite_players_subtitle">Ð—Ð°ÐºÑ€ÐµÐ¿Ð¸Ñ‚Ðµ Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð², Ð¼Ð°Ñ‚Ñ‡Ð¸ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… Ð²Ñ‹ Ð½Ðµ Ñ…Ð¾Ñ‚Ð¸Ñ‚Ðµ Ð¿Ñ€Ð¾Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ.</string>
 
-    <string name="loading_teams_players">Загрузка команд и игроков…</string>
-    <string name="retry_favorites">Повторить загрузку избранного</string>
+    <string name="loading_teams_players">Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° ÐºÐ¾Ð¼Ð°Ð½Ð´ Ð¸ Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð²â€¦</string>
+    <string name="retry_favorites">ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð¸Ñ‚ÑŒ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ Ð¸Ð·Ð±Ñ€Ð°Ð½Ð½Ð¾Ð³Ð¾</string>
 
-    <string name="loading_teams">Загрузка команд…</string>
-    <string name="load_more_teams">Загрузить ещё 6 команд</string>
+    <string name="loading_teams">Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° ÐºÐ¾Ð¼Ð°Ð½Ð´â€¦</string>
+    <string name="load_more_teams">Ð—Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ ÐµÑ‰Ñ‘ 6 ÐºÐ¾Ð¼Ð°Ð½Ð´</string>
 
-    <string name="loading_players">Загрузка игроков…</string>
-    <string name="load_more_players">Загрузить ещё 6 игроков</string>
+    <string name="loading_players">Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð²â€¦</string>
+    <string name="load_more_players">Ð—Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ ÐµÑ‰Ñ‘ 6 Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð²</string>
 
-    <string name="selected">выбрано</string>
-    <string name="load_six_more">Загрузить ещё 6</string>
-    <string name="maximum_six_selections">Максимум 6 вариантов.</string>
+    <string name="selected">Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð¾</string>
+    <string name="load_six_more">Ð—Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ ÐµÑ‰Ñ‘ 6</string>
+    <string name="maximum_six_selections">ÐœÐ°ÐºÑÐ¸Ð¼ÑƒÐ¼ 6 Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ð¾Ð².</string>
 
     <!-- Authentication -->
-    <string name="signing_in">Выполняется вход…</string>
-    <string name="sign_in">Войти</string>
-    <string name="continue_label">Продолжить</string>
+    <string name="signing_in">Ð’Ñ‹Ð¿Ð¾Ð»Ð½ÑÐµÑ‚ÑÑ Ð²Ñ…Ð¾Ð´â€¦</string>
+    <string name="sign_in">Ð’Ð¾Ð¹Ñ‚Ð¸</string>
+    <string name="continue_label">ÐŸÑ€Ð¾Ð´Ð¾Ð»Ð¶Ð¸Ñ‚ÑŒ</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_name">Обновления матчей</string>
-    <string name="notification_channel_description">Напоминания о начале, счёт в реальном времени и уведомления о голах.</string>
-    <string name="notification_next_match">Следующий матч</string>
-    <string name="notification_kickoff">Начало матча</string>
-    <string name="notification_view_match">Смотреть матч</string>
-    <string name="notification_match_reminder">Напоминание о матче</string>
-    <string name="notification_upcoming_match">Предстоящий матч</string>
-    <string name="notification_match_in_24_hours">Матч через 24 часа</string>
-    <string name="notification_match_in_1_hour">Матч через 1 час</string>
-    <string name="notification_kickoff_now">Матч начинается</string>
+    <string name="notification_channel_name">ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¼Ð°Ñ‚Ñ‡ÐµÐ¹</string>
+    <string name="notification_channel_description">ÐÐ°Ð¿Ð¾Ð¼Ð¸Ð½Ð°Ð½Ð¸Ñ Ð¾ Ð½Ð°Ñ‡Ð°Ð»Ðµ, ÑÑ‡Ñ‘Ñ‚ Ð² Ñ€ÐµÐ°Ð»ÑŒÐ½Ð¾Ð¼ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð¸ ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ Ð¾ Ð³Ð¾Ð»Ð°Ñ….</string>
+    <string name="notification_next_match">Ð¡Ð»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ð¹ Ð¼Ð°Ñ‚Ñ‡</string>
+    <string name="notification_kickoff">ÐÐ°Ñ‡Ð°Ð»Ð¾ Ð¼Ð°Ñ‚Ñ‡Ð°</string>
+    <string name="notification_view_match">Ð¡Ð¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ Ð¼Ð°Ñ‚Ñ‡</string>
+    <string name="notification_match_reminder">ÐÐ°Ð¿Ð¾Ð¼Ð¸Ð½Ð°Ð½Ð¸Ðµ Ð¾ Ð¼Ð°Ñ‚Ñ‡Ðµ</string>
+    <string name="notification_upcoming_match">ÐŸÑ€ÐµÐ´ÑÑ‚Ð¾ÑÑ‰Ð¸Ð¹ Ð¼Ð°Ñ‚Ñ‡</string>
+    <string name="notification_match_in_24_hours">ÐœÐ°Ñ‚Ñ‡ Ñ‡ÐµÑ€ÐµÐ· 24 Ñ‡Ð°ÑÐ°</string>
+    <string name="notification_match_in_1_hour">ÐœÐ°Ñ‚Ñ‡ Ñ‡ÐµÑ€ÐµÐ· 1 Ñ‡Ð°Ñ</string>
+    <string name="notification_kickoff_now">ÐœÐ°Ñ‚Ñ‡ Ð½Ð°Ñ‡Ð¸Ð½Ð°ÐµÑ‚ÑÑ</string>
 
-    <string name="identity_add_name_later">Добавьте имя сейчас. Имя пользователя можно выбрать позже в разделе «Игры».</string>
-    <string name="teams_selected_count">Выбрано команд: %1$d/%2$d</string>
-    <string name="players_selected_count">Выбрано игроков: %1$d/%2$d</string>
-    <string name="pin_to_dashboard">+ ЗАКРЕПИТЬ НА ПАНЕЛИ</string>
-    <string name="pinned">ЗАКРЕПЛЕНО</string>
-    <string name="all_filter">Все</string>
-    <string name="full_name_validation">Введите имя и фамилию; каждое должно содержать не менее 2 букв.</string>
-    <string name="select_up_to_teams">Можно выбрать до %1$d команд.</string>
-    <string name="select_up_to_players">Можно выбрать до %1$d игроков.</string>
+    <string name="identity_add_name_later">Ð”Ð¾Ð±Ð°Ð²ÑŒÑ‚Ðµ Ð¸Ð¼Ñ ÑÐµÐ¹Ñ‡Ð°Ñ. Ð˜Ð¼Ñ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ Ð¼Ð¾Ð¶Ð½Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¶Ðµ Ð² Ñ€Ð°Ð·Ð´ÐµÐ»Ðµ Â«Ð˜Ð³Ñ€Ñ‹Â».</string>
+    <string name="teams_selected_count">Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð¾ ÐºÐ¾Ð¼Ð°Ð½Ð´: %1$d/%2$d</string>
+    <string name="players_selected_count">Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð¾ Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð²: %1$d/%2$d</string>
+    <string name="pin_to_dashboard">+ Ð—ÐÐšÐ Ð•ÐŸÐ˜Ð¢Ð¬ ÐÐ ÐŸÐÐÐ•Ð›Ð˜</string>
+    <string name="pinned">Ð—ÐÐšÐ Ð•ÐŸÐ›Ð•ÐÐž</string>
+    <string name="all_filter">Ð’ÑÐµ</string>
+    <string name="full_name_validation">Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¸Ð¼Ñ Ð¸ Ñ„Ð°Ð¼Ð¸Ð»Ð¸ÑŽ; ÐºÐ°Ð¶Ð´Ð¾Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð¾ ÑÐ¾Ð´ÐµÑ€Ð¶Ð°Ñ‚ÑŒ Ð½Ðµ Ð¼ÐµÐ½ÐµÐµ 2 Ð±ÑƒÐºÐ².</string>
+    <string name="select_up_to_teams">ÐœÐ¾Ð¶Ð½Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð´Ð¾ %1$d ÐºÐ¾Ð¼Ð°Ð½Ð´.</string>
+    <string name="select_up_to_players">ÐœÐ¾Ð¶Ð½Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð´Ð¾ %1$d Ð¸Ð³Ñ€Ð¾ÐºÐ¾Ð².</string>
 </resources>
+

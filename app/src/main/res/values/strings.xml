@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Goalio: Live Football Scores</string>
-    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+    <string name="onesignal_app_id" translatable="false">014b1cc7-22ca-494b-a8f0-b130b68cf140</string>
 
     <!-- General -->
     <string name="done">Done</string>

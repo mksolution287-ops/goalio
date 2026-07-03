@@ -1,260 +1,261 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Goalio：足球实时比分</string>
-    <string name="onesignal_app_id" translatable="false">4159dbb2-0f8d-4da3-945d-dc590d14f729</string>
+    <string name="app_name">Goalioï¼šè¶³çƒå®žæ—¶æ¯”åˆ†</string>
+    <string name="onesignal_app_id" translatable="false">014b1cc7-22ca-494b-a8f0-b130b68cf140</string>
 
-    <!-- 通用 -->
-    <string name="done">完成</string>
-    <string name="save">保存</string>
-    <string name="cancel">取消</string>
-    <string name="back">返回</string>
-    <string name="next">下一步</string>
-    <string name="skip">跳过</string>
-    <string name="open">打开</string>
-    <string name="edit">编辑</string>
-    <string name="search">搜索</string>
-    <string name="loading">加载中…</string>
-    <string name="saving">保存中…</string>
-    <string name="checking">检查中…</string>
+    <!-- é€šç”¨ -->
+    <string name="done">å®Œæˆ</string>
+    <string name="save">ä¿å­˜</string>
+    <string name="cancel">å–æ¶ˆ</string>
+    <string name="back">è¿”å›ž</string>
+    <string name="next">ä¸‹ä¸€æ­¥</string>
+    <string name="skip">è·³è¿‡</string>
+    <string name="open">æ‰“å¼€</string>
+    <string name="edit">ç¼–è¾‘</string>
+    <string name="search">æœç´¢</string>
+    <string name="loading">åŠ è½½ä¸­â€¦</string>
+    <string name="saving">ä¿å­˜ä¸­â€¦</string>
+    <string name="checking">æ£€æŸ¥ä¸­â€¦</string>
 
-    <!-- 语言 -->
-    <string name="language">语言</string>
-    <string name="choose_your_language">选择语言</string>
-    <string name="language_description">比分、比赛动态和导航菜单将采用您首选的语言。</string>
-    <string name="device">设备</string>
-    <string name="system_default">系统默认</string>
-    <string name="use_device_language">使用设备语言</string>
-    <string name="all_languages">所有语言</string>
-    <string name="search_languages">搜索语言</string>
+    <!-- è¯­è¨€ -->
+    <string name="language">è¯­è¨€</string>
+    <string name="choose_your_language">é€‰æ‹©è¯­è¨€</string>
+    <string name="language_description">æ¯”åˆ†ã€æ¯”èµ›åŠ¨æ€å’Œå¯¼èˆªèœå•å°†é‡‡ç”¨æ‚¨é¦–é€‰çš„è¯­è¨€ã€‚</string>
+    <string name="device">è®¾å¤‡</string>
+    <string name="system_default">ç³»ç»Ÿé»˜è®¤</string>
+    <string name="use_device_language">ä½¿ç”¨è®¾å¤‡è¯­è¨€</string>
+    <string name="all_languages">æ‰€æœ‰è¯­è¨€</string>
+    <string name="search_languages">æœç´¢è¯­è¨€</string>
 
-    <!-- 导航 -->
-    <string name="home">首页</string>
-    <string name="matches">比赛</string>
-    <string name="games">游戏</string>
-    <string name="play">开始</string>
+    <!-- å¯¼èˆª -->
+    <string name="home">é¦–é¡µ</string>
+    <string name="matches">æ¯”èµ›</string>
+    <string name="games">æ¸¸æˆ</string>
+    <string name="play">å¼€å§‹</string>
 
-    <!-- 比赛详情 -->
-    <string name="overview">概览</string>
-    <string name="timeline">时间轴</string>
-    <string name="stats">数据</string>
-    <string name="ai_insight">AI 分析</string>
-    <string name="lineups">阵容</string>
-    <string name="watch">观看</string>
-    <string name="match_details">比赛详情</string>
-    <string name="match_center">比赛中心</string>
-    <string name="tap_full_match_details">点击查看完整比赛详情</string>
-    <string name="match_stats">比赛数据</string>
-    <string name="win_probability">获胜概率</string>
-    <string name="view_analysis">查看分析</string>
+    <!-- æ¯”èµ›è¯¦æƒ… -->
+    <string name="overview">æ¦‚è§ˆ</string>
+    <string name="timeline">æ—¶é—´è½´</string>
+    <string name="stats">æ•°æ®</string>
+    <string name="ai_insight">AI åˆ†æž</string>
+    <string name="lineups">é˜µå®¹</string>
+    <string name="watch">è§‚çœ‹</string>
+    <string name="match_details">æ¯”èµ›è¯¦æƒ…</string>
+    <string name="match_center">æ¯”èµ›ä¸­å¿ƒ</string>
+    <string name="tap_full_match_details">ç‚¹å‡»æŸ¥çœ‹å®Œæ•´æ¯”èµ›è¯¦æƒ…</string>
+    <string name="match_stats">æ¯”èµ›æ•°æ®</string>
+    <string name="win_probability">èŽ·èƒœæ¦‚çŽ‡</string>
+    <string name="view_analysis">æŸ¥çœ‹åˆ†æž</string>
 
-    <string name="referee">裁判</string>
-    <string name="stadium">球场</string>
-    <string name="not_listed">未列出</string>
+    <string name="referee">è£åˆ¤</string>
+    <string name="stadium">çƒåœº</string>
+    <string name="not_listed">æœªåˆ—å‡º</string>
 
-    <string name="key_moments">关键时刻</string>
-    <string name="performance_matrix">表现矩阵</string>
+    <string name="key_moments">å…³é”®æ—¶åˆ»</string>
+    <string name="performance_matrix">è¡¨çŽ°çŸ©é˜µ</string>
 
-    <!-- 足球统计数据 -->
-    <string name="possession">控球率</string>
-    <string name="shots">射门</string>
-    <string name="on_goal">射正</string>
-    <string name="corners">角球</string>
-    <string name="fouls">犯规</string>
-    <string name="yellow_cards">黄牌</string>
-    <string name="saves">扑救</string>
-    <string name="passes">传球</string>
-    <string name="accurate_passes">精准传球</string>
-    <string name="total_shots">总射门数</string>
-    <string name="shots_on_target">射正次数</string>
+    <!-- è¶³çƒç»Ÿè®¡æ•°æ® -->
+    <string name="possession">æŽ§çƒçŽ‡</string>
+    <string name="shots">å°„é—¨</string>
+    <string name="on_goal">å°„æ­£</string>
+    <string name="corners">è§’çƒ</string>
+    <string name="fouls">çŠ¯è§„</string>
+    <string name="yellow_cards">é»„ç‰Œ</string>
+    <string name="saves">æ‰‘æ•‘</string>
+    <string name="passes">ä¼ çƒ</string>
+    <string name="accurate_passes">ç²¾å‡†ä¼ çƒ</string>
+    <string name="total_shots">æ€»å°„é—¨æ•°</string>
+    <string name="shots_on_target">å°„æ­£æ¬¡æ•°</string>
 
-    <string name="goalio_ai_summary">Goalio AI 总结</string>
-    <string name="auto_generated_match_context">自动生成的比赛分析内容</string>
+    <string name="goalio_ai_summary">Goalio AI æ€»ç»“</string>
+    <string name="auto_generated_match_context">è‡ªåŠ¨ç”Ÿæˆçš„æ¯”èµ›åˆ†æžå†…å®¹</string>
 
-    <!-- 设置 -->
-    <string name="settings">设置</string>
-    <string name="settings_subtitle">个人资料、提醒和应用控制</string>
+    <!-- è®¾ç½® -->
+    <string name="settings">è®¾ç½®</string>
+    <string name="settings_subtitle">ä¸ªäººèµ„æ–™ã€æé†’å’Œåº”ç”¨æŽ§åˆ¶</string>
 
-    <string name="preferences">偏好设置</string>
-    <string name="match_notifications">比赛通知</string>
-    <string name="on">开启</string>
-    <string name="off">关闭</string>
+    <string name="preferences">åå¥½è®¾ç½®</string>
+    <string name="match_notifications">æ¯”èµ›é€šçŸ¥</string>
+    <string name="on">å¼€å¯</string>
+    <string name="off">å…³é—­</string>
 
-    <string name="favorite_teams">收藏球队</string>
-    <string name="favorite_players">收藏球员</string>
-    <string name="add_teams">添加球队</string>
-    <string name="add_players">添加球员</string>
+    <string name="favorite_teams">æ”¶è—çƒé˜Ÿ</string>
+    <string name="favorite_players">æ”¶è—çƒå‘˜</string>
+    <string name="add_teams">æ·»åŠ çƒé˜Ÿ</string>
+    <string name="add_players">æ·»åŠ çƒå‘˜</string>
 
-    <string name="app">应用</string>
-    <string name="privacy_policy">隐私政策</string>
-    <string name="version">版本</string>
+    <string name="app">åº”ç”¨</string>
+    <string name="privacy_policy">éšç§æ”¿ç­–</string>
+    <string name="version">ç‰ˆæœ¬</string>
 
-    <!-- 个人资料 -->
-    <string name="edit_profile">编辑个人资料</string>
-    <string name="member_since">注册时间</string>
-    <string name="recently">最近</string>
-    <string name="level">等级</string>
-    <string name="mastery">熟练度</string>
-    <string name="teams">球队</string>
-    <string name="players">球员</string>
-    <string name="alerts">提醒</string>
-    <string name="sign_out">退出登录</string>
+    <!-- ä¸ªäººèµ„æ–™ -->
+    <string name="edit_profile">ç¼–è¾‘ä¸ªäººèµ„æ–™</string>
+    <string name="member_since">æ³¨å†Œæ—¶é—´</string>
+    <string name="recently">æœ€è¿‘</string>
+    <string name="level">ç­‰çº§</string>
+    <string name="mastery">ç†Ÿç»ƒåº¦</string>
+    <string name="teams">çƒé˜Ÿ</string>
+    <string name="players">çƒå‘˜</string>
+    <string name="alerts">æé†’</string>
+    <string name="sign_out">é€€å‡ºç™»å½•</string>
 
-    <string name="full_name">全名</string>
-    <string name="full_name_hint">例如：Alex Morgan</string>
+    <string name="full_name">å…¨å</string>
+    <string name="full_name_hint">ä¾‹å¦‚ï¼šAlex Morgan</string>
 
-    <string name="pick_username">选择您的用户名</string>
-    <string name="username_hint">例如：GoalGetter99</string>
+    <string name="pick_username">é€‰æ‹©æ‚¨çš„ç”¨æˆ·å</string>
+    <string name="username_hint">ä¾‹å¦‚ï¼šGoalGetter99</string>
 
-    <string name="search_teams">搜索球队</string>
-    <string name="search_players">搜索球员</string>
+    <string name="search_teams">æœç´¢çƒé˜Ÿ</string>
+    <string name="search_players">æœç´¢çƒå‘˜</string>
 
-    <string name="leave_account">在此设备上退出 %1$s 帐号</string>
-    <string name="update_display_name">更新您在 %1$s 中的显示名称。</string>
+    <string name="leave_account">åœ¨æ­¤è®¾å¤‡ä¸Šé€€å‡º %1$s å¸å·</string>
+    <string name="update_display_name">æ›´æ–°æ‚¨åœ¨ %1$s ä¸­çš„æ˜¾ç¤ºåç§°ã€‚</string>
 
-    <!-- 世界杯 -->
-    <string name="world_cup">世界杯</string>
-    <string name="north_america_2026">2026北美世界杯</string>
+    <!-- ä¸–ç•Œæ¯ -->
+    <string name="world_cup">ä¸–ç•Œæ¯</string>
+    <string name="north_america_2026">2026åŒ—ç¾Žä¸–ç•Œæ¯</string>
 
-    <string name="group">小组</string>
-    <string name="group_a">A组</string>
-    <string name="groups">分组</string>
+    <string name="group">å°ç»„</string>
+    <string name="group_a">Aç»„</string>
+    <string name="groups">åˆ†ç»„</string>
 
-    <string name="group_a_standings_pending">当国际足联 (FIFA) 公布当前排名后，将显示A组积分榜。</string>
+    <string name="group_a_standings_pending">å½“å›½é™…è¶³è” (FIFA) å…¬å¸ƒå½“å‰æŽ’ååŽï¼Œå°†æ˜¾ç¤ºAç»„ç§¯åˆ†æ¦œã€‚</string>
 
-    <string name="group_tables">小组积分榜</string>
-    <string name="knockout_path">淘汰赛晋级图</string>
-    <string name="world_cup_matches">世界杯比赛</string>
-    <string name="world_cup_library">世界杯资料库</string>
+    <string name="group_tables">å°ç»„ç§¯åˆ†æ¦œ</string>
+    <string name="knockout_path">æ·˜æ±°èµ›æ™‹çº§å›¾</string>
+    <string name="world_cup_matches">ä¸–ç•Œæ¯æ¯”èµ›</string>
+    <string name="world_cup_library">ä¸–ç•Œæ¯èµ„æ–™åº“</string>
 
-    <string name="collapse">收起</string>
-    <string name="expand">展开</string>
-    <string name="view_all">查看全部</string>
-    <string name="choose_date">选择日期</string>
-    <string name="min_read">分钟阅读时间</string>
-    <string name="read_on_fifa">前往 FIFA.com 阅读</string>
+    <string name="collapse">æ”¶èµ·</string>
+    <string name="expand">å±•å¼€</string>
+    <string name="view_all">æŸ¥çœ‹å…¨éƒ¨</string>
+    <string name="choose_date">é€‰æ‹©æ—¥æœŸ</string>
+    <string name="min_read">åˆ†é’Ÿé˜…è¯»æ—¶é—´</string>
+    <string name="read_on_fifa">å‰å¾€ FIFA.com é˜…è¯»</string>
 
-    <!-- 积分榜简写 -->
-    <string name="rank">排名</string>
-    <string name="team">球队</string>
-    <string name="stage">阶段</string>
+    <!-- ç§¯åˆ†æ¦œç®€å†™ -->
+    <string name="rank">æŽ’å</string>
+    <string name="team">çƒé˜Ÿ</string>
+    <string name="stage">é˜¶æ®µ</string>
 
-    <string name="played_short">赛</string>
-    <string name="won_short">胜</string>
-    <string name="drawn_short">平</string>
-    <string name="lost_short">负</string>
-    <string name="goal_difference_short">净</string>
-    <string name="points_short">分</string>
+    <string name="played_short">èµ›</string>
+    <string name="won_short">èƒœ</string>
+    <string name="drawn_short">å¹³</string>
+    <string name="lost_short">è´Ÿ</string>
+    <string name="goal_difference_short">å‡€</string>
+    <string name="points_short">åˆ†</string>
 
-    <!-- 首页动态 -->
-    <string name="live_action">实时赛况</string>
-    <string name="next_seven_days">未来 7 天</string>
-    <string name="upcoming_today">今日即将开始</string>
+    <!-- é¦–é¡µåŠ¨æ€ -->
+    <string name="live_action">å®žæ—¶èµ›å†µ</string>
+    <string name="next_seven_days">æœªæ¥ 7 å¤©</string>
+    <string name="upcoming_today">ä»Šæ—¥å³å°†å¼€å§‹</string>
 
-    <!-- 阵容详情 -->
-    <string name="player_lineups">球员阵容</string>
-    <string name="lineup_subtitle">首发名单、阵型及替补</string>
-    <string name="starting_xi">首发名单</string>
-    <string name="bench">替补名单</string>
-    <string name="formation">阵型</string>
-    <string name="home_side">主队</string>
-    <string name="away_side">客队</string>
+    <!-- é˜µå®¹è¯¦æƒ… -->
+    <string name="player_lineups">çƒå‘˜é˜µå®¹</string>
+    <string name="lineup_subtitle">é¦–å‘åå•ã€é˜µåž‹åŠæ›¿è¡¥</string>
+    <string name="starting_xi">é¦–å‘åå•</string>
+    <string name="bench">æ›¿è¡¥åå•</string>
+    <string name="formation">é˜µåž‹</string>
+    <string name="home_side">ä¸»é˜Ÿ</string>
+    <string name="away_side">å®¢é˜Ÿ</string>
 
-    <string name="no_bench_listed">未列出替补名单</string>
-    <string name="unavailable">缺阵</string>
+    <string name="no_bench_listed">æœªåˆ—å‡ºæ›¿è¡¥åå•</string>
+    <string name="unavailable">ç¼ºé˜µ</string>
 
-    <!-- 直播与集锦 -->
-    <string name="watch_highlights">观赛与集锦</string>
-    <string name="stream">视频直播</string>
-    <string name="highlights">集锦</string>
+    <!-- ç›´æ’­ä¸Žé›†é”¦ -->
+    <string name="watch_highlights">è§‚èµ›ä¸Žé›†é”¦</string>
+    <string name="stream">è§†é¢‘ç›´æ’­</string>
+    <string name="highlights">é›†é”¦</string>
 
-    <!-- 互动问答小游戏 -->
-    <string name="football_five">足球五答</string>
-    <string name="football_five_subtitle">5 个问题，挑战连续答对。提升你的榜单排名。</string>
+    <!-- äº’åŠ¨é—®ç­”å°æ¸¸æˆ -->
+    <string name="football_five">è¶³çƒäº”ç­”</string>
+    <string name="football_five_subtitle">5 ä¸ªé—®é¢˜ï¼ŒæŒ‘æˆ˜è¿žç»­ç­”å¯¹ã€‚æå‡ä½ çš„æ¦œå•æŽ’åã€‚</string>
 
-    <string name="test_football_knowledge">测试您的足球知识</string>
-    <string name="quiz_rules">5 个问题 · 每个限时 15 秒\n答对 +10 XP · 答错 −5 XP</string>
+    <string name="test_football_knowledge">æµ‹è¯•æ‚¨çš„è¶³çƒçŸ¥è¯†</string>
+    <string name="quiz_rules">5 ä¸ªé—®é¢˜ Â· æ¯ä¸ªé™æ—¶ 15 ç§’\nç­”å¯¹ +10 XP Â· ç­”é”™ âˆ’5 XP</string>
 
-    <string name="play_now">立即进入</string>
-    <string name="leaderboard">排行榜</string>
-    <string name="top_ten">前十名</string>
-    <string name="no_leaderboard">暂无排行榜数据。快来参与并赢得排名吧！</string>
-    <string name="you">您</string>
+    <string name="play_now">ç«‹å³è¿›å…¥</string>
+    <string name="leaderboard">æŽ’è¡Œæ¦œ</string>
+    <string name="top_ten">å‰åå</string>
+    <string name="no_leaderboard">æš‚æ— æŽ’è¡Œæ¦œæ•°æ®ã€‚å¿«æ¥å‚ä¸Žå¹¶èµ¢å¾—æŽ’åå§ï¼</string>
+    <string name="you">æ‚¨</string>
 
-    <!-- 欢迎页面 / 引导页 -->
-    <string name="your_football_your_way">您的足球，由您做主。</string>
-    <string name="swipe_to_explore">滑动以探索</string>
+    <!-- æ¬¢è¿Žé¡µé¢ / å¼•å¯¼é¡µ -->
+    <string name="your_football_your_way">æ‚¨çš„è¶³çƒï¼Œç”±æ‚¨åšä¸»ã€‚</string>
+    <string name="swipe_to_explore">æ»‘åŠ¨ä»¥æŽ¢ç´¢</string>
 
-    <string name="built_for_matchday">专为比赛日打造</string>
-    <string name="feature">特色功能</string>
+    <string name="built_for_matchday">ä¸“ä¸ºæ¯”èµ›æ—¥æ‰“é€ </string>
+    <string name="feature">ç‰¹è‰²åŠŸèƒ½</string>
 
-    <string name="never_miss_kick">绝不错过精彩瞬间</string>
-    <string name="never_miss_kick_subtitle">尽享实时比分、即时数据和赛事提醒，带您亲临比赛现场。</string>
+    <string name="never_miss_kick">ç»ä¸é”™è¿‡ç²¾å½©çž¬é—´</string>
+    <string name="never_miss_kick_subtitle">å°½äº«å®žæ—¶æ¯”åˆ†ã€å³æ—¶æ•°æ®å’Œèµ›äº‹æé†’ï¼Œå¸¦æ‚¨äº²ä¸´æ¯”èµ›çŽ°åœºã€‚</string>
 
-    <string name="live_match_center">实时比赛中心</string>
-    <string name="deep_stats">深度数据</string>
-    <string name="custom_alerts">自定义提醒</string>
+    <string name="live_match_center">å®žæ—¶æ¯”èµ›ä¸­å¿ƒ</string>
+    <string name="deep_stats">æ·±åº¦æ•°æ®</string>
+    <string name="custom_alerts">è‡ªå®šä¹‰æé†’</string>
 
-    <string name="track_tournaments">追踪每项赛事</string>
-    <string name="track_tournaments_subtitle">关注世界杯及各大联赛的赛程、积分榜和比赛详情。</string>
+    <string name="track_tournaments">è¿½è¸ªæ¯é¡¹èµ›äº‹</string>
+    <string name="track_tournaments_subtitle">å…³æ³¨ä¸–ç•Œæ¯åŠå„å¤§è”èµ›çš„èµ›ç¨‹ã€ç§¯åˆ†æ¦œå’Œæ¯”èµ›è¯¦æƒ…ã€‚</string>
 
-    <string name="fixtures">赛程</string>
+    <string name="fixtures">èµ›ç¨‹</string>
 
-    <string name="build_dashboard">打造您的专属仪表盘</string>
-    <string name="build_dashboard_subtitle">固定您喜爱的球队和球员，首页信息流将直接呈现您关心的足球动态。</string>
+    <string name="build_dashboard">æ‰“é€ æ‚¨çš„ä¸“å±žä»ªè¡¨ç›˜</string>
+    <string name="build_dashboard_subtitle">å›ºå®šæ‚¨å–œçˆ±çš„çƒé˜Ÿå’Œçƒå‘˜ï¼Œé¦–é¡µä¿¡æ¯æµå°†ç›´æŽ¥å‘ˆçŽ°æ‚¨å…³å¿ƒçš„è¶³çƒåŠ¨æ€ã€‚</string>
 
-    <string name="favorites">收藏</string>
-    <string name="player_heroes">明星球员</string>
-    <string name="smart_feed">智能推荐</string>
+    <string name="favorites">æ”¶è—</string>
+    <string name="player_heroes">æ˜Žæ˜Ÿçƒå‘˜</string>
+    <string name="smart_feed">æ™ºèƒ½æŽ¨è</string>
 
-    <!-- 个人资料设置 -->
-    <string name="build_your_profile">创建您的个人资料</string>
-    <string name="profile_title">打造你的 %1$s</string>
-    <string name="profile_intro">选择您的身份、球队和球员。您可以随时更改这些设置。</string>
+    <!-- ä¸ªäººèµ„æ–™è®¾ç½® -->
+    <string name="build_your_profile">åˆ›å»ºæ‚¨çš„ä¸ªäººèµ„æ–™</string>
+    <string name="profile_title">æ‰“é€ ä½ çš„ %1$s</string>
+    <string name="profile_intro">é€‰æ‹©æ‚¨çš„èº«ä»½ã€çƒé˜Ÿå’Œçƒå‘˜ã€‚æ‚¨å¯ä»¥éšæ—¶æ›´æ”¹è¿™äº›è®¾ç½®ã€‚</string>
 
-    <string name="your_identity">您的身份</string>
-    <string name="identity_subtitle">创建新个人资料或安全恢复已有账户。</string>
+    <string name="your_identity">æ‚¨çš„èº«ä»½</string>
+    <string name="identity_subtitle">åˆ›å»ºæ–°ä¸ªäººèµ„æ–™æˆ–å®‰å…¨æ¢å¤å·²æœ‰è´¦æˆ·ã€‚</string>
 
-    <string name="favorite_teams_subtitle">围绕您关注的俱乐部和国家队构建专属动态信息流。</string>
-    <string name="favorite_players_subtitle">固定您绝不想错过的球员。</string>
+    <string name="favorite_teams_subtitle">å›´ç»•æ‚¨å…³æ³¨çš„ä¿±ä¹éƒ¨å’Œå›½å®¶é˜Ÿæž„å»ºä¸“å±žåŠ¨æ€ä¿¡æ¯æµã€‚</string>
+    <string name="favorite_players_subtitle">å›ºå®šæ‚¨ç»ä¸æƒ³é”™è¿‡çš„çƒå‘˜ã€‚</string>
 
-    <string name="loading_teams_players">正在加载球队和球员…</string>
-    <string name="retry_favorites">重试加载收藏</string>
+    <string name="loading_teams_players">æ­£åœ¨åŠ è½½çƒé˜Ÿå’Œçƒå‘˜â€¦</string>
+    <string name="retry_favorites">é‡è¯•åŠ è½½æ”¶è—</string>
 
-    <string name="loading_teams">正在加载球队…</string>
-    <string name="load_more_teams">加载更多 6 支球队</string>
+    <string name="loading_teams">æ­£åœ¨åŠ è½½çƒé˜Ÿâ€¦</string>
+    <string name="load_more_teams">åŠ è½½æ›´å¤š 6 æ”¯çƒé˜Ÿ</string>
 
-    <string name="loading_players">正在加载球员…</string>
-    <string name="load_more_players">加载更多 6 名球员</string>
+    <string name="loading_players">æ­£åœ¨åŠ è½½çƒå‘˜â€¦</string>
+    <string name="load_more_players">åŠ è½½æ›´å¤š 6 åçƒå‘˜</string>
 
-    <string name="selected">已选择</string>
-    <string name="load_six_more">再加载 6 个</string>
-    <string name="maximum_six_selections">最多可选择 6 项。</string>
+    <string name="selected">å·²é€‰æ‹©</string>
+    <string name="load_six_more">å†åŠ è½½ 6 ä¸ª</string>
+    <string name="maximum_six_selections">æœ€å¤šå¯é€‰æ‹© 6 é¡¹ã€‚</string>
 
-    <!-- 身份验证 -->
-    <string name="signing_in">正在登录…</string>
-    <string name="sign_in">登录</string>
-    <string name="continue_label">继续</string>
+    <!-- èº«ä»½éªŒè¯ -->
+    <string name="signing_in">æ­£åœ¨ç™»å½•â€¦</string>
+    <string name="sign_in">ç™»å½•</string>
+    <string name="continue_label">ç»§ç»­</string>
 
-    <!-- 通知推送 -->
-    <string name="notification_channel_name">比赛动态</string>
-    <string name="notification_channel_description">开赛提醒、实时比分和进球通知。</string>
-    <string name="notification_next_match">下一场比赛</string>
-    <string name="notification_kickoff">开赛</string>
-    <string name="notification_view_match">查看比赛</string>
-    <string name="notification_match_reminder">比赛提醒</string>
-    <string name="notification_upcoming_match">即将开始的比赛</string>
-    <string name="notification_match_in_24_hours">比赛将在24小时后开始</string>
-    <string name="notification_match_in_1_hour">比赛将在1小时后开始</string>
-    <string name="notification_kickoff_now">比赛现在开始</string>
+    <!-- é€šçŸ¥æŽ¨é€ -->
+    <string name="notification_channel_name">æ¯”èµ›åŠ¨æ€</string>
+    <string name="notification_channel_description">å¼€èµ›æé†’ã€å®žæ—¶æ¯”åˆ†å’Œè¿›çƒé€šçŸ¥ã€‚</string>
+    <string name="notification_next_match">ä¸‹ä¸€åœºæ¯”èµ›</string>
+    <string name="notification_kickoff">å¼€èµ›</string>
+    <string name="notification_view_match">æŸ¥çœ‹æ¯”èµ›</string>
+    <string name="notification_match_reminder">æ¯”èµ›æé†’</string>
+    <string name="notification_upcoming_match">å³å°†å¼€å§‹çš„æ¯”èµ›</string>
+    <string name="notification_match_in_24_hours">æ¯”èµ›å°†åœ¨24å°æ—¶åŽå¼€å§‹</string>
+    <string name="notification_match_in_1_hour">æ¯”èµ›å°†åœ¨1å°æ—¶åŽå¼€å§‹</string>
+    <string name="notification_kickoff_now">æ¯”èµ›çŽ°åœ¨å¼€å§‹</string>
 
-    <string name="identity_add_name_later">现在添加姓名，稍后可在“游戏”中设置用户名。</string>
-    <string name="teams_selected_count">已选择 %1$d/%2$d 支球队</string>
-    <string name="players_selected_count">已选择 %1$d/%2$d 名球员</string>
-    <string name="pin_to_dashboard">+ 固定到主页</string>
-    <string name="pinned">已固定</string>
-    <string name="all_filter">全部</string>
-    <string name="full_name_validation">请输入名字和姓氏；每部分至少需要2个字符。</string>
-    <string name="select_up_to_teams">最多可选择 %1$d 支球队。</string>
-    <string name="select_up_to_players">最多可选择 %1$d 名球员。</string>
+    <string name="identity_add_name_later">çŽ°åœ¨æ·»åŠ å§“åï¼Œç¨åŽå¯åœ¨â€œæ¸¸æˆâ€ä¸­è®¾ç½®ç”¨æˆ·åã€‚</string>
+    <string name="teams_selected_count">å·²é€‰æ‹© %1$d/%2$d æ”¯çƒé˜Ÿ</string>
+    <string name="players_selected_count">å·²é€‰æ‹© %1$d/%2$d åçƒå‘˜</string>
+    <string name="pin_to_dashboard">+ å›ºå®šåˆ°ä¸»é¡µ</string>
+    <string name="pinned">å·²å›ºå®š</string>
+    <string name="all_filter">å…¨éƒ¨</string>
+    <string name="full_name_validation">è¯·è¾“å…¥åå­—å’Œå§“æ°ï¼›æ¯éƒ¨åˆ†è‡³å°‘éœ€è¦2ä¸ªå­—ç¬¦ã€‚</string>
+    <string name="select_up_to_teams">æœ€å¤šå¯é€‰æ‹© %1$d æ”¯çƒé˜Ÿã€‚</string>
+    <string name="select_up_to_players">æœ€å¤šå¯é€‰æ‹© %1$d åçƒå‘˜ã€‚</string>
 </resources>
+
