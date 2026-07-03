@@ -1,6 +1,7 @@
 package zero.ramjikvarosai.hirebazzar
 
 import android.Manifest
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Build
 import android.os.LocaleList
@@ -45,13 +46,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,6 +82,7 @@ class MainActivity : ComponentActivity() {
         const val PREF_LANGUAGE_RETURN_SCREEN = "language_return_screen"
         const val PREF_SKIP_SPLASH_ONCE = "skip_splash_once"
     }
+    private var keepSystemSplash = false
 
     override fun onResume() {
         super.onResume()
@@ -91,11 +96,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val launchSettings = getSharedPreferences("goalio_settings", MODE_PRIVATE)
+        keepSystemSplash = !launchSettings.getBoolean(PREF_SKIP_SPLASH_ONCE, false)
         enableEdgeToEdge()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             splashScreen.setOnExitAnimationListener { splashScreenView ->
                 splashScreenView.animate()
                     .alpha(0f)
+                    .setStartDelay(if (keepSystemSplash) 240L else 0L)
                     .setDuration(220L)
                     .withEndAction {
                         (splashScreenView.parent as? ViewGroup)?.removeView(splashScreenView)
@@ -110,7 +118,7 @@ class MainActivity : ComponentActivity() {
                 val hasSavedLanguage = remember { settings.contains("language") }
                 val skipSplashOnce = remember { settings.getBoolean(PREF_SKIP_SPLASH_ONCE, false) }
                 var currentLanguage by remember { mutableStateOf(settings.getString("language", "system") ?: "system") }
-                var showSplash by remember { mutableStateOf(hasSavedLanguage && !skipSplashOnce) }
+                var showSplash by remember { mutableStateOf(!skipSplashOnce) }
                 var languageSelected by remember { mutableStateOf(settings.contains("language")) }
                 var onboardingComplete by remember {
                     mutableStateOf(settings.getBoolean("onboarding_complete", false))
@@ -181,6 +189,8 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 LaunchedEffect(Unit) {
+                    delay(180)
+                    keepSystemSplash = false
                     delay(2800)
                     showSplash = false
                 }
@@ -434,103 +444,141 @@ fun GoalioBackground(backgroundAlpha: Float = 1f, content: @Composable BoxScope.
 @Composable
 fun SplashScreen() {
     val metrics = rememberGoalioMetrics()
+    val context = LocalContext.current
+    val footballImage = remember {
+        runCatching {
+            context.assets.open("Football.png").use { stream ->
+                BitmapFactory.decodeStream(stream)?.asImageBitmap()
+            }
+        }.getOrNull()
+    }
     val transition = rememberInfiniteTransition(label = "splash motion")
-    val rotation = transition.animateFloat(
+    val spin = transition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(tween(1800, easing = LinearEasing), RepeatMode.Restart),
-        label = "splash ball angle"
+        label = "football spin"
     ).value
-    val sweep = transition.animateFloat(
-        initialValue = 0f,
+    val progress = transition.animateFloat(
+        initialValue = .08f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(2200, easing = LinearEasing), RepeatMode.Restart),
-        label = "pitch sweep"
+        animationSpec = infiniteRepeatable(tween(2200, easing = FastOutSlowInEasing), RepeatMode.Restart),
+        label = "splash progress"
     ).value
-    GoalioBackground {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
         Canvas(Modifier.fillMaxSize()) {
             drawRect(
                 brush = Brush.radialGradient(
-                    colors = listOf(Color(0xFF1C1005), GoalioColors.Background),
+                    colors = listOf(
+                        Color(0xFF2A1502),
+                        Color(0xFF120A03),
+                        Color.Black
+                    ),
                     center = center,
-                    radius = size.minDimension * .72f
+                    radius = size.minDimension * .86f
                 )
             )
-            val lineColor = GoalioColors.Tertiary.copy(alpha = .09f)
-            val fieldWidth = size.width * .88f
-            val fieldHeight = size.height * .62f
+            val pitchColor = GoalioColors.Tertiary.copy(alpha = .18f)
+            val glowColor = GoalioColors.Tertiary.copy(alpha = .08f)
+            val fieldWidth = size.width * .84f
+            val fieldHeight = size.height * .58f
             val left = (size.width - fieldWidth) / 2f
             val top = (size.height - fieldHeight) / 2f
-            val stroke = (size.minDimension * .004f).coerceAtLeast(1.5f)
+            val stroke = (size.minDimension * .0045f).coerceAtLeast(1.6f)
             drawRoundRect(
-                color = lineColor,
+                color = glowColor,
+                topLeft = Offset(left - stroke * 7f, top - stroke * 7f),
+                size = Size(fieldWidth + stroke * 14f, fieldHeight + stroke * 14f),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(stroke * 18f),
+                style = Stroke(width = stroke * 5f)
+            )
+            drawRoundRect(
+                color = pitchColor,
                 topLeft = Offset(left, top),
                 size = Size(fieldWidth, fieldHeight),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(stroke * 4f),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(stroke * 9f),
                 style = Stroke(width = stroke)
             )
-            drawLine(lineColor, Offset(left, center.y), Offset(left + fieldWidth, center.y), stroke)
-            drawCircle(lineColor, radius = fieldWidth * .14f, center = center, style = Stroke(width = stroke))
-            drawCircle(lineColor, radius = stroke * 1.35f, center = center)
-            val boxWidth = fieldWidth * .34f
-            val boxHeight = fieldHeight * .13f
-            drawRect(lineColor, Offset(center.x - boxWidth / 2f, top), Size(boxWidth, boxHeight), style = Stroke(stroke))
-            drawRect(lineColor, Offset(center.x - boxWidth / 2f, top + fieldHeight - boxHeight), Size(boxWidth, boxHeight), style = Stroke(stroke))
+            drawLine(pitchColor, Offset(left, center.y), Offset(left + fieldWidth, center.y), stroke)
+            drawCircle(pitchColor, radius = fieldWidth * .14f, center = center, style = Stroke(width = stroke))
+            drawCircle(pitchColor, radius = stroke * 1.4f, center = center)
+            val boxWidth = fieldWidth * .33f
+            val boxHeight = fieldHeight * .14f
+            drawRect(pitchColor, Offset(center.x - boxWidth / 2f, top), Size(boxWidth, boxHeight), style = Stroke(stroke))
+            drawRect(pitchColor, Offset(center.x - boxWidth / 2f, top + fieldHeight - boxHeight), Size(boxWidth, boxHeight), style = Stroke(stroke))
         }
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    Modifier.size(metrics.dp(if (metrics.compact) 210 else 244)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.goalio_ball),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .offset(x = metrics.dp(5), y = metrics.dp(6))
-                            .size(metrics.dp(if (metrics.compact) 76 else 88))
-                            .graphicsLayer {
-                                rotationZ = rotation
-                                alpha = .98f
-                            }
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.goalio_mark_noball),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("GOAL", color = Color.White, fontSize = metrics.sp(if (metrics.compact) 38 else 44), fontWeight = FontWeight.Black, fontStyle = FontStyle.Italic)
-                    Text("IO", color = GoalioColors.Tertiary, fontSize = metrics.sp(if (metrics.compact) 38 else 44), fontWeight = FontWeight.Black, fontStyle = FontStyle.Italic)
-                }
-                Spacer(Modifier.height(metrics.dp(5)))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(metrics.dp(10))) {
-                    Box(Modifier.size(width = metrics.dp(28), height = metrics.dp(2)).background(GoalioColors.Tertiary))
-                    Text("LIVE FOOTBALL SCORES", color = Color(0xFFD8D8D8), fontSize = metrics.sp(10), fontWeight = FontWeight.SemiBold, letterSpacing = 2.sp)
-                    Box(Modifier.size(width = metrics.dp(28), height = metrics.dp(2)).background(GoalioColors.Tertiary))
-                }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = metrics.horizontalPadding)
+        ) {
+            val ballModifier = Modifier
+                .size(metrics.dp(if (metrics.compact) 154 else 184))
+                .clip(RoundedCornerShape(metrics.dp(34)))
+                .rotate(spin)
+            if (footballImage != null) {
+                Image(
+                    bitmap = footballImage,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = ballModifier
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.football),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = ballModifier
+                )
             }
+            Spacer(Modifier.height(metrics.dp(18)))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "Goal",
+                    color = Color.White,
+                    fontSize = metrics.sp(if (metrics.compact) 40 else 48),
+                    fontWeight = FontWeight.Black,
+                    fontStyle = FontStyle.Italic
+                )
+                Text(
+                    "io",
+                    color = GoalioColors.Tertiary,
+                    fontSize = metrics.sp(if (metrics.compact) 40 else 48),
+                    fontWeight = FontWeight.Black,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            Spacer(Modifier.height(metrics.dp(4)))
+            Text(
+                "LIVE FOOTBALL SCORES",
+                color = Color(0xFFE6D7C2),
+                fontSize = metrics.sp(11),
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 2.sp
+            )
+            Spacer(Modifier.height(metrics.dp(28)))
             Box(
                 Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = metrics.dp(64))
-                    .size(
-                        width = metrics.dp(if (metrics.compact) 180 else 220),
-                        height = metrics.dp(6)
-                    )
+                    .fillMaxWidth(if (metrics.compact) .62f else .44f)
+                    .height(metrics.dp(6))
                     .clip(RoundedCornerShape(50))
                     .background(Color.White.copy(alpha = .14f))
             ) {
                 Box(
                     Modifier
-                        .fillMaxWidth(sweep.coerceIn(.08f, 1f))
+                        .fillMaxWidth(progress.coerceIn(.08f, 1f))
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(50))
-                        .background(GoalioColors.Tertiary)
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(Color.White, GoalioColors.Tertiary)
+                            )
+                        )
                 )
             }
         }
@@ -590,7 +638,7 @@ private fun LoadingGoal(modifier: Modifier = Modifier) {
             modifier = Modifier.align(Alignment.CenterEnd).size(goalWidth)
         )
         Image(
-            painter = painterResource(R.drawable.football_ball),
+            painter = painterResource(R.drawable.football),
             contentDescription = "Loading",
             modifier = Modifier
                 .align(Alignment.CenterStart)

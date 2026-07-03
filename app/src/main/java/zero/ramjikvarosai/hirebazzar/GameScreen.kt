@@ -172,6 +172,7 @@ fun GameScreen(
                                 if (usernameError == null) {
                                     fullName = fullName.trim()
                                     username = username.trim().lowercase()
+                                    usernameAvailable = true
                                     usernameSaved = true
                                 }
                                 savingUsername = false
@@ -405,6 +406,7 @@ private fun UsernameGateCard(
         else -> null
     }
     val success = usernameAvailable == true && error == null
+    val canSave = fullNameValid && usernameValid && usernameAvailable != false && !checking && !saving
 
     Surface(
         color = Color(0xFF0D0D0D),
@@ -469,7 +471,7 @@ private fun UsernameGateCard(
             }
             GradientButton(
                 label = if (saving) "SAVING..." else "SAVE USERNAME",
-                enabled = fullNameValid && usernameValid && usernameAvailable == true && !checking && !saving,
+                enabled = canSave,
                 metrics = metrics,
                 onClick = onSave
             )

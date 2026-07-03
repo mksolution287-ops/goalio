@@ -2,6 +2,6 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/black" />
     <item android:width="220dp" android:height="220dp" android:gravity="center">
-        <bitmap android:src="@drawable/goalio_icon_only" android:gravity="fill" />
+        <bitmap android:src="@drawable/logo" android:gravity="fill" />
     </item>
 </layer-list>
