@@ -64,6 +64,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import zero.ramjikvarosai.hirebazzar.components.AppInstallNativeAdCard
 
 private val HomeLeagues = listOf(
     "fifa.world",
@@ -100,9 +101,18 @@ fun PersonalizedHomeScreen(
     var standings by remember { mutableStateOf(MatchRepository.cachedStandings(context, "fifa.world")) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val today = remember { LocalDate.now() }
+    var now by remember { mutableStateOf(Instant.now()) }
+    var pinnedLiveMatch by remember { mutableStateOf<ScheduleMatch?>(null) }
+    var livePinnedAt by remember { mutableStateOf<Instant?>(null) }
+    val today = remember(now) { LocalDate.now() }
     val fromDate = remember(today) { today.minusDays(30).toString() }
     val toDate = remember(today) { today.plusDays(120).toString() }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(20_000)
+            now = Instant.now()
+        }
+    }
     LaunchedEffect(fromDate, toDate) {
         MatchRepository.matchUpdates.collect { canonical ->
             val shared = canonical.values.filter { match ->
@@ -150,18 +160,59 @@ fun PersonalizedHomeScreen(
             .onSuccess { standings = it }
     }
 
-    val buckets = remember(matches, today) {
+    val detectedLiveMatches = remember(matches, now) {
+        matches.filter { it.isHomeLiveAt(now) }
+            .sortedBy { it.kickoff.orEmpty() }
+    }
+    LaunchedEffect(matches, detectedLiveMatches, now) {
+        val pinned = pinnedLiveMatch
+        if (pinned == null) {
+            detectedLiveMatches.firstOrNull()?.let {
+                pinnedLiveMatch = it
+                livePinnedAt = now
+            }
+            return@LaunchedEffect
+        }
+
+        val refreshed = matches.firstOrNull { it.homeMatchKey() == pinned.homeMatchKey() }
+        val withinPinLimit = livePinnedAt?.let { Duration.between(it, now) < Duration.ofHours(6) } ?: false
+        val keepPinned = when {
+            refreshed?.isHomeTerminal() == true -> false
+            refreshed != null -> refreshed.canRemainHomeLiveAt(now)
+            else -> withinPinLimit && pinned.canRemainHomeLiveAt(now)
+        }
+
+        if (keepPinned) {
+            if (refreshed != null) pinnedLiveMatch = refreshed
+        } else {
+            val replacement = detectedLiveMatches.firstOrNull { it.homeMatchKey() != pinned.homeMatchKey() }
+            pinnedLiveMatch = replacement
+            livePinnedAt = replacement?.let { now }
+        }
+    }
+
+    val buckets = remember(matches, today, now, pinnedLiveMatch) {
         val todayMatches = matches.filter { it.isTodayKickoff(today) }
-        val liveMatches = matches.filter { it.state == "in" && (it.isTodayKickoff(today) || it.kickoff.isNullOrBlank()) }
+        val refreshedPinned = pinnedLiveMatch?.let { pinned ->
+            matches.firstOrNull { it.homeMatchKey() == pinned.homeMatchKey() } ?: pinned
+        }?.takeIf { it.canRemainHomeLiveAt(now) }
+        val liveMatches = buildList {
+            refreshedPinned?.let(::add)
+            matches.asSequence()
+                .filter { it.isHomeLiveAt(now) }
+                .filter { candidate -> candidate.homeMatchKey() != refreshedPinned?.homeMatchKey() }
+                .sortedBy { it.kickoff.orEmpty() }
+                .forEach(::add)
+        }
         val nearLimit = today.plusDays(7)
         val upcoming = matches
             .filter { match ->
-                match.state == "pre" &&
+                match.state == "pre" && !match.isHomeLiveAt(now) &&
                     match.localKickoffDate()?.let { date -> !date.isBefore(today) && !date.isAfter(nearLimit) } == true
             }
             .sortedBy { it.kickoff.orEmpty() }
             .take(6)
-        val todayUpcoming = todayMatches.filter { it.state == "pre" }.sortedBy { it.kickoff.orEmpty() }
+        val todayUpcoming = todayMatches.filter { it.state == "pre" && !it.isHomeLiveAt(now) }.sortedBy { it.kickoff.orEmpty() }
         val upcomingToday = todayUpcoming.take(3).ifEmpty { upcoming.take(3) }
         val upcomingTitle = if (todayUpcoming.isEmpty() && upcomingToday.isNotEmpty()) "NEXT 7 DAYS" else "UPCOMING TODAY"
         val finished = todayMatches.filter { it.state == "post" }.take(3)
@@ -214,6 +265,7 @@ fun PersonalizedHomeScreen(
                         }
                     }
                 }
+                item { AppInstallNativeAdCard() }
                 if (buckets.featured != null) {
                     item { WinProbabilityCard(buckets.featured) { onOpenMatch(buckets.featured, "Stats") } }
                 }
@@ -838,6 +890,51 @@ private fun ScheduleMatch.statusLabel(): String = when (state) {
     "post" -> statusDescription ?: status ?: "Finished"
     else -> statusDescription ?: status ?: "Match"
 }
+
+internal fun ScheduleMatch.isHomeTerminal(): Boolean {
+    if (state.equals("post", ignoreCase = true)) return true
+    val value = "${status.orEmpty()} ${statusDescription.orEmpty()}".trim().lowercase()
+    val terminalCodes = setOf("ft", "final", "aet", "pens", "canceled", "cancelled", "postponed", "abandoned")
+    return value in terminalCodes || listOf(
+        "full time",
+        "match finished",
+        "match ended",
+        "game finished",
+        "game ended",
+        "cancelled",
+        "canceled",
+        "postponed",
+        "abandoned"
+    ).any(value::contains)
+}
+
+internal fun ScheduleMatch.isHomeLiveAt(now: Instant): Boolean {
+    if (isHomeTerminal()) return false
+    if (state.equals("in", ignoreCase = true) || hasExplicitHomeLiveStatus()) return true
+    val kickoffInstant = runCatching { OffsetDateTime.parse(kickoff).toInstant() }.getOrNull() ?: return false
+    return !now.isBefore(kickoffInstant) && now <= kickoffInstant.plus(Duration.ofHours(4))
+}
+
+internal fun ScheduleMatch.canRemainHomeLiveAt(now: Instant): Boolean {
+    if (isHomeTerminal()) return false
+    val kickoffInstant = runCatching { OffsetDateTime.parse(kickoff).toInstant() }.getOrNull()
+    return kickoffInstant?.let { now <= it.plus(Duration.ofHours(6)) }
+        ?: (state.equals("in", ignoreCase = true) || hasExplicitHomeLiveStatus())
+}
+
+private fun ScheduleMatch.hasExplicitHomeLiveStatus(): Boolean {
+    val statusCode = status?.trim()?.uppercase().orEmpty()
+    if (statusCode in setOf("HT", "ET", "1H", "2H", "P", "LIVE")) return true
+    val value = "${status.orEmpty()} ${statusDescription.orEmpty()}"
+    return value.contains("live", ignoreCase = true) ||
+        value.contains("half time", ignoreCase = true) ||
+        value.contains("halftime", ignoreCase = true) ||
+        value.contains("in progress", ignoreCase = true) ||
+        value.contains("extra time", ignoreCase = true) ||
+        Regex("\\b\\d{1,3}(?:\\+\\d+)?['’]").containsMatchIn(value)
+}
+
+private fun ScheduleMatch.homeMatchKey(): String = "$league:$matchId"
 
 private fun ScheduleMatch.compactName(): String {
     val home = homeTeam?.shortName ?: homeTeam?.name ?: "TBD"

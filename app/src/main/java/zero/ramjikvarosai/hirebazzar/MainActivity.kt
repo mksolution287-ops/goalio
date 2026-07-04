@@ -12,6 +12,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Animatable
@@ -36,6 +37,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,13 +78,15 @@ import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
 import com.onesignal.OneSignal
 import kotlinx.coroutines.delay
 import java.util.Locale
+import zero.ramjikvarosai.hirebazzar.utils.AdManager
+import zero.ramjikvarosai.hirebazzar.utils.AdLoadingOverlay
 
 class MainActivity : ComponentActivity() {
     private companion object {
         const val PREF_LANGUAGE_RETURN_SCREEN = "language_return_screen"
-        const val PREF_SKIP_SPLASH_ONCE = "skip_splash_once"
+        const val SYSTEM_SPLASH_MIN_MS = 650L
     }
-    private var keepSystemSplash = false
+    private var keepSystemSplash = true
 
     override fun onResume() {
         super.onResume()
@@ -95,30 +99,30 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val systemSplashStartedAt = System.currentTimeMillis()
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition {
+            keepSystemSplash && System.currentTimeMillis() - systemSplashStartedAt < SYSTEM_SPLASH_MIN_MS
+        }
         super.onCreate(savedInstanceState)
-        val launchSettings = getSharedPreferences("goalio_settings", MODE_PRIVATE)
-        keepSystemSplash = !launchSettings.getBoolean(PREF_SKIP_SPLASH_ONCE, false)
         enableEdgeToEdge()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            splashScreen.setOnExitAnimationListener { splashScreenView ->
-                splashScreenView.animate()
-                    .alpha(0f)
-                    .setStartDelay(if (keepSystemSplash) 240L else 0L)
-                    .setDuration(220L)
-                    .withEndAction {
-                        (splashScreenView.parent as? ViewGroup)?.removeView(splashScreenView)
-                    }
-                    .start()
-            }
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            splashScreenView.view.animate()
+                .alpha(0f)
+                .setDuration(220L)
+                .withEndAction {
+                    splashScreenView.remove()
+                }
+                .start()
         }
         setContent {
             GoalioTheme(dynamicColor = false) {
                 val settings = remember { getSharedPreferences("goalio_settings", MODE_PRIVATE) }
+                val isAdLoading by AdManager.isAdLoading.collectAsState()
                 val pendingLanguageReturn = remember { settings.getString(PREF_LANGUAGE_RETURN_SCREEN, null) }
                 val hasSavedLanguage = remember { settings.contains("language") }
-                val skipSplashOnce = remember { settings.getBoolean(PREF_SKIP_SPLASH_ONCE, false) }
                 var currentLanguage by remember { mutableStateOf(settings.getString("language", "system") ?: "system") }
-                var showSplash by remember { mutableStateOf(!skipSplashOnce) }
+                var showSplash by remember { mutableStateOf(true) }
                 var languageSelected by remember { mutableStateOf(settings.contains("language")) }
                 var onboardingComplete by remember {
                     mutableStateOf(settings.getBoolean("onboarding_complete", false))
@@ -137,6 +141,7 @@ class MainActivity : ComponentActivity() {
                     if (target != appScreen) {
                         screenHistory = screenHistory + appScreen
                         appScreen = target
+                        AdManager.trackAction(applicationContext, this@MainActivity)
                     }
                 }
                 val navigateBack: () -> Unit = {
@@ -150,6 +155,13 @@ class MainActivity : ComponentActivity() {
                 }
                 val openCompetitionHub: () -> Unit = {
                     navigateTo(competitionHubMode.screen ?: "matches")
+                }
+                val openMatchDetail: (ScheduleMatch, String) -> Unit = { match, tab ->
+                    AdManager.immediateInterstitialAd(this@MainActivity) {
+                        selectedMatch = match
+                        selectedDetailTab = tab
+                        navigateTo("detail")
+                    }
                 }
                 val effectiveLanguage = if (currentLanguage == "system") Locale.getDefault().toLanguageTag() else currentLanguage
                 val notificationLauncher = rememberLauncherForActivityResult(
@@ -171,14 +183,6 @@ class MainActivity : ComponentActivity() {
                     if (pendingLanguageReturn != null) {
                         settings.edit()
                             .remove(PREF_LANGUAGE_RETURN_SCREEN)
-                            .apply()
-                    }
-                }
-
-                LaunchedEffect(skipSplashOnce) {
-                    if (skipSplashOnce) {
-                        settings.edit()
-                            .remove(PREF_SKIP_SPLASH_ONCE)
                             .apply()
                     }
                 }
@@ -239,6 +243,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 CompositionLocalProvider(LocalAppLanguage provides effectiveLanguage) {
+                    Box(Modifier.fillMaxSize()) {
                     when {
                         showSplash -> SplashScreen()
                         !languageSelected -> LanguageScreen(
@@ -256,7 +261,6 @@ class MainActivity : ComponentActivity() {
                                 val returnScreen = languageReturnScreen
                                 val editor = settings.edit()
                                     .putString("language", languageTag)
-                                    .putBoolean(PREF_SKIP_SPLASH_ONCE, true)
                                 if (returnScreen != null) {
                                     editor.putString(PREF_LANGUAGE_RETURN_SCREEN, returnScreen)
                                 }
@@ -300,11 +304,7 @@ class MainActivity : ComponentActivity() {
                             onOpenWorldCup = openCompetitionHub,
                             onOpenGames = { navigateTo("games") },
                             onOpenSettings = { navigateTo("settings") },
-                            onOpenMatch = { match ->
-                                selectedMatch = match
-                                selectedDetailTab = "Overview"
-                                navigateTo("detail")
-                            }
+                            onOpenMatch = { match -> openMatchDetail(match, "Overview") }
                         )
                         "detail" -> selectedMatch?.let { match ->
                             MatchDetailScreen(
@@ -327,11 +327,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenWorldCup = openCompetitionHub,
                                 onOpenGames = { navigateTo("games") },
                                 onOpenSettings = { navigateTo("settings") },
-                                onOpenMatch = { match ->
-                                    selectedMatch = match
-                                    selectedDetailTab = "Overview"
-                                    navigateTo("detail")
-                                }
+                                onOpenMatch = { match -> openMatchDetail(match, "Overview") }
                             )
                         }
                         "worldcup" -> WorldCupScreen(
@@ -407,17 +403,15 @@ class MainActivity : ComponentActivity() {
                             onOpenWorldCup = openCompetitionHub,
                             onOpenGames = { navigateTo("games") },
                             onOpenSettings = { navigateTo("settings") },
-                            onOpenMatch = { match, tab ->
-                                selectedMatch = match
-                                selectedDetailTab = tab
-                                navigateTo("detail")
-                            }
+                            onOpenMatch = openMatchDetail
                         )
+                    }
+                    }
+                    AdLoadingOverlay(isAdLoading)
                     }
                 }
             }
         }
-    }
     }
 
     private fun applyLanguage(languageTag: String) {
