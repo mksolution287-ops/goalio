@@ -57,7 +57,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -105,8 +107,8 @@ fun PersonalizedHomeScreen(
     var pinnedLiveMatch by remember { mutableStateOf<ScheduleMatch?>(null) }
     var livePinnedAt by remember { mutableStateOf<Instant?>(null) }
     val today = remember(now) { LocalDate.now() }
-    val fromDate = remember(today) { today.minusDays(30).toString() }
-    val toDate = remember(today) { today.plusDays(120).toString() }
+    val fromDate = remember(today) { today.minusDays(2).toString() }
+    val toDate = remember(today) { today.plusDays(14).toString() }
     LaunchedEffect(Unit) {
         while (true) {
             delay(20_000)
@@ -125,16 +127,27 @@ fun PersonalizedHomeScreen(
     }
 
     LaunchedEffect(fromDate, toDate) {
-        matches = MatchRepository.cachedFeed(context, fromDate, toDate)
+        matches = withContext(Dispatchers.IO) {
+            MatchRepository.cachedFeed(context, fromDate, toDate)
+        }
         loading = matches.isEmpty()
         while (true) {
             errorMessage = null
-            runCatching { MatchRepository.refreshFeed(context, fromDate, toDate) }
+            runCatching {
+                MatchRepository.refreshFeed(context, fromDate, toDate) { partial ->
+                    matches = (partial + matches)
+                        .distinctBy { "${it.league}:${it.matchId}" }
+                        .sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
+                    loading = false
+                }
+            }
                 .onSuccess { result ->
                     if (result.matches.isNotEmpty()) {
                         matches = result.matches
                     } else {
-                        val cached = MatchRepository.cachedFeed(context, fromDate, toDate)
+                        val cached = withContext(Dispatchers.IO) {
+                            MatchRepository.cachedFeed(context, fromDate, toDate)
+                        }
                         if (cached.isNotEmpty()) matches = cached
                     }
                     if (result.scoreChanged) {

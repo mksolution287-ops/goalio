@@ -2,9 +2,10 @@ package zero.ramjikvarosai.hirebazzar
 
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -62,23 +63,42 @@ object MatchRepository {
         return source.map { canonicalMatches.value[matchKey(it.league, it.matchId)] ?: it }
     }
 
-    suspend fun refreshFeed(context: Context, from: String, to: String): MatchFeedResult {
-        val previousMatches = cachedFeed(context, from, to)
+    suspend fun refreshFeed(
+        context: Context,
+        from: String,
+        to: String,
+        onPartial: (suspend (List<ScheduleMatch>) -> Unit)? = null
+    ): MatchFeedResult {
+        val previousMatches = withContext(Dispatchers.IO) { cachedFeed(context, from, to) }
         val before = previousMatches.scoreSignature()
-        val rawMatches = coroutineScope {
-            leagues.map { league ->
-                async {
+        val rawMatches = supervisorScope {
+            val completed = Channel<List<ScheduleMatch>>(leagues.size)
+            leagues.forEach { league ->
+                launch {
                     runCatching { GoalioBackendApi.getScheduleRange(league, from, to).matches }
                         .getOrDefault(emptyList())
+                        .let { completed.send(it) }
                 }
-            }.flatMap { it.await() }
-        }.distinctBy { "${it.league}:${it.matchId}" }
-            .sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
+            }
+            val accumulated = mutableListOf<ScheduleMatch>()
+            repeat(leagues.size) {
+                val batch = completed.receive()
+                if (batch.isNotEmpty()) {
+                    accumulated += batch
+                    val partial = accumulated.normalizedFeed()
+                    publishMatches(partial, overwrite = true)
+                    onPartial?.invoke(partial)
+                }
+            }
+            completed.close()
+            accumulated.normalizedFeed()
+        }
         if (rawMatches.isEmpty() && previousMatches.isNotEmpty()) {
             return MatchFeedResult(previousMatches, scoreChanged = false)
         }
         val changed = before.isNotBlank() && before != rawMatches.scoreSignature()
         val notificationEvents = matchNotificationEvents(previousMatches, rawMatches)
+        publishMatches(rawMatches, overwrite = true)
         val matches = rawMatches.localized(context)
         publishMatches(matches, overwrite = true)
         GoalioMatchNotifier.scheduleUpcoming(context, canonicalMatches.value.values.toList())
@@ -169,6 +189,10 @@ object MatchRepository {
         }
     }
 }
+
+private fun List<ScheduleMatch>.normalizedFeed(): List<ScheduleMatch> =
+    distinctBy { "${it.league}:${it.matchId}" }
+        .sortedWith(compareBy<ScheduleMatch> { stateRank(it.state) }.thenBy { it.kickoff.orEmpty() })
 
 private fun matchKey(league: String, matchId: String) = "$league:$matchId"
 

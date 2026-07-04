@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,7 +77,8 @@ private val languages = listOf(
 fun LanguageScreen(
     onBack: (() -> Unit)?,
     onDone: (String) -> Unit,
-    initialLanguage: String = "system"
+    initialLanguage: String = "system",
+    showAd: Boolean = true
 ) {
     val metrics = rememberGoalioMetrics()
     var query by rememberSaveable { mutableStateOf("") }
@@ -151,7 +153,13 @@ fun LanguageScreen(
                 SearchBox(query) { query = it }
             }
             LazyColumn(
-                modifier = Modifier.weight(1f),
+                modifier = if (showAd) {
+                    Modifier
+                        .weight(1f, fill = false)
+                        .heightIn(max = metrics.dp(438))
+                } else {
+                    Modifier.weight(1f)
+                },
                 contentPadding = PaddingValues(
                     start = metrics.horizontalPadding,
                     end = metrics.horizontalPadding,
@@ -170,10 +178,12 @@ fun LanguageScreen(
                     LanguageCard(language, selected == language.tag) { selected = language.tag }
                 }
             }
-            AppInstallNativeAdCard(
-                modifier = Modifier.padding(horizontal = metrics.horizontalPadding),
-                mediaHeight = metrics.dp(160)
-            )
+            if (showAd) {
+                AppInstallNativeAdCard(
+                    modifier = Modifier.padding(horizontal = metrics.horizontalPadding),
+                    mediaHeight = if (metrics.compact) 120.dp else metrics.dp(150)
+                )
+            }
             Spacer(Modifier.navigationBarsPadding().height(metrics.dp(4)))
         }
     }

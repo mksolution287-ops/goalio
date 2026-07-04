@@ -270,7 +270,8 @@ class MainActivity : ComponentActivity() {
                                 languageReturnScreen = null
                                 languageSelected = true
                             },
-                            initialLanguage = currentLanguage
+                            initialLanguage = currentLanguage,
+                            showAd = languageReturnScreen == null
                         )
                         !onboardingComplete -> OnboardingScreen(
                             onBack = { languageSelected = false },
