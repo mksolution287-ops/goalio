@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -26,8 +30,12 @@ import zero.ramjikvarosai.hirebazzar.utils.AdManager
 import zero.ramjikvarosai.hirebazzar.R
 
 @Composable
-fun AppInstallNativeAdCard(modifier: Modifier = Modifier) {
+fun AppInstallNativeAdCard(
+    modifier: Modifier = Modifier,
+    mediaHeight: Dp = 120.dp
+) {
     val context = LocalContext.current
+    val mediaHeightPx = with(LocalDensity.current) { mediaHeight.roundToPx() }
     val adsEnabled by AdManager.adsEnabled.collectAsState()
     val nativeEnabled by AdManager.nativeEnabled.collectAsState()
 
@@ -45,10 +53,12 @@ fun AppInstallNativeAdCard(modifier: Modifier = Modifier) {
                 nativeAd?.destroy()
                 nativeAd = ad
                 adReady = true
+                Log.d("AppInstallNativeAd", "Large native ad loaded")
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     adReady = false
+                    Log.e("AppInstallNativeAd", "Large native ad failed: ${error.code} ${error.message}")
                 }
             })
             .withNativeAdOptions(
@@ -80,6 +90,9 @@ fun AppInstallNativeAdCard(modifier: Modifier = Modifier) {
                     .inflate(R.layout.native_app_install_ad_view, null) as NativeAdView
 
                 adView.mediaView        = adView.findViewById(R.id.ad_media)
+                adView.mediaView?.layoutParams = adView.mediaView?.layoutParams?.apply {
+                    height = mediaHeightPx
+                }
                 adView.headlineView     = adView.findViewById(R.id.ad_headline)
                 adView.bodyView         = adView.findViewById(R.id.ad_body)
                 adView.iconView         = adView.findViewById(R.id.ad_app_icon)

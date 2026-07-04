@@ -52,14 +52,14 @@ class GoalioApplication : Application() {
                     }
                 }
         }
-        // Initialize AdMob
+        appOpenAdManager = AppOpenAdManager(this)
+
+        // Initialize AdMob once, then load ads after Remote Config defaults are ready.
         MobileAds.initialize(this) {
-            AdManager.init(this)
-            appOpenAdManager = AppOpenAdManager(this)
-            appOpenAdManager.loadAd(this)
+            AdManager.init(this) {
+                appOpenAdManager.loadAd(this)
+            }
         }
-        //initializing metaads
-        MobileAds.initialize(this)
     }
 
     companion object {

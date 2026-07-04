@@ -41,4 +41,16 @@
         <key>league_screen_enabled</key>
         <value>false</value>
     </entry>
+
+    <!-- Ad switches and test IDs. Firebase Console should override IDs in production. -->
+    <entry><key>ads_enabled</key><value>true</value></entry>
+    <entry><key>banner_ad_enabled</key><value>true</value></entry>
+    <entry><key>interstitial_ad_enabled</key><value>true</value></entry>
+    <entry><key>native_ad_enabled</key><value>true</value></entry>
+    <entry><key>app_open_ad_enabled</key><value>true</value></entry>
+    <entry><key>interstitial_trigger_count</key><value>3</value></entry>
+    <entry><key>banner_ad_unit_id</key><value>ca-app-pub-3940256099942544/6300978111</value></entry>
+    <entry><key>interstitial_ad_unit_id</key><value>ca-app-pub-3940256099942544/1033173712</value></entry>
+    <entry><key>native_ad_unit_id</key><value>ca-app-pub-3940256099942544/2247696110</value></entry>
+    <entry><key>app_open_ad_unit_id</key><value>ca-app-pub-3940256099942544/9257395921</value></entry>
 </defaultsMap>

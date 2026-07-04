@@ -36,8 +36,11 @@ import kotlinx.coroutines.flow.StateFlow
 import com.google.firebase.remoteconfig.ConfigUpdate
 import com.google.firebase.remoteconfig.ConfigUpdateListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
+import zero.ramjikvarosai.hirebazzar.BuildConfig
+import zero.ramjikvarosai.hirebazzar.R
 
 object AdManager {
+    private var initialized = false
 
     // ── Test Ad Unit IDs (replace with real ones for production) ─────────
     private const val TEST_BANNER_ID       = "ca-app-pub-3940256099942544/6300978111"
@@ -94,40 +97,35 @@ object AdManager {
     private var lastAdTime = 0L
 
     // ── Remote Config defaults ────────────────────────────────────────────
-    private val remoteConfigDefaults = mapOf(
-        KEY_ADS_ENABLED          to true,
-        KEY_BANNER_ENABLED       to true,
-        KEY_INTERSTITIAL_ENABLED to true,
-        KEY_NATIVE_ENABLED       to true,
-        KEY_APP_OPEN_ENABLED     to true,
-        KEY_INTERSTITIAL_TRIGGER to 3L,
-        KEY_BANNER_AD_UNIT       to TEST_BANNER_ID,
-        KEY_INTERSTITIAL_AD_UNIT to TEST_INTERSTITIAL_ID,
-        KEY_NATIVE_AD_UNIT       to TEST_NATIVE_ID,
-        KEY_APP_OPEN_AD_UNIT     to TEST_APP_OPEN_ID
-    )
+    fun init(context: Context, onReady: () -> Unit = {}) {
+        if (initialized) {
+            onReady()
+            return
+        }
+        initialized = true
 
-
-
-    fun init(context: Context) {
+        val appContext = context.applicationContext
         val remoteConfig = Firebase.remoteConfig
         remoteConfig.setConfigSettingsAsync(
             remoteConfigSettings {
-                minimumFetchIntervalInSeconds = 0
+                minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
             }
         )
-        remoteConfig.setDefaultsAsync(remoteConfigDefaults)
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults).addOnCompleteListener {
+            applyRemoteConfig(appContext)
+            onReady()
 
         // ── One-time fetch on start ───────────────────────────────────────
-        remoteConfig.fetchAndActivate().addOnCompleteListener {
-            applyRemoteConfig(context)
+            remoteConfig.fetchAndActivate().addOnCompleteListener {
+                applyRemoteConfig(appContext)
+            }
         }
 
         // ── Real-time listener — fires whenever you change values in Firebase
         remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
             override fun onUpdate(configUpdate: ConfigUpdate) {
                 remoteConfig.activate().addOnCompleteListener {
-                    applyRemoteConfig(context)  // re-apply instantly
+                    applyRemoteConfig(appContext)
                 }
             }
 
@@ -261,7 +259,7 @@ object AdManager {
         if (!config.getBoolean(KEY_INTERSTITIAL_ENABLED)) return
 
         actionCount++
-        val triggerCount = config.getLong(KEY_INTERSTITIAL_TRIGGER).toInt()
+        val triggerCount = config.getLong(KEY_INTERSTITIAL_TRIGGER).toInt().coerceAtLeast(1)
 
 //        if (actionCount >= triggerCount) {
 //            actionCount = 0
@@ -360,6 +358,12 @@ object AdManager {
 
         if (!_adsEnabled.value) {
             Log.d("AdManager", "❌ Ads disabled")
+            onDismiss()
+            return
+        }
+
+        if (!Firebase.remoteConfig.getBoolean(KEY_INTERSTITIAL_ENABLED)) {
+            Log.d("AdManager", "Interstitial disabled by config")
             onDismiss()
             return
         }
