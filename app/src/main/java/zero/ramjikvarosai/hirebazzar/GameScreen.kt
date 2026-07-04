@@ -139,7 +139,7 @@ fun GameScreen(
                 start = metrics.horizontalPadding,
                 end = metrics.horizontalPadding,
                 top = metrics.dp(18),
-                bottom = metrics.dp(120)
+                bottom = metrics.bottomBarPadding
             ),
             verticalArrangement = Arrangement.spacedBy(metrics.dp(20))
         ) {
@@ -851,6 +851,20 @@ private fun ResultBanner(result: QuizAnswerInfo, metrics: GoalioMetrics) {
 
 @Composable
 private fun LeaderboardSection(leaderboard: QuizLeaderboardInfo?, metrics: GoalioMetrics) {
+    val pageSize = 10
+    val entries = leaderboard?.entries.orEmpty()
+        .filter { it.xp > 0 }
+        .distinctBy { it.username.lowercase() }
+        .sortedBy { it.rank }
+    val me = leaderboard?.me?.takeIf { it.xp > 0 }
+    val pageCount = ((entries.size + pageSize - 1) / pageSize).coerceAtLeast(1)
+    var page by rememberSaveable(entries.size) { mutableStateOf(0) }
+    LaunchedEffect(pageCount) {
+        if (page >= pageCount) page = pageCount - 1
+    }
+    val pageEntries = entries.drop(page * pageSize).take(pageSize)
+    val meVisible = me != null && pageEntries.any { it.username.equals(me.username, ignoreCase = true) }
+
     Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(12))) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -871,15 +885,14 @@ private fun LeaderboardSection(leaderboard: QuizLeaderboardInfo?, metrics: Goali
                 modifier = Modifier.weight(1f)
             )
             Text(
-                trans("TOP 10"),
+                trans(if (pageCount > 1) "TOP ${page * pageSize + 1}-${page * pageSize + pageEntries.size}" else "TOP 10"),
                 color = GoalioColors.Accent,
                 fontSize = metrics.sp(11),
                 fontWeight = FontWeight.Black
             )
         }
 
-        val entries = leaderboard?.entries.orEmpty().take(10)
-        if (entries.isEmpty()) {
+        if (pageEntries.isEmpty()) {
             Surface(
                 color = GoalioColors.Surface1,
                 shape = RoundedCornerShape(metrics.dp(16)),
@@ -895,8 +908,85 @@ private fun LeaderboardSection(leaderboard: QuizLeaderboardInfo?, metrics: Goali
                 )
             }
         } else {
-            entries.forEach { player ->
+            pageEntries.forEach { player ->
                 LeaderboardRow(player, metrics)
+            }
+            if (me != null && !meVisible) {
+                Text(
+                    trans("YOUR RANK"),
+                    color = GoalioColors.TextTertiary,
+                    fontSize = metrics.sp(10),
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier.padding(top = metrics.dp(2))
+                )
+                LeaderboardRow(me.copy(isMe = true), metrics)
+            }
+            if (pageCount > 1) {
+                LeaderboardPager(
+                    page = page,
+                    pageCount = pageCount,
+                    metrics = metrics,
+                    onPage = { page = it }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LeaderboardPager(
+    page: Int,
+    pageCount: Int,
+    metrics: GoalioMetrics,
+    onPage: (Int) -> Unit
+) {
+    val visiblePages = remember(page, pageCount) {
+        if (pageCount <= 5) {
+            (0 until pageCount).toList()
+        } else {
+            buildList {
+                add(0)
+                add((page - 1).coerceAtLeast(0))
+                add(page)
+                add((page + 1).coerceAtMost(pageCount - 1))
+                add(pageCount - 1)
+            }.distinct().sorted()
+        }
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        visiblePages.forEachIndexed { visibleIndex, index ->
+            if (visibleIndex > 0 && index - visiblePages[visibleIndex - 1] > 1) {
+                Text(
+                    "...",
+                    color = GoalioColors.TextTertiary,
+                    fontSize = metrics.sp(12),
+                    fontWeight = FontWeight.Black,
+                    modifier = Modifier.padding(horizontal = metrics.dp(4))
+                )
+            }
+            val selected = index == page
+            Surface(
+                color = if (selected) GoalioColors.Accent else GoalioColors.Surface1,
+                shape = RoundedCornerShape(metrics.dp(8)),
+                border = BorderStroke(1.dp, if (selected) GoalioColors.Accent else GoalioColors.CardBorder),
+                modifier = Modifier
+                    .padding(horizontal = metrics.dp(3))
+                    .size(metrics.dp(34))
+                    .clickable { onPage(index) }
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        "${index + 1}",
+                        color = if (selected) Color.Black else GoalioColors.TextSecondary,
+                        fontSize = metrics.sp(12),
+                        fontWeight = FontWeight.Black
+                    )
+                }
             }
         }
     }

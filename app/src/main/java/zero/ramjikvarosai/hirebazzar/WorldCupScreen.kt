@@ -61,6 +61,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
+import zero.ramjikvarosai.hirebazzar.components.InlineNativeAd
 import kotlinx.coroutines.delay
 
 @Composable
@@ -265,7 +266,10 @@ private fun WorldCupGroups(groups: List<WorldCupGroupInfo>) {
     val metrics = rememberGoalioMetrics()
     Column(verticalArrangement = Arrangement.spacedBy(metrics.dp(14))) {
         SectionTitle("Groups")
-        groups.forEach { group -> WorldCupGroupTable(group) }
+        groups.forEachIndexed { index, group ->
+            WorldCupGroupTable(group)
+            if ((index + 1) % 2 == 0 && index < groups.lastIndex) InlineNativeAd()
+        }
     }
 }
 

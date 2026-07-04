@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
+import zero.ramjikvarosai.hirebazzar.components.BannerAd
 
 @Composable
 fun GoalioTopBar(
@@ -87,19 +88,22 @@ fun GoalioBottomBar(modifier: Modifier = Modifier, selected: String, onHome: () 
         border = BorderStroke(1.dp, GoalioColors.CardBorder),
         modifier = modifier.fillMaxWidth().navigationBarsPadding()
     ) {
-        Row(Modifier.padding(horizontal = 8.dp, vertical = 6.dp), horizontalArrangement = Arrangement.SpaceAround) {
-            items.forEach { (label, action) ->
-                val active = selected == label
-                val fg = if (active) GoalioColors.Primary else GoalioColors.TextSecondary
-                Surface(
-                    color = if (active) GoalioColors.Accent else Color.Transparent,
-                    shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier.weight(1f).height(62.dp).clickable(onClick = action)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
-                        Icon(bottomBarIcon(label), contentDescription = label, tint = fg, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.height(4.dp))
-                        Text(trans(label), color = fg, fontWeight = FontWeight.Bold, fontSize = 10.sp, maxLines = 1)
+        Column {
+            BannerAd()
+            Row(Modifier.padding(horizontal = 8.dp, vertical = 6.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                items.forEach { (label, action) ->
+                    val active = selected == label
+                    val fg = if (active) GoalioColors.Primary else GoalioColors.TextSecondary
+                    Surface(
+                        color = if (active) GoalioColors.Accent else Color.Transparent,
+                        shape = RoundedCornerShape(18.dp),
+                        modifier = Modifier.weight(1f).height(62.dp).clickable(onClick = action)
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
+                            Icon(bottomBarIcon(label), contentDescription = label, tint = fg, modifier = Modifier.size(24.dp))
+                            Spacer(Modifier.height(4.dp))
+                            Text(trans(label), color = fg, fontWeight = FontWeight.Bold, fontSize = 10.sp, maxLines = 1)
+                        }
                     }
                 }
             }

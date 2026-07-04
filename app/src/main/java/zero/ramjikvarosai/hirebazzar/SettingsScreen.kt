@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
+import zero.ramjikvarosai.hirebazzar.components.InlineNativeAd
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -194,6 +195,7 @@ fun SettingsScreen(
             item { ProfileHero(username = username, member = member, level = level, onEdit = { editor = SettingsEditor.Profile }) }
             item { MasteryCard(level = level, levelXp = levelXp, totalXp = xp) }
             item { QuickStatsRow(teams = teams.size, players = players.size, notifications = notifications) }
+            item { InlineNativeAd() }
             item {
                 SettingsSection(trans("Preferences")) {
                     SettingsRow(

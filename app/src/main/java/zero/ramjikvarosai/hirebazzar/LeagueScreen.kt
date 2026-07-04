@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
+import zero.ramjikvarosai.hirebazzar.components.InlineNativeAd
 
 private data class LeagueHubOption(val code: String, val label: String, val color: Color)
 
@@ -108,6 +109,7 @@ fun LeagueScreen(
                     else -> LeagueState(error ?: "${selected.label} table is not available yet.")
                 }
             }
+            item { InlineNativeAd() }
             item { LeagueBracketPreview(selected, hub?.bracket) }
             item { LeagueLibrary(selected, hub?.library.orEmpty()) }
         }

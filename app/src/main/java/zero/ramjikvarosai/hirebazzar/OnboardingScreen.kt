@@ -62,6 +62,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
 import kotlinx.coroutines.launch
+import zero.ramjikvarosai.hirebazzar.components.NativeAdCard
 
 private data class OnboardingPage(
     val title: String,
@@ -156,6 +157,8 @@ fun OnboardingScreen(onBack: () -> Unit, onComplete: () -> Unit) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(Modifier.height(metrics.dp(24)))
+            NativeAdCard(Modifier.padding(horizontal = metrics.horizontalPadding))
             Spacer(Modifier.height(metrics.dp(14)))
         }
     }

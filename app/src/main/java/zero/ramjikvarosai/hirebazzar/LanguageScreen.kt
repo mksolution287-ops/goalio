@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.ramjikvarosai.hirebazzar.ui.theme.GoalioColors
+import zero.ramjikvarosai.hirebazzar.components.AppInstallNativeAdCard
 
 private data class LanguageOption(
     val tag: String,
@@ -137,26 +138,43 @@ fun LanguageScreen(
                 }
             }
             HorizontalDivider(color = GoalioColors.Divider)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = metrics.horizontalPadding,
+                        end = metrics.horizontalPadding,
+                        top = metrics.dp(12),
+                        bottom = metrics.dp(8)
+                    )
+            ) {
+                SearchBox(query) { query = it }
+            }
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(metrics.horizontalPadding),
-                verticalArrangement = Arrangement.spacedBy(metrics.dp(10))
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(
+                    start = metrics.horizontalPadding,
+                    end = metrics.horizontalPadding,
+                    top = metrics.dp(4),
+                    bottom = metrics.dp(8)
+                ),
+                verticalArrangement = Arrangement.spacedBy(metrics.dp(8))
             ) {
                 item {
-                    Spacer(Modifier.height(metrics.dp(18)))
-                    SearchBox(query) { query = it }
-                    Spacer(Modifier.height(metrics.dp(16)))
                     LanguageCard(
                         LanguageOption("system", trans("System Default"), "", "⚙"),
                         selected == "system"
                     ) { selected = "system" }
-                    Spacer(Modifier.height(metrics.dp(10)))
                 }
-                items(filtered, key = { it.tag }) { language ->
+                items(filtered, key = { language -> language.tag }) { language ->
                     LanguageCard(language, selected == language.tag) { selected = language.tag }
                 }
-                item { Spacer(Modifier.navigationBarsPadding().height(metrics.dp(12))) }
             }
+            AppInstallNativeAdCard(
+                modifier = Modifier.padding(horizontal = metrics.horizontalPadding),
+                mediaHeight = metrics.dp(160)
+            )
+            Spacer(Modifier.navigationBarsPadding().height(metrics.dp(4)))
         }
     }
 }
@@ -200,14 +218,14 @@ private fun LanguageCard(language: LanguageOption, selected: Boolean, onClick: (
             if (selected) 2.dp else 1.dp,
             if (selected) GoalioColors.Accent else GoalioColors.CardBorder
         ),
-        modifier = Modifier.fillMaxWidth().height(metrics.dp(78))
+        modifier = Modifier.fillMaxWidth().height(metrics.dp(66))
     ) {
         Row(Modifier.padding(horizontal = metrics.dp(16)), verticalAlignment = Alignment.CenterVertically) {
             Surface(
                 shape = RoundedCornerShape(metrics.dp(13)),
                 color = if (selected) GoalioColors.Tertiary.copy(alpha = .12f) else GoalioColors.Primary,
                 border = BorderStroke(1.dp, if (selected) GoalioColors.Tertiary.copy(alpha = .45f) else GoalioColors.Border),
-                modifier = Modifier.size(metrics.dp(44))
+                modifier = Modifier.size(metrics.dp(40))
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(language.badge, color = Color.White, fontSize = metrics.sp(22), fontWeight = FontWeight.Black)

@@ -38,7 +38,7 @@ fun rememberGoalioMetrics(): GoalioMetrics {
             width > 460 -> 28.dp
             else -> 22.dp
         },
-        bottomBarPadding = if (compact) 86.dp else 104.dp,
+        bottomBarPadding = if (compact) 152.dp else 170.dp,
         compact = compact,
         scale = scale
     )
